@@ -1,0 +1,40 @@
+.header_container {
+  margin: 0;
+      padding: 0;
+      display: table;
+      width: 100%; 
+      /*background-image: url(/static/img/header.jpg);*/
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      height: 300px;  /* Высота шапки */
+}
+
+.btn-my-r {
+    display: inline-block;
+    color: #3b6696;
+    font-weight: bold;
+    text-decoration: none;
+    background: #eee;
+    margin: 0 2px 6px 0;
+    padding: 4px 5px;
+    font-size: 15px;
+    line-height: 17px;
+    border: solid 2px #3b6696;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.gap-item {
+    margin: 0px 15px;
+    border-radius: 5px;
+    border:  solid 1px #d54d38;
+}
+
+/*
+.sticky {
+    position: sticky;
+    top: 80px;
+    padding: 10px;
+}*/
