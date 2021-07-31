@@ -4,7 +4,6 @@ import org.aleks4ay.hotel.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +33,8 @@ public class RunDao {
         Room room1 = new Room(101, RoomCategory.STANDARD, 2, "Номер с видом на море", 1_600.0);
         Room room2 = new Room(106, RoomCategory.SUPERIOR, 3, "Номер с wi-fi и видом на море", 2_800.0);
         Room room3 = new Room(501, RoomCategory.DELUXE, 5, "Люкс с бассейном", 100_000.0);
+
+        room1.setStatus(LocalDate.now(), RoomStatus.BOOKED);
 
         User user1 = new User("login1", "pass1");
         User user2 = new User("login2", "pass2");

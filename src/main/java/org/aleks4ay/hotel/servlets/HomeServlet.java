@@ -2,6 +2,7 @@ package org.aleks4ay.hotel.servlets;
 
 
 import org.aleks4ay.hotel.model.Room;
+import org.aleks4ay.hotel.model.RoomCategory;
 import org.aleks4ay.hotel.service.RoomService;
 
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @WebServlet(urlPatterns = "/home")
@@ -26,6 +28,8 @@ public class HomeServlet extends HttpServlet {
         String page = req.getParameter("pg");
         List<Room> roomList = new RoomService().getAll();
         req.setAttribute("rooms", roomList);
+        List<RoomCategory> categories = Arrays.asList(RoomCategory.values());
+        req.setAttribute("categories", categories);
         if (page == null || page.equals("")) {
             req.setAttribute("pg", 1);
         } else {

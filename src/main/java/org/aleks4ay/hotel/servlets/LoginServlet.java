@@ -23,8 +23,8 @@ public class LoginServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
 
 
-        String login = (String) req.getParameter("toLogin");
-        String pass = (String) req.getParameter("log_pass");
+        String login = req.getParameter("login");
+        String pass = req.getParameter("log_pass");
         System.out.println("login = " + login);
         System.out.println("pass = " + pass);
         req.getRequestDispatcher("/WEB-INF/jsp/login.jsp").forward(req, resp);

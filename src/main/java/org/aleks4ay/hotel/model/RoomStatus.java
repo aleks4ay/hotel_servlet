@@ -7,5 +7,10 @@ public enum RoomStatus {
     EMPTY,
     BOOKED,
     OCCUPIED,
-    DISABLED
+    DISABLED;
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

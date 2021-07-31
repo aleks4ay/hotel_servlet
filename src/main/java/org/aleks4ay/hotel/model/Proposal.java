@@ -4,35 +4,31 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class Order {
-
+/**
+ * Created by aser on 31.07.2021.
+ */
+public class Proposal {
     private Long id;
-    private Room room;
     private LocalDateTime registered = LocalDateTime.now();
     private LocalDate dateStart;
     private LocalDate dateEnd;
     private int period;
-    private double correctPrice;
-//    private double cost;
-    private OrderStatus orderStatus;
+    private int guests;
+    private RoomCategory category;
 
     private User user;
 
-    public Order() {
+    public Proposal() {
     }
 
-    public Order(Long id, Room room, LocalDateTime registered, LocalDate dateStart, LocalDate dateEnd) {
-        this.orderStatus = OrderStatus.NEW;
-        this.id = id;
-        this.room = room;
-        this.registered = registered;
+    public Proposal(LocalDate dateStart, LocalDate dateEnd, int guests, RoomCategory category, User user) {
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
+        this.category = category;
+        this.guests = guests;
+        this.user = user;
         setPeriod();
-        setCorrectPrice();
     }
-
-
 
     public Long getId() {
         return id;
@@ -40,22 +36,6 @@ public class Order {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
     }
 
     public LocalDateTime getRegistered() {
@@ -82,6 +62,30 @@ public class Order {
         this.dateEnd = dateEnd;
     }
 
+    public int getGuests() {
+        return guests;
+    }
+
+    public void setGuests(int guests) {
+        this.guests = guests;
+    }
+
+    public RoomCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(RoomCategory category) {
+        this.category = category;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public int getPeriod() {
         if (this.period == 0) {
             return (int) getDateStart().until(getDateEnd(), ChronoUnit.DAYS);
@@ -93,30 +97,16 @@ public class Order {
         this.period = (int) getDateStart().until(getDateEnd(), ChronoUnit.DAYS);
     }
 
-    public double getCorrectPrice() {
-        return correctPrice;
-    }
-
-    public void setCorrectPrice() {
-        this.correctPrice = this.room.getPrice();
-    }
-
-    public double getCost() {
-        return getCorrectPrice() * getPeriod();
-    }
-
     @Override
     public String toString() {
-        return "Order{" +
+        return "Proposal{" +
                 "id=" + id +
-                ", room=" + room +
-                ", orderStatus=" + orderStatus +
                 ", registered=" + registered +
                 ", dateStart=" + dateStart +
                 ", dateEnd=" + dateEnd +
-                ", correctPrice=" + correctPrice +
-                ", cost=" + getCost() +
-//                ", user=" + user +
+                ", period=" + period +
+                ", category=" + category +
+                ", user=" + user.getLogin() +
                 '}';
     }
 }

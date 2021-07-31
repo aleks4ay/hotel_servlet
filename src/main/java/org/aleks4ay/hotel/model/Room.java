@@ -1,19 +1,23 @@
 package org.aleks4ay.hotel.model;
 
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Room {
+
     private int number;
-    private Enum<RoomStatus> roomStatus;
-    private Enum<RoomCategory> roomCategory;
+    private RoomCategory roomCategory;
     private int guests;
     private String description;
     private double price;
     private byte[] roomView;
+    private Map<LocalDate, RoomStatus> statuses = new HashMap<>();
 
     public Room() {
     }
 
-    public Room(int number, Enum<RoomCategory> roomCategory, int guests, String description, double price) {
-        this.roomStatus = RoomStatus.EMPTY;
+    public Room(int number, RoomCategory roomCategory, int guests, String description, double price) {
         this.number = number;
         this.roomCategory = roomCategory;
         this.guests = guests;
@@ -21,11 +25,32 @@ public class Room {
         this.price = price;
     }
 
-    public Enum<RoomCategory> getRoomCategory() {
+    public boolean isEmpty(LocalDate start, LocalDate end) {
+        LocalDate date = start;
+
+        while (!date.isAfter((end))) {
+            if (statuses.keySet().contains(date)) {
+                return false;
+            }
+            date = date.plusDays(1);
+        }
+        return true;
+    }
+
+    public boolean isEmpty(LocalDate date) {
+        if (statuses.keySet().contains(date)) {
+            return false;
+        }
+        return true;
+    }
+
+
+
+    public RoomCategory getRoomCategory() {
         return roomCategory;
     }
 
-    public void setRoomCategory(Enum<RoomCategory> roomCategory) {
+    public void setRoomCategory(RoomCategory roomCategory) {
         this.roomCategory = roomCategory;
     }
 
@@ -53,13 +78,34 @@ public class Room {
         this.number = number;
     }
 
-    public Enum<RoomStatus> getRoomStatus() {
-        return roomStatus;
+    public Map<LocalDate, RoomStatus> getStatuses() {
+        return statuses;
     }
 
-    public void setRoomStatus(Enum<RoomStatus> roomStatus) {
-        this.roomStatus = roomStatus;
+    public void setStatuses(Map<LocalDate, RoomStatus> statuses) {
+        this.statuses = statuses;
     }
+
+    public boolean setStatus(LocalDate date, RoomStatus status) {
+        RoomStatus oldStatus = statuses.get(date);
+        if (oldStatus == null) {
+            if (status.equals(RoomStatus.EMPTY)) {
+                return false;
+            } else {
+                statuses.put(date, status);
+                return true;
+            }
+        }
+        if (status.equals(RoomStatus.EMPTY)) {
+            statuses.remove(date);
+            return true;
+        } else {
+            statuses.put(date, status);
+            return true;
+        }
+    }
+
+
 
     public double getPrice() {
         return price;
@@ -68,6 +114,7 @@ public class Room {
     public void setPrice(double price) {
         this.price = price;
     }
+
 
     public byte[] getRoomView() {
         return roomView;
@@ -80,12 +127,12 @@ public class Room {
     @Override
     public String toString() {
         return "Room{" +
-                "roomCategory=" + roomCategory +
-                ", roomStatus=" + roomStatus +
+                "number=" + number +
+                ", roomCategory=" + roomCategory +
                 ", guests=" + guests +
                 ", description='" + description + '\'' +
-                ", number=" + number +
                 ", price=" + price +
+                ", statuses=" + statuses +
                 '}';
     }
 }
