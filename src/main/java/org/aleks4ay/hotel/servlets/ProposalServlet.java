@@ -1,6 +1,5 @@
 package org.aleks4ay.hotel.servlets;
 
-
 import org.aleks4ay.hotel.model.*;
 
 import javax.servlet.ServletException;
@@ -21,15 +20,15 @@ public class ProposalServlet extends HttpServlet {
         System.out.println("user = " + user);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateStartString = req.getParameter("dateStart");
-        String dateEndString = req.getParameter("dateEnd");
+        String dateStartString = req.getParameter("arrival");
+        String dateEndString = req.getParameter("departure");
         LocalDate dateStart = LocalDate.parse(dateStartString, formatter);
         LocalDate dateEnd = LocalDate.parse(dateEndString, formatter);
 
         int guests = Integer.parseInt(req.getParameter("field1"));
         String selected = req.getParameter("field2");
-        RoomCategory category = RoomCategory.valueOf(selected);
-        Proposal proposal = new Proposal(dateStart, dateEnd, guests, category, new User());
+        Category category = Category.valueOf(selected);
+        Proposal proposal = new Proposal(dateStart, dateEnd, guests, category, new User(), true);
 
         System.out.println("dateStart " + dateStart);
         System.out.println("dateEnd " + dateEnd);

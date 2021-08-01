@@ -26,6 +26,14 @@ public class User {
         addRole(Role.ROLE_USER);
     }
 
+    public User(Long id, String login, String name, String surname, String password) {
+        this.id = id;
+        this.login = login;
+        this.name = name;
+        this.surname = surname;
+        this.password = password;
+    }
+
     public Long getId() {
         return id;
     }
@@ -60,6 +68,7 @@ public class User {
 
     public String getPassword() {
         return password;
+//        return Encrypt.hash(password, "SHA-256");
     }
 
     public void setPassword(String password) {

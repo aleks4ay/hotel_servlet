@@ -9,8 +9,8 @@ public class Order {
     private Long id;
     private Room room;
     private LocalDateTime registered = LocalDateTime.now();
-    private LocalDate dateStart;
-    private LocalDate dateEnd;
+    private LocalDate arrival;
+    private LocalDate departure;
     private int period;
     private double correctPrice;
 //    private double cost;
@@ -21,13 +21,13 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, Room room, LocalDateTime registered, LocalDate dateStart, LocalDate dateEnd) {
+    public Order(Long id, Room room, LocalDateTime registered, LocalDate arrival, LocalDate departure) {
         this.orderStatus = OrderStatus.NEW;
         this.id = id;
         this.room = room;
         this.registered = registered;
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
+        this.arrival = arrival;
+        this.departure = departure;
         setPeriod();
         setCorrectPrice();
     }
@@ -66,31 +66,31 @@ public class Order {
         this.registered = registered;
     }
 
-    public LocalDate getDateStart() {
-        return dateStart;
+    public LocalDate getArrival() {
+        return arrival;
     }
 
-    public void setDateStart(LocalDate dateStart) {
-        this.dateStart = dateStart;
+    public void setArrival(LocalDate arrival) {
+        this.arrival = arrival;
     }
 
-    public LocalDate getDateEnd() {
-        return dateEnd;
+    public LocalDate getDeparture() {
+        return departure;
     }
 
-    public void setDateEnd(LocalDate dateEnd) {
-        this.dateEnd = dateEnd;
+    public void setDeparture(LocalDate departure) {
+        this.departure = departure;
     }
 
     public int getPeriod() {
         if (this.period == 0) {
-            return (int) getDateStart().until(getDateEnd(), ChronoUnit.DAYS);
+            return (int) getArrival().until(getDeparture(), ChronoUnit.DAYS);
         }
         return period;
     }
 
     public void setPeriod() {
-        this.period = (int) getDateStart().until(getDateEnd(), ChronoUnit.DAYS);
+        this.period = (int) getArrival().until(getDeparture(), ChronoUnit.DAYS);
     }
 
     public double getCorrectPrice() {
@@ -112,8 +112,8 @@ public class Order {
                 ", room=" + room +
                 ", orderStatus=" + orderStatus +
                 ", registered=" + registered +
-                ", dateStart=" + dateStart +
-                ", dateEnd=" + dateEnd +
+                ", arrival=" + arrival +
+                ", departure=" + departure +
                 ", correctPrice=" + correctPrice +
                 ", cost=" + getCost() +
 //                ", user=" + user +

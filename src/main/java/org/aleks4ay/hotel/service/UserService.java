@@ -1,17 +1,69 @@
 package org.aleks4ay.hotel.service;
 
-
+import org.aleks4ay.hotel.dao.UserDao;
+import org.aleks4ay.hotel.dao.Utils;
 import org.aleks4ay.hotel.model.User;
-import org.aleks4ay.hotel.run.RunDao;
+import org.aleks4ay.hotel.utils.Encrypt;
 
 import java.util.List;
+import java.util.Map;
 
 public class UserService {
-//    private UserDao userDao;
-    private RunDao runDao = new RunDao();
+    private UserDao userDao = new UserDao(Utils.getConnection());
+
+    public User getById(Long id) {
+        return userDao.getById(id);
+    }
+
+    public User getByLogin(String login) {
+        return userDao.getByLogin(login);
+    }
 
     public List<User> getAll() {
-        RunDao runDao = new RunDao();
-        return runDao.getUsers();
+        return userDao.getAll();
+    }
+
+    public boolean delete(Long id) {
+        return userDao.delete(id);
+    }
+
+    public User update(User user) {
+        return userDao.update(user);
+    }
+
+    public boolean create(User user) {
+        Map<String, String> loginMap = userDao.getLoginMap();
+        if (loginMap.keySet().contains(user.getLogin())) {
+//            System.out.println("User with login '" + user.getLogin() + "' already exist.");
+            return false;
+        }
+        String encryptPassword = Encrypt.hash(user.getPassword(), "SHA-256");
+        user.setPassword(encryptPassword);
+        return userDao.create(user);
+    }
+
+    public static void main(String[] args) {
+        new UserService().create(new User(3L, "alex", "Алексей", "Сергиенко", "1313"));
+        new UserService().create(new User(3L, "alex2", "Алексей", "Сергиенко", "1313"));
+    }
+
+    public boolean checkLogin(String login) {
+        Map<String, String> loginMap = userDao.getLoginMap();
+        if (loginMap.keySet().contains(login)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkPassword(String login, String pass) {
+        Map<String, String> loginMap = userDao.getLoginMap();
+        if (loginMap.keySet().contains(login)) {
+            String passFromDb = loginMap.get(login);
+            String encriptedPassword = Encrypt.hash(pass, "SHA-256");
+            if (passFromDb.equals(encriptedPassword)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

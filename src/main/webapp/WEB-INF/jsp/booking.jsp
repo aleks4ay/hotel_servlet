@@ -18,11 +18,11 @@
             <div>
                 <p> <fmt:message key="name"/>: ${order.user.name} </p>
                 <p> <fmt:message key="surname"/>: ${order.user.surname} </p>
-                <p> <fmt:message key="arrival"/>: ${order.dateStart} </p>
-                <p> <fmt:message key="departure"/>: ${order.dateEnd} </p>
+                <p> <fmt:message key="arrival"/>: ${order.arrival} </p>
+                <p> <fmt:message key="departure"/>: ${order.departure} </p>
                 <p> <fmt:message key="period"/>: ${order.period} </p>
                 <p> <fmt:message key="roomNumber"/>: ${order.room.number} </p>
-                <p> <fmt:message key="roomCategory"/>: ${order.room.roomCategory} </p>
+                <p> <fmt:message key="category"/>: ${order.room.category} </p>
                 <p> <fmt:message key="guestsQuantity"/>: ${order.room.guests} </p>
                 <p> <fmt:message key="description"/>: ${order.room.description} </p>
                 <p> <h3> <fmt:message key="cost"/>: ${order.cost} &nbsp; <fmt:message key="currency"/> </h3> </p>

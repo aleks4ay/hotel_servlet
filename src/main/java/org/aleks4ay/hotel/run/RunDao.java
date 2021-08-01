@@ -30,9 +30,9 @@ public class RunDao {
     }
 
     public void init() {
-        Room room1 = new Room(101, RoomCategory.STANDARD, 2, "Номер с видом на море", 1_600.0);
-        Room room2 = new Room(106, RoomCategory.SUPERIOR, 3, "Номер с wi-fi и видом на море", 2_800.0);
-        Room room3 = new Room(501, RoomCategory.DELUXE, 5, "Люкс с бассейном", 100_000.0);
+        Room room1 = new Room(1, 101, Category.STANDARD, 2, "Номер с видом на море", 1_600.0);
+        Room room2 = new Room(2, 106, Category.SUPERIOR, 3, "Номер с wi-fi и видом на море", 2_800.0);
+        Room room3 = new Room(3, 501, Category.DELUXE, 5, "Люкс с бассейном", 100_000.0);
 
         room1.setStatus(LocalDate.now(), RoomStatus.BOOKED);
 

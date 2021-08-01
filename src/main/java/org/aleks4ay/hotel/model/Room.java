@@ -6,8 +6,9 @@ import java.util.Map;
 
 public class Room {
 
+    private long id;
     private int number;
-    private RoomCategory roomCategory;
+    private Category category;
     private int guests;
     private String description;
     private double price;
@@ -17,9 +18,18 @@ public class Room {
     public Room() {
     }
 
-    public Room(int number, RoomCategory roomCategory, int guests, String description, double price) {
+/*    public Room(int number, Category category, int guests, String description, double price) {
         this.number = number;
-        this.roomCategory = roomCategory;
+        this.category = category;
+        this.guests = guests;
+        this.description = description;
+        this.price = price;
+    }*/
+
+    public Room(long id, int number, Category category, int guests, String description, double price) {
+        this.id = id;
+        this.number = number;
+        this.category = category;
         this.guests = guests;
         this.description = description;
         this.price = price;
@@ -44,14 +54,20 @@ public class Room {
         return true;
     }
 
-
-
-    public RoomCategory getRoomCategory() {
-        return roomCategory;
+    public long getId() {
+        return id;
     }
 
-    public void setRoomCategory(RoomCategory roomCategory) {
-        this.roomCategory = roomCategory;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public int getGuests() {
@@ -127,8 +143,9 @@ public class Room {
     @Override
     public String toString() {
         return "Room{" +
-                "number=" + number +
-                ", roomCategory=" + roomCategory +
+                "id=" + id +
+                ", number=" + number +
+                ", category=" + category +
                 ", guests=" + guests +
                 ", description='" + description + '\'' +
                 ", price=" + price +

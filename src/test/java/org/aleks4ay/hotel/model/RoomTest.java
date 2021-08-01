@@ -14,9 +14,9 @@ public class RoomTest {
 
     @Before
     public void setUp() {
-        room1 = new Room(101, RoomCategory.STANDARD, 2, "Номер с видом на море", 1_600.0);
-        room2 = new Room(106, RoomCategory.SUPERIOR, 3, "Номер с wi-fi и видом на море", 2_800.0);
-        room3 = new Room(501, RoomCategory.DELUXE, 5, "Люкс с бассейном", 100_000.0);
+        room1 = new Room(1, 101, Category.STANDARD, 2, "Номер с видом на море", 1_600.0);
+        room2 = new Room(2, 106, Category.SUPERIOR, 3, "Номер с wi-fi и видом на море", 2_800.0);
+        room3 = new Room(3, 501, Category.DELUXE, 5, "Люкс с бассейном", 100_000.0);
 
         room1.setStatus(LocalDate.of(2021,7,30), RoomStatus.EMPTY);
         room1.setStatus(LocalDate.of(2021,7,31), RoomStatus.BOOKED);
@@ -85,7 +85,7 @@ public class RoomTest {
 
     @Test
     public void testToString() throws Exception {
-        String expected = "Room{number=101, roomCategory=STANDARD, guests=2, description='Номер с видом на море', " +
+        String expected = "Room{id=1, number=101, category=Category['STANDARD'], guests=2, description='Номер с видом на море', " +
                 "price=1600.0, statuses={2021-07-31=BOOKED, 2021-08-02=OCCUPIED, 2021-08-01=DISABLED}}";
         String actual = room1.toString();
         assertEquals(expected, actual);

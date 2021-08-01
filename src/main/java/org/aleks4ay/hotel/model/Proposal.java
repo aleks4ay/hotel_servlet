@@ -10,20 +10,22 @@ import java.time.temporal.ChronoUnit;
 public class Proposal {
     private Long id;
     private LocalDateTime registered = LocalDateTime.now();
-    private LocalDate dateStart;
-    private LocalDate dateEnd;
+    private LocalDate arrival;
+    private LocalDate departure;
     private int period;
     private int guests;
-    private RoomCategory category;
+    private Category category;
+    private boolean newItem;
 
     private User user;
 
     public Proposal() {
     }
 
-    public Proposal(LocalDate dateStart, LocalDate dateEnd, int guests, RoomCategory category, User user) {
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
+    public Proposal(LocalDate arrival, LocalDate departure, int guests, Category category, User user, boolean newItem) {
+        this.newItem = newItem;
+        this.arrival = arrival;
+        this.departure = departure;
         this.category = category;
         this.guests = guests;
         this.user = user;
@@ -38,6 +40,14 @@ public class Proposal {
         this.id = id;
     }
 
+    public boolean isNewItem() {
+        return newItem;
+    }
+
+    public void setNewItem(boolean newItem) {
+        this.newItem = newItem;
+    }
+
     public LocalDateTime getRegistered() {
         return registered;
     }
@@ -46,20 +56,20 @@ public class Proposal {
         this.registered = registered;
     }
 
-    public LocalDate getDateStart() {
-        return dateStart;
+    public LocalDate getArrival() {
+        return arrival;
     }
 
-    public void setDateStart(LocalDate dateStart) {
-        this.dateStart = dateStart;
+    public void setArrival(LocalDate arrival) {
+        this.arrival = arrival;
     }
 
-    public LocalDate getDateEnd() {
-        return dateEnd;
+    public LocalDate getDeparture() {
+        return departure;
     }
 
-    public void setDateEnd(LocalDate dateEnd) {
-        this.dateEnd = dateEnd;
+    public void setDeparture(LocalDate departure) {
+        this.departure = departure;
     }
 
     public int getGuests() {
@@ -70,11 +80,11 @@ public class Proposal {
         this.guests = guests;
     }
 
-    public RoomCategory getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(RoomCategory category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
@@ -88,13 +98,13 @@ public class Proposal {
 
     public int getPeriod() {
         if (this.period == 0) {
-            return (int) getDateStart().until(getDateEnd(), ChronoUnit.DAYS);
+            return (int) getArrival().until(getDeparture(), ChronoUnit.DAYS);
         }
         return period;
     }
 
     public void setPeriod() {
-        this.period = (int) getDateStart().until(getDateEnd(), ChronoUnit.DAYS);
+        this.period = (int) getArrival().until(getDeparture(), ChronoUnit.DAYS);
     }
 
     @Override
@@ -102,8 +112,8 @@ public class Proposal {
         return "Proposal{" +
                 "id=" + id +
                 ", registered=" + registered +
-                ", dateStart=" + dateStart +
-                ", dateEnd=" + dateEnd +
+                ", arrival=" + arrival +
+                ", departure=" + departure +
                 ", period=" + period +
                 ", category=" + category +
                 ", user=" + user.getLogin() +

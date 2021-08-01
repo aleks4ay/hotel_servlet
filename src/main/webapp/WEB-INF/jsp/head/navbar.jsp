@@ -25,12 +25,21 @@
             <li>
                 &nbsp;
             </li>
-            <%--<li class="nav-item">
-                <a class="nav-link" href="newuser"><fmt:message key="registration"/></a>
-            </li>--%>
-            <li class="nav-item">
-                <a class="nav-link" href="login"><fmt:message key="loginNow"/></a>
-            </li>
+
+            <c:if test="${not empty sessionScope.get('user')}">
+                <li class="nav-item">
+                    <a class="nav-link" href="logout"><fmt:message key="logoutNow"/></a>
+                </li>
+            </c:if>
+
+            <c:if test="${empty sessionScope.get('user')}">
+                <li class="nav-item">
+                    <a class="nav-link" href="login"><fmt:message key="loginNow"/></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="registration"><fmt:message key="registration"/></a>
+                </li>
+            </c:if>
         </ul>
     </div>
 </nav>

@@ -1,6 +1,6 @@
 package org.aleks4ay.hotel.model;
 
-public enum RoomCategory {
+public enum Category {
     STANDARD("STANDARD"),
     SUPERIOR("SUPERIOR"),
     FAMILY_ROOM("FAMILY_ROOM"),
@@ -9,7 +9,7 @@ public enum RoomCategory {
 
     private String title;
 
-    RoomCategory(String title) {
+    Category(String title) {
         this.title = title;
     }
 
@@ -19,7 +19,7 @@ public enum RoomCategory {
 
     @Override
     public String toString() {
-        return "RoomCategory['" +
+        return "Category['" +
                 title + '\'' +
                 ']';
     }

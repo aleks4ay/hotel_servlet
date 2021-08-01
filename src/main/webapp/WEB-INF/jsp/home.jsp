@@ -9,9 +9,14 @@
 <div class="container-fluid" style="margin-top:10px">
     <div class="row">
         <div class="col-sm-2">
+            <%--<h2>"${language}"</h2>--%>
             <form class="sticky rounded-lg shadow p-4 mb-4"
             style="height:700px; height: 350px; background-color: rgba(96, 162, 218, 0.2);">
                 <p><fmt:message key="filters"/></p>
+                <%--<h2>${not empty sessionScope.get('user') ? sessionScope.get('user') : ''}</h2>--%>
+                <c:if test="${not empty sessionScope.get('user')}">
+                    <h2> Hello, ${sessionScope.get('user').name}! </h2>
+                </c:if>
             </form>
         </div>
 
@@ -30,7 +35,7 @@
                         <tr>
                             <th scope="col"><fmt:message key="n"/></th>
                             <th scope="col"><fmt:message key="number"/></th>
-                            <th scope="col"><fmt:message key="roomCategory"/></th>
+                            <th scope="col"><fmt:message key="category"/></th>
                             <%--<th scope="col"><fmt:message key="roomStatus"/></th>--%>
                             <th scope="col"><fmt:message key="guests"/></th>
                             <th scope="col"><fmt:message key="description"/></th>
@@ -44,7 +49,7 @@
                                     <c:out value="${10 * (pg - 1) + position.count}" />
                                 </td>
                                 <td><c:out value="${room.number}" /></td>
-                                <td><c:out value="${room.roomCategory}" /></td>
+                                <td><c:out value="${room.category}" /></td>
                                 <%--<td><c:out value="${room.roomStatus}" /></td>--%>
                                 <td><c:out value="${room.guests}" /></td>
                                 <td><c:out value="${room.description}" /></td>
@@ -73,12 +78,12 @@
                 <h3><fmt:message key="cart_1"/></h3>
                 <div class="mb-3">
                     <label for="date1" class="form-label">Date arrival:</label>
-                    <input type="date" class="form-control" id="date1"  name="dateStart" />
-                    <%--<input type="datetime" class="form-control" id="date1" name="dateStart" />--%>
+                    <input type="date" class="form-control" id="date1"  name="arrival" />
+                    <%--<input type="datetime" class="form-control" id="date1" name="arrival" />--%>
                 </div>
                 <div class="mb-3">
                     <label for="date2" class="form-label">Date arrival:</label>
-                    <input type="date" class="form-control" id="date2" name="dateEnd" />
+                    <input type="date" class="form-control" id="date2" name="departure" />
                 </div>
                 <div class="mb-3">
                     <label for="field1" class="form-label"> Guests </label>
@@ -108,8 +113,8 @@
             </form>
 <%--            <form class="sticky rounded-lg shadow p-4 mb-4" style="height: 250px; background-color: rgba(96, 162, 218, 0.2);">
 
-                <p> Date arrival: ${order.dateStart} </p>
-                <p> Date departure: ${order.dateEnd} </p>
+                <p> Date arrival: ${order.arrival} </p>
+                <p> Date departure: ${order.departure} </p>
                 <p> Number of guest: ${order.room.guests} </p>
                 <p><c:out value="${not empty id ? id : '-'}"></c:out>
             </form>--%>
