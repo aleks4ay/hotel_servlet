@@ -1,15 +1,21 @@
 package org.aleks4ay.hotel.dao;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public final class ConnectionPool {
+    private static final Logger log = LogManager.getLogger(UserRoleDao.class);
 
     private static DataSource dataSource;
     private static final String DRIVER_NAME;
@@ -20,23 +26,28 @@ public final class ConnectionPool {
     static {
         final ResourceBundle config = ResourceBundle
                 .getBundle("database", Locale.ENGLISH);
+        // TODO: 02.08.2021 LOGIONG
         DRIVER_NAME = config.getString("database.driver");
         URL = config.getString("database.url");
         USER_NAME = config.getString("database.username");
         PASSWORD = config.getString("database.password");
-        dataSource = setupDataSource();
+        dataSource = initDataSource();
+//        log.error("IOException during read {} from {}.", new File(filePropertiesName).getAbsolutePath(), Utils.class, e.toString());
     }
 
     public static Connection getConnection() {
         try {
-            return dataSource.getConnection();
+            Connection connection = dataSource.getConnection();
+            log.debug("Was getting Connection from {}.", ConnectionPool.class);
+            return connection;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("SQLException during get Connection from resource {}. {}",
+                    new File("/database.properties").getAbsolutePath(), e);
         }
         return null;
     }
 
-    private static DataSource setupDataSource() {
+    private static DataSource initDataSource() {
         ComboPooledDataSource cpds = new ComboPooledDataSource();
         try {
             cpds.setDriverClass(DRIVER_NAME);
@@ -52,46 +63,33 @@ public final class ConnectionPool {
         return cpds;
     }
 
-/*    public static void main(String[] args) throws SQLException {
-        for (int i = 0; i < 10; i++) {
-            long start = System.currentTimeMillis();
-            new ConnectionPool().doTestWithPool();
-            long end = System.currentTimeMillis();
-            System.out.println("With pool. time = " + (end - start));
-        }
-        for (int i = 0; i < 10; i++) {
-            long start = System.currentTimeMillis();
-            new ConnectionPool().doTestNoPool();
-            long end = System.currentTimeMillis();
-            System.out.println("No pool. time = " + (end - start));
-        }
-    }*/
-
-/*    private void doTestNoPool() {
-        Connection conn = Utils.getConnection();
-        UserDao userDao = new UserDao(conn);
-        User user = userDao.create(new User(null, "ert12", "rt1", "rt1", "rt1"));
-        Utils.closeConnection(conn);
-        Connection conn2 = Utils.getConnection();
-        UserDao userDao2 = new UserDao(conn2);
-        userDao2.delete(user.getId());
-        Utils.closeConnection(conn2);
-    }
-
-    private void doTestWithPool() {
-        Connection conn = ConnectionPool.getConnection();
-        UserDao userDao = new UserDao(conn);
-        User user = userDao.create(new User(null, "ert6", "rt", "rt", "rt"));
+    public static void closeConnection(Connection conn) {
         if (conn != null) {
             try {
                 conn.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.debug("SQLException during close connection from {}. {}", ConnectionPool.class, e);
             }
         }
-        Connection conn2 = ConnectionPool.getConnection();
-        UserDao userDao2 = new UserDao(conn2);
-        userDao2.delete(user.getId());
-        Utils.closeConnection(conn2);
-    }*/
+    }
+
+    public static void closeStatement(Statement statement) {
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                log.debug("SQLException during close Statement from {}. {}", ConnectionPool.class, e);
+            }
+        }
+    }
+
+    public static void closeResultSet(ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                log.debug("SQLException during close ResultSet from {}. {}", ConnectionPool.class, e);
+            }
+        }
+    }
 }

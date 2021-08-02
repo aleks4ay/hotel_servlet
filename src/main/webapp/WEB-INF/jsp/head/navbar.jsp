@@ -5,7 +5,10 @@
                 <a class="nav-link gap-item" href="home"><fmt:message key="home"/></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link gap-item" href="#"><fmt:message key="account"/></a>
+                <a class="nav-link gap-item" href="/account"><fmt:message key="account"/></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link gap-item" href="/admin"><fmt:message key="admin"/></a>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
@@ -17,10 +20,10 @@
                 &nbsp;
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/lang?language=ru" <c:if test="${language=='ru'}">style="color: #d54d38"</c:if> >RU</a>
+                <a class="nav-link" href="<c:url value="/lang?language=ru"/>" <c:if test="${language=='ru'}">style="color: #d54d38"</c:if> >RU</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/lang?language=en" <c:if test="${language=='en'}">style="color: #d54d38"</c:if> >EN</a>
+                <a class="nav-link" href="<c:url value="/lang?language=en"/>" <c:if test="${language=='en'}">style="color: #d54d38"</c:if> >EN</a>
             </li>
             <li>
                 &nbsp;

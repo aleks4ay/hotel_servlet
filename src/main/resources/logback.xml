@@ -1,60 +1,47 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" scanPeriod="30 seconds">
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration status="info">
 
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <charset>UTF-8</charset>
-            <!--<pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %cyan(%class{50}.%M:%L) - %msg%n</pattern>-->
-            <pattern>%d{HH:mm:ss.SSS} - %msg%n</pattern>
-        </encoder>
-    </appender>
+    <Properties>
+        <Property name="logdir">/hotel/logs</Property>
+        <!--   To avoid double logging of exceptions to the servlet context, you must use %ex{none} in your PatternLayout as shown in the example. The exception will be omitted from the message text but it is passed to the servlet context as the actual Throwable object.     -->
+        <Property name="layout">%d [%t] %-5p %c- %m%n%ex{none}</Property>
+    </Properties>
 
-    <appender name="FILEINFO" class="ch.qos.logback.core.FileAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>INFO</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <file>log/hotel_info.html</file>
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <charset>UTF-8</charset>
-            <layout class="ch.qos.logback.classic.html.HTMLLayout">
-                <pattern>%date%msg</pattern>
-            </layout>
-        </encoder>
-    </appender>
-    <appender name="FILEWARN" class="ch.qos.logback.core.FileAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <file>log/hotel_warn.html</file>
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <charset>UTF-8</charset>
-            <layout class="ch.qos.logback.classic.html.HTMLLayout">
-                <pattern>%date %-5level %logger{50}.%M:%L - %msg%n</pattern>
-            </layout>
-        </encoder>
-    </appender>
+    <Appenders>
 
-    <appender name="FILEDEBUG" class="ch.qos.logback.core.FileAppender">
-        <file>log/hotel.log</file>
-        <encoder>
-            <charset>UTF-8</charset>
-            <pattern>%date %-5level %logger{50}.%M:%L - %msg%n</pattern>
-        </encoder>
-    </appender>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%style{%d{ISO8601}}{black} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"/>
+        </Console>
 
+        <RollingFile name="LOCALHOST"
+                     fileName="${logdir}/localhost.log"
+                     filePattern="${logdir}/localhost.%d{yyyy-MM-dd}-%i.log">
+            <!--       TODO     fileName="./logs/spring-boot-logger-log4j2.log"-->
+            <!--            filePattern="./logs/$${date:yyyy-MM}/spring-boot-logger-log4j2-%d{-dd-MMMM-yyyy}-%i.log.gz">-->
+            <PatternLayout pattern="${layout}"/>
+            <Policies>
+                <!--                <TimeBasedTriggeringPolicy/>-->
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="1 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
 
-    <root level="debug">
-        <appender-ref ref="console" />
-        <appender-ref ref="FILEDEBUG" />
-        <appender-ref ref="FILEINFO" />
-        <appender-ref ref="FILEWARN" />
-    </root>
+    </Appenders>
 
-    <logger name="kiyv" level="debug"/>
-    <logger name="org.springframework.web.servlet" level="debug"/>
+    <Loggers>
 
-</configuration>
+        <Root level="error">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="LOCALHOST" />
+        </Root>
+
+        <Logger name="org.anatkor"
+                level="info" additivity="false">
+            <AppenderRef ref="LOCALHOST"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+    </Loggers>
+</Configuration>

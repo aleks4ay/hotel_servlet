@@ -1,17 +1,8 @@
 package org.aleks4ay.hotel.dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.*;
-import java.util.Properties;
-
 public final class Utils {
 
-    private static final Logger log = LoggerFactory.getLogger(Utils.class);
+    /*private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
     public static Connection getConnection2() {
         Properties props = new Properties();
@@ -82,6 +73,6 @@ public final class Utils {
                 }
             }
         }
-    }
+    }*/
 
 }

@@ -1,29 +1,40 @@
 package org.aleks4ay.hotel.service;
 
-import org.aleks4ay.hotel.dao.ConnectionPool;
-import org.aleks4ay.hotel.dao.UserDao;
-import org.aleks4ay.hotel.dao.Utils;
+import org.aleks4ay.hotel.dao.*;
 import org.aleks4ay.hotel.model.Role;
 import org.aleks4ay.hotel.model.User;
 import org.aleks4ay.hotel.utils.Encrypt;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class UserService {
     private UserDao userDao = new UserDao(ConnectionPool.getConnection());
+    private UserRoleService roleService = new UserRoleService();
+
+    public static void main(String[] args) {
+//        new UserService().create(new User(null, "alex0", "Алексей", "Сергиенко", "1313"));
+        new UserService().getAll().forEach(System.out::println);
+    }
 
     public User getById(Long id) {
-        return userDao.getById(id);
+        User user = userDao.getById(id);
+        user.setRoles(roleService.getById(id));
+        return user;
     }
 
     public User getByLogin(String login) {
-        return userDao.getByLogin(login);
+        User user = userDao.getByLogin(login);
+        user.setRoles(roleService.getById(user.getId()));
+        return user;
     }
 
     public List<User> getAll() {
-        return userDao.getAll();
+        List<User> users = userDao.getAll();
+        Map<Long, Set<Role>> roleMap = roleService.getAllRoleAsMap();
+        for (User u : users) {
+            u.setRoles(roleMap.get(u.getId()));
+        }
+        return users;
     }
 
     public boolean delete(Long id) {
@@ -43,22 +54,8 @@ public class UserService {
         user.setPassword(encryptPassword);
         user.addRole(Role.ROLE_USER);
         user = userDao.create(user);
-        createUserRoles(user.getId(), user.getRoles());
+        roleService.createRoles(user.getId(), user.getRoles());
         return user;
-    }
-
-    public boolean createUserRoles(long id, Set<Role> roles) {
-        for (Role r : roles) {
-            boolean success = userDao.createUserRoles(id, r);
-            if (!success) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static void main(String[] args) {
-        new UserService().create(new User(null, "alex2", "Алексей", "Сергиенко", "1313"));
     }
 
     public boolean checkLogin(String login) {
@@ -79,5 +76,22 @@ public class UserService {
             }
         }
         return false;
+    }
+
+    public List<User> getAll(int positionOnPage, int page) {
+        int startPosition = positionOnPage * (page - 1);
+        List<User> users = getAll();
+        List<User> usersAfterFilter = new ArrayList<>();
+
+        if (users.size() > startPosition) {
+            for (int i = startPosition; i < startPosition + positionOnPage; i++) {
+                if (i >= users.size()) {
+                    break;
+                }
+                usersAfterFilter.add(users.get(i));
+            }
+            return usersAfterFilter;
+        }
+        return new ArrayList<>();
     }
 }

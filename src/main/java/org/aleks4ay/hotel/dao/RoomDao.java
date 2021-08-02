@@ -2,17 +2,16 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.model.Category;
 import org.aleks4ay.hotel.model.Room;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.sql.*;
 import java.util.List;
 
 public class RoomDao extends AbstractDao<Room, Long>{
-    private static final Logger log = LoggerFactory.getLogger(RoomDao.class);
-    private static final String SQL_GET_ONE = "SELECT * FROM room WHERE number = ?;";
+    private static final Logger log = LogManager.getLogger(RoomDao.class);
+    private static final String SQL_GET_ONE = "SELECT * FROM room WHERE id = ?;";
     private static final String SQL_GET_ALL = "SELECT * FROM room;";
-    private static final String SQL_DELETE = "DELETE FROM room WHERE number = ?;";
+    private static final String SQL_DELETE = "DELETE FROM room WHERE id = ?;";
     private static final String SQL_CREATE = "INSERT INTO room (category, guests, description, prise, number) " +
             "VALUES (?, ?, ?, ?, ?); ";
     private static final String SQL_UPDATE = "UPDATE room set category=?, guests=?, description=?, prise=? " +
@@ -45,9 +44,24 @@ public class RoomDao extends AbstractDao<Room, Long>{
 
     @Override
     public Room create(Room room) {
-//        return createAbstract(SQL_CREATE, room);
-        // TODO: 02.08.2021
-        return null;
+        PreparedStatement prepStatement = null;
+        try {
+            prepStatement = connection.prepareStatement(SQL_CREATE, new String[]{"id"});
+            fillEntityStatement(prepStatement, room);
+            prepStatement.executeUpdate();
+
+            ResultSet rs = prepStatement.getGeneratedKeys();
+
+            if (rs.next()) {
+                room.setId(rs.getLong(1));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            ConnectionPool.closeStatement(prepStatement);
+        }
+        return room;
     }
 
     @Override

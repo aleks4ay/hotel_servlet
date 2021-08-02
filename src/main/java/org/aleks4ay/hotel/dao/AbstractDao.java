@@ -37,8 +37,8 @@ public abstract class AbstractDao<T, K> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            Utils.closeResultSet(rs);
-            Utils.closeStatement(prepStatement);
+            ConnectionPool.closeResultSet(rs);
+            ConnectionPool.closeStatement(prepStatement);
         }
         return result;
     }
@@ -56,8 +56,8 @@ public abstract class AbstractDao<T, K> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            Utils.closeResultSet(rs);
-            Utils.closeStatement(prepStatement);
+            ConnectionPool.closeResultSet(rs);
+            ConnectionPool.closeStatement(prepStatement);
         }
         return null;
     }
@@ -75,8 +75,8 @@ public abstract class AbstractDao<T, K> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            Utils.closeResultSet(rs);
-            Utils.closeStatement(prepStatement);
+            ConnectionPool.closeResultSet(rs);
+            ConnectionPool.closeStatement(prepStatement);
         }
         return null;
     }
@@ -91,7 +91,7 @@ public abstract class AbstractDao<T, K> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            Utils.closeStatement(prepStatement);
+            ConnectionPool.closeStatement(prepStatement);
         }
         return result;
     }
@@ -106,7 +106,7 @@ public abstract class AbstractDao<T, K> {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            Utils.closeStatement(prepStatement);
+            ConnectionPool.closeStatement(prepStatement);
         }
         return result;
     }
