@@ -44,8 +44,10 @@ public class RoomDao extends AbstractDao<Room, Long>{
     }
 
     @Override
-    public boolean create(Room room) {
-        return createAbstract(SQL_CREATE, room);
+    public Room create(Room room) {
+//        return createAbstract(SQL_CREATE, room);
+        // TODO: 02.08.2021
+        return null;
     }
 
     @Override

@@ -23,7 +23,6 @@ public class User {
     public User(String login, String password) {
         this.login = login;
         this.password = password;
-        addRole(Role.ROLE_USER);
     }
 
     public User(Long id, String login, String name, String surname, String password) {

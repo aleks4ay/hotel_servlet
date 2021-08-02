@@ -1,15 +1,18 @@
 package org.aleks4ay.hotel.service;
 
+import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.dao.UserDao;
 import org.aleks4ay.hotel.dao.Utils;
+import org.aleks4ay.hotel.model.Role;
 import org.aleks4ay.hotel.model.User;
 import org.aleks4ay.hotel.utils.Encrypt;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class UserService {
-    private UserDao userDao = new UserDao(Utils.getConnection());
+    private UserDao userDao = new UserDao(ConnectionPool.getConnection());
 
     public User getById(Long id) {
         return userDao.getById(id);
@@ -31,20 +34,31 @@ public class UserService {
         return userDao.update(user);
     }
 
-    public boolean create(User user) {
+    public User create(User user) {
         Map<String, String> loginMap = userDao.getLoginMap();
         if (loginMap.keySet().contains(user.getLogin())) {
-//            System.out.println("User with login '" + user.getLogin() + "' already exist.");
-            return false;
+            return null;
         }
         String encryptPassword = Encrypt.hash(user.getPassword(), "SHA-256");
         user.setPassword(encryptPassword);
-        return userDao.create(user);
+        user.addRole(Role.ROLE_USER);
+        user = userDao.create(user);
+        createUserRoles(user.getId(), user.getRoles());
+        return user;
+    }
+
+    public boolean createUserRoles(long id, Set<Role> roles) {
+        for (Role r : roles) {
+            boolean success = userDao.createUserRoles(id, r);
+            if (!success) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void main(String[] args) {
-        new UserService().create(new User(3L, "alex", "Алексей", "Сергиенко", "1313"));
-        new UserService().create(new User(3L, "alex2", "Алексей", "Сергиенко", "1313"));
+        new UserService().create(new User(null, "alex2", "Алексей", "Сергиенко", "1313"));
     }
 
     public boolean checkLogin(String login) {

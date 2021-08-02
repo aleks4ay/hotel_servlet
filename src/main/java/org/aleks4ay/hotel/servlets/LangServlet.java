@@ -13,7 +13,7 @@ public class LangServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         final String language = req.getParameter("language");
-        System.out.println("lang=" + language);
+//        System.out.println("lang=" + language);
         String url = new URL(req.getHeader("Referer")).getFile();
 
         HttpSession session = req.getSession();

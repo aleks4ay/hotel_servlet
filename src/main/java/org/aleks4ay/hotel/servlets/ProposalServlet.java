@@ -15,15 +15,21 @@ public class ProposalServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
-
-        String user = req.getRemoteUser();
-        System.out.println("user = " + user);
+        HttpSession session = req.getSession();
+        User remoteUser = (User)session.getAttribute("user");
+        System.out.println("remoteUser = " + remoteUser);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String dateStartString = req.getParameter("arrival");
         String dateEndString = req.getParameter("departure");
-        LocalDate dateStart = LocalDate.parse(dateStartString, formatter);
-        LocalDate dateEnd = LocalDate.parse(dateEndString, formatter);
+        LocalDate dateStart, dateEnd;
+        if (dateEndString.isEmpty() || dateEndString.isEmpty()){
+            dateStart = LocalDate.now();
+            dateEnd = dateStart.plusDays(1);
+        } else {
+            dateStart = LocalDate.parse(dateStartString, formatter);
+            dateEnd = LocalDate.parse(dateEndString, formatter);
+        }
 
         int guests = Integer.parseInt(req.getParameter("field1"));
         String selected = req.getParameter("field2");

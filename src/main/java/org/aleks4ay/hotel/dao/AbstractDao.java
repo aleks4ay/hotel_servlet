@@ -14,7 +14,7 @@ public abstract class AbstractDao<T, K> {
     public abstract List<T> getAll();
     public abstract boolean delete(K id);
     public abstract T update(T t);
-    public abstract boolean create(T t);
+    public abstract T create(T t);
     public abstract <T>T readEntity(ResultSet rs) throws SQLException;
     public abstract void fillEntityStatement(PreparedStatement statement, T t) throws SQLException;
 

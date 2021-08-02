@@ -49,7 +49,7 @@
                                     <c:out value="${10 * (pg - 1) + position.count}" />
                                 </td>
                                 <td><c:out value="${room.number}" /></td>
-                                <td><c:out value="${room.category}" /></td>
+                                <td><c:out value="${room.category.title}" /></td>
                                 <%--<td><c:out value="${room.roomStatus}" /></td>--%>
                                 <td><c:out value="${room.guests}" /></td>
                                 <td><c:out value="${room.description}" /></td>
@@ -108,16 +108,16 @@
                     </select>
                     <%--<input type="o" class="form-control" id="field2" name="field2">--%>
                 </div>
-                <button type="submit" class="btn btn-outline-success">  <fmt:message key="cart_2"/>  </button>
+                <div data-title="Софийский собор">
+                <c:if test="${not empty sessionScope.get('user')}">
+                    <button type="submit" class="btn btn-outline-success" alt="888">  <fmt:message key="cart_2"/>  </button>
+                </c:if>
+                <c:if test="${empty sessionScope.get('user')}">
+                    <button type="submit" class="btn btn-outline-success" disabled alt="888">  <fmt:message key="cart_2"/>  </button>
+                </c:if>
+                </div>
 
             </form>
-<%--            <form class="sticky rounded-lg shadow p-4 mb-4" style="height: 250px; background-color: rgba(96, 162, 218, 0.2);">
-
-                <p> Date arrival: ${order.arrival} </p>
-                <p> Date departure: ${order.departure} </p>
-                <p> Number of guest: ${order.room.guests} </p>
-                <p><c:out value="${not empty id ? id : '-'}"></c:out>
-            </form>--%>
         </div>
     </div>
 </div>

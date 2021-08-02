@@ -1,5 +1,6 @@
 package org.aleks4ay.hotel.dao;
 
+import org.aleks4ay.hotel.model.Role;
 import org.aleks4ay.hotel.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,8 @@ public class UserDao extends AbstractDao<User, Long>{
     private static final String SQL_GET_ONE = "SELECT * FROM usr WHERE id = ?;";
     private static final String SQL_GET_BY_LOGIN = "SELECT * FROM usr WHERE login = ?;";
     private static final String SQL_GET_ALL = "SELECT * FROM usr;";
-//    private static final String SQL_LOGINS = "SELECT login, password FROM usr;";
     private static final String SQL_DELETE = "DELETE FROM usr WHERE id = ?;";
+    private static final String SQL_ROLE = "INSERT INTO user_roles (user_id, role) VALUES (?, ?);";
     private static final String SQL_CREATE = "INSERT INTO usr (name, surname, password, registered, enabled, login)" +
             " VALUES (?, ?, ?, ?, ?, ?); ";
     private static final String SQL_UPDATE = "UPDATE usr set name=?, surname=?, password=?, registered=?, enabled=? " +
@@ -57,9 +58,52 @@ public class UserDao extends AbstractDao<User, Long>{
         return result ? user : null;
     }
 
+//    @Override
+//    public boolean create(User user) {
+//        return createAbstract(SQL_CREATE, user);
+//    }
+
     @Override
-    public boolean create(User user) {
-        return createAbstract(SQL_CREATE, user);
+    public User create(User user) {
+        PreparedStatement prepStatement = null;
+        try {
+            prepStatement = connection.prepareStatement(SQL_CREATE, new String[]{"id", "registered", "enabled"});
+            fillEntityStatement(prepStatement, user);
+            prepStatement.executeUpdate();
+
+            ResultSet rs = prepStatement.getGeneratedKeys();
+
+            if (rs.next()) {
+                user.setId(rs.getLong(1));
+                user.setRegistered(rs.getTimestamp(2).toLocalDateTime());
+                user.setActive(rs.getBoolean(3));
+            }
+            return user;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Utils.closeStatement(prepStatement);
+        }
+        return null;
+    }
+
+    public boolean createUserRoles(long id, Role role) {
+        PreparedStatement prepStatement = null;
+        try {
+            prepStatement = connection.prepareStatement(SQL_ROLE);
+            prepStatement.setLong(1, id);
+            prepStatement.setString(2, role.getTitle());
+            int result = prepStatement.executeUpdate();
+
+            return result == 1;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Utils.closeStatement(prepStatement);
+        }
+        return false;
     }
 
     @Override

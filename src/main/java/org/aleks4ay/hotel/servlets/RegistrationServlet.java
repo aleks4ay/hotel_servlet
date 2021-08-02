@@ -23,7 +23,7 @@ public class RegistrationServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         String url = new URL(req.getHeader("Referer")).getFile();
-        System.out.println("url=" + url);
+//        System.out.println("url=" + url);
         if (!url.contains("registration") && !url.contains("login")) {
             HttpSession session = req.getSession();
             session.setAttribute("backUrl", url);
@@ -72,9 +72,9 @@ public class RegistrationServlet extends HttpServlet {
             req.getRequestDispatcher("/WEB-INF/jsp/newUser.jsp").forward(req, resp);
         } else {
 
-            boolean success = userService.create(user);
+            User createdUser = userService.create(user);
 
-            if (success) {
+            if (createdUser != null) {
                 resp.sendRedirect("/login");
             } else {
                 req.setAttribute("warnLogin", "exist");

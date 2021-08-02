@@ -13,7 +13,7 @@ public final class Utils {
 
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
-    public static Connection getConnection() {
+    public static Connection getConnection2() {
         Properties props = new Properties();
         String filePropertiesName = "database.properties";
         try (InputStream in = Utils.class.getClassLoader().getResourceAsStream(filePropertiesName)) {
