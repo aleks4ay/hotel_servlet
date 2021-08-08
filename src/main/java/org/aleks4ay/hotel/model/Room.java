@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Room {
+public class Room implements Entity{
 
     private long id;
     private int number;
@@ -54,10 +54,12 @@ public class Room {
         return true;
     }
 
+    @Override
     public long getId() {
         return id;
     }
 
+    @Override
     public void setId(long id) {
         this.id = id;
     }

@@ -23,7 +23,8 @@ CREATE TABLE usr
   surname          VARCHAR    NOT NULL,
   password         VARCHAR    NOT NULL,
   registered       TIMESTAMP  NOT NULL DEFAULT now(),
-  enabled          BOOL       NOT NULL DEFAULT TRUE
+  enabled          BOOL       NOT NULL DEFAULT TRUE,
+  bill             DECIMAL    NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX usr_login ON usr (login);
 
@@ -45,14 +46,14 @@ CREATE TABLE room (
 );
 
 CREATE TABLE orders (
-  id            BIGINT    NOT NULL PRIMARY KEY DEFAULT nextval('order_id_seq'),
-  registered    TIMESTAMP NOT NULL DEFAULT now(),
-  arrival       DATE      NOT NULL,
-  departure     DATE      NOT NULL,
-  correct_price DECIMAL   NOT NULL,
-  status        INTEGER   NOT NULL,
-  user_id       INTEGER   NOT NULL,
-  room_id       INTEGER   NOT NULL,
+  id            BIGINT      NOT NULL PRIMARY KEY DEFAULT nextval('order_id_seq'),
+  registered    TIMESTAMP   NOT NULL DEFAULT now(),
+  arrival       DATE        NOT NULL,
+  departure     DATE        NOT NULL,
+  correct_price DECIMAL     NOT NULL,
+  status        VARCHAR(32) NOT NULL,
+  user_id       INTEGER     NOT NULL,
+  room_id       INTEGER     NOT NULL,
   FOREIGN KEY (user_id) REFERENCES usr (id) ON DELETE CASCADE,
   FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE
 );

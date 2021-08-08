@@ -9,10 +9,11 @@ import java.util.*;
 
 public class UserRoleDao {
     private static final Logger log = LogManager.getLogger(UserRoleDao.class);
-    private static final String SQL_GET_ONE = "SELECT * FROM user_roles WHERE user_id = ?;";
+    private static final String SQL_GET_ONE = "SELECT * FROM user_roles WHERE user_id=?;";
     private static final String SQL_GET_ALL = "SELECT * FROM user_roles;";
-    private static final String SQL_DELETE = "DELETE FROM user_roles WHERE user_id = ? and role = ?;";
-    private static final String SQL_CREATE = "INSERT INTO user_roles (user_id, role) VALUES (?, ?);";
+    private static final String SQL_DELETE = "DELETE FROM user_roles WHERE role=? and user_id=?;";
+    private static final String SQL_UPDATE = "UPDATE user_roles SET role=? WHERE user_id=?;";
+    private static final String SQL_CREATE = "INSERT INTO user_roles (role, user_id) VALUES (?, ?);";
 
     private Connection connection = null;
 
@@ -20,84 +21,67 @@ public class UserRoleDao {
         this.connection = connection;
     }
 
-    public Set<Role> getById(Long id) {
-        Set<Role> roles = new HashSet<>();
-        ResultSet rs = null;
-        PreparedStatement prepStatement = null;
-        try {
-            prepStatement = connection.prepareStatement(SQL_GET_ONE);
+    public Role getById(Long id) {
+        Role role = null;
+        try (PreparedStatement prepStatement = connection.prepareStatement(SQL_GET_ONE)) {
             prepStatement.setLong(1, id);
-            rs = prepStatement.executeQuery();
-            while (rs.next()) {
-                Role role = Role.valueOf(rs.getString("role"));
-                roles.add(role);
+            ResultSet rs = prepStatement.executeQuery();
+            if (rs.next()) {
+                role = Role.valueOf(rs.getString("role"));
             }
         } catch (SQLException e) {
             log.warn("Exception during reading 'Role' with id = '{}'. {}", id, e);
-        } finally {
-            ConnectionPool.closeResultSet(rs);
-            ConnectionPool.closeStatement(prepStatement);
         }
-        log.debug("Was read {} 'Role' for user with id = '{}'.", roles.size(), id);
-        return roles;
+        return role;
     }
 
-    public Map<Long, Set<Role>> getAllRoleAsMap() {
-        Map<Long, Set<Role>> roles = new HashMap<>();
-        ResultSet rs = null;
-        PreparedStatement prepStatement = null;
-        try {
-            prepStatement = connection.prepareStatement(SQL_GET_ALL);
-            rs = prepStatement.executeQuery();
+    public Map<Long, Role> getAllRoleAsMap() {
+        Map<Long, Role> roles = new HashMap<>();
+        try (PreparedStatement prepStatement = connection.prepareStatement(SQL_GET_ALL)) {
+            ResultSet rs = prepStatement.executeQuery();
             while (rs.next()) {
-                long userId = rs.getLong("user_id");
-                Role role = Role.valueOf(rs.getString("role"));
-                if (roles.containsKey(userId)) {
-                    roles.get(userId).add(role);
-                } else {
-                    Set<Role> tempRoles = new HashSet<>();
-                    tempRoles.add(role);
-                    roles.put(userId, tempRoles);
-                }
+                roles.put(rs.getLong("user_id"), Role.valueOf(rs.getString("role")));
             }
         } catch (SQLException e) {
-            log.warn("Exception during reading 'Roles'. {}", e);
-        } finally {
-            ConnectionPool.closeResultSet(rs);
-            ConnectionPool.closeStatement(prepStatement);
+            log.warn("Exception during reading all 'Role'. {}", e);
         }
-        log.debug("Was read {} 'Roles' for all.", roles.size());
+        log.debug("Was read {} 'Role' for all.", roles.size());
         return roles;
     }
 
     public boolean delete(Long id, Role role) {
-        boolean result = updateRole(id, role, SQL_DELETE);
+        boolean result = changeRole(id, role, SQL_DELETE);
         if (result) {
-            log.debug("Was delete {} for user with id = '{}'.", role, id);
+            log.debug("Was delete role '{}' for user with id = '{}'.", role, id);
         }
         return result;
     }
 
     public boolean createRole(long id, Role role) {
-        boolean result = updateRole(id, role, SQL_CREATE);
+        boolean result = changeRole(id, role, SQL_CREATE);
         if (result) {
-            log.debug("Was create {} for user with id = '{}'.", role, id);
+            log.debug("Was create role '{}' for user with id = '{}'.", role, id);
         }
         return result;
     }
 
-    private boolean updateRole(long id, Role role, String sql) {
-        PreparedStatement prepStatement = null;
+    public boolean updateRole(long id, Role role) {
+        boolean result = changeRole(id, role, SQL_UPDATE);
+        if (result) {
+            log.debug("Was change role to '{}' for user with id = '{}'.", role, id);
+        }
+        return result;
+    }
+
+    private boolean changeRole(long id, Role role, String sql) {
         int result = 0;
-        try {
-            prepStatement = connection.prepareStatement(sql);
-            prepStatement.setLong(1, id);
-            prepStatement.setString(2, role.getTitle());
+        try (PreparedStatement prepStatement = connection.prepareStatement(sql)) {
+            prepStatement.setString(1, role.toString());
+            prepStatement.setLong(2, id);
             result = prepStatement.executeUpdate();
         } catch (SQLException e) {
+            log.warn("Exception during change 'Role' with id = '{}'. {}", id, e);
             e.printStackTrace();
-        } finally {
-            ConnectionPool.closeStatement(prepStatement);
         }
         return result == 1;
     }

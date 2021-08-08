@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class Order {
+public class Order implements Entity{
 
-    private Long id;
+    private long id;
     private Room room;
     private LocalDateTime registered = LocalDateTime.now();
     private LocalDate arrival;
@@ -21,24 +21,25 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, Room room, LocalDateTime registered, LocalDate arrival, LocalDate departure) {
+    public Order(long id, Room room, LocalDateTime registered, LocalDate arrival, LocalDate departure) {
         this.orderStatus = OrderStatus.NEW;
         this.id = id;
         this.room = room;
+        this.correctPrice = room.getPrice();
         this.registered = registered;
         this.arrival = arrival;
         this.departure = departure;
         setPeriod();
-        setCorrectPrice();
     }
 
 
-
-    public Long getId() {
+    @Override
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    @Override
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -56,6 +57,7 @@ public class Order {
 
     public void setRoom(Room room) {
         this.room = room;
+        this.correctPrice = room.getPrice();
     }
 
     public LocalDateTime getRegistered() {
@@ -89,6 +91,14 @@ public class Order {
         return period;
     }
 
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
     public void setPeriod() {
         this.period = (int) getArrival().until(getDeparture(), ChronoUnit.DAYS);
     }
@@ -97,8 +107,8 @@ public class Order {
         return correctPrice;
     }
 
-    public void setCorrectPrice() {
-        this.correctPrice = this.room.getPrice();
+    public void setCorrectPrice(Double price) {
+        this.correctPrice = price;
     }
 
     public double getCost() {

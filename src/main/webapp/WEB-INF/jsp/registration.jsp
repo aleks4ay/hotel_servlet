@@ -1,34 +1,10 @@
 <%@include file="head/headerPrefixAndLanguage.jsp"%>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/logo.css">
-    <style>
-        .hello_1 {
-            height: 1200px;
-            /*background-image: url(/static/img/background_1.jpg);*/
-            /*background-size: cover;*/
-            width: 720px;
-            background-size: 100%;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        .center2 {
-            width: 720px;
-            margin: 0;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-right: -50%;
-            transform: translate(-50%, -50%)
-        }
-    </style>
-</head>
+<%@include file="head/head.jsp"%>
+
 <body>
+
+<%@include file="head/navbar.jsp"%>
 
     <div class="center1">
         <form class="inner_logo" method="post" action="/registration">
@@ -74,18 +50,21 @@
                     <c:if test="${not empty warnPass}"> <fmt:message key="emptyField"/> </c:if>
                 </small>
             </div>
-            <div class="mb-3 form-check">
+<%--            <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="exampleCheck1" name="checkLogin">
                 <label class="form-check-label" for="exampleCheck1">
                     <fmt:message key="loginNow"/>
                 </label>
-            </div>
+            </div>--%>
             <button type="submit" class="btn btn-outline-success">
                 <fmt:message key="register"/>
             </button>
             <button type="button" class="btn btn-outline-danger" onclick="window.location='${not empty backUrl ? backUrl : '/home'}'" >
                 <fmt:message key="cancel"/>
             </button>
+            <div style="margin-top: 30px; font-size: 1.3em">
+                <a href='<c:url value="/login" />'> <fmt:message key="toLogin"/> </a>
+            </div>
         </form>
     </div>
 </body>

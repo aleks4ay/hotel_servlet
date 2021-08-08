@@ -2,8 +2,8 @@
 <Configuration status="info">
 
     <Properties>
-        <Property name="logdir">/hotel/logs</Property>
-        <!--   To avoid double logging of exceptions to the servlet context, you must use %ex{none} in your PatternLayout as shown in the example. The exception will be omitted from the message text but it is passed to the servlet context as the actual Throwable object.     -->
+        <Property name="logdir">J:/__EPAM__/hotel/logs</Property>
+<!--   To avoid double logging of exceptions to the servlet context, you must use %ex{none} in your PatternLayout as shown in the example. The exception will be omitted from the message text but it is passed to the servlet context as the actual Throwable object.     -->
         <Property name="layout">%d [%t] %-5p %c- %m%n%ex{none}</Property>
     </Properties>
 
@@ -17,11 +17,9 @@
         <RollingFile name="LOCALHOST"
                      fileName="${logdir}/localhost.log"
                      filePattern="${logdir}/localhost.%d{yyyy-MM-dd}-%i.log">
-            <!--       TODO     fileName="./logs/spring-boot-logger-log4j2.log"-->
-            <!--            filePattern="./logs/$${date:yyyy-MM}/spring-boot-logger-log4j2-%d{-dd-MMMM-yyyy}-%i.log.gz">-->
             <PatternLayout pattern="${layout}"/>
             <Policies>
-                <!--                <TimeBasedTriggeringPolicy/>-->
+<!--                <TimeBasedTriggeringPolicy/>-->
                 <OnStartupTriggeringPolicy />
                 <SizeBasedTriggeringPolicy size="1 MB"/>
             </Policies>
@@ -37,7 +35,7 @@
             <AppenderRef ref="LOCALHOST" />
         </Root>
 
-        <Logger name="org.anatkor"
+        <Logger name="org.aleks4ay"
                 level="info" additivity="false">
             <AppenderRef ref="LOCALHOST"/>
             <AppenderRef ref="Console"/>

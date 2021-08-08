@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/admin", "/admin/newRoom"})
+//@WebServlet(urlPatterns = {"/admin", "/admin/newRoom"})
 public class AdminServlet extends HttpServlet {
     private UserService userService = new UserService();
     private RoomService roomService = new RoomService();
@@ -50,7 +50,7 @@ public class AdminServlet extends HttpServlet {
         } else if (action.equals("order")) {
 
         }
-        req.getRequestDispatcher("/WEB-INF/jsp/admin.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/jsp/adminPage.jsp").forward(req, resp);
     }
 
     @Override

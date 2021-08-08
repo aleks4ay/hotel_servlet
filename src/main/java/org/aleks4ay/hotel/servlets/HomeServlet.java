@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-@WebServlet(urlPatterns = "/home")
+//@WebServlet(urlPatterns = "/home")
 public class HomeServlet extends HttpServlet {
 
     @Override
@@ -41,6 +41,6 @@ public class HomeServlet extends HttpServlet {
         } else {
             req.setAttribute("pg", Integer.parseInt(page));
         }
-        req.getRequestDispatcher("/WEB-INF/jsp/home.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/jsp/userPage.jsp").forward(req, resp);
     }
 }

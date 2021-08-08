@@ -49,7 +49,7 @@ public class NewRoomServlet extends HttpServlet {
         } else if (action.equals("order")) {
 
         }
-        req.getRequestDispatcher("/WEB-INF/jsp/admin.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/jsp/adminPage.jsp").forward(req, resp);
     }
 
     @Override

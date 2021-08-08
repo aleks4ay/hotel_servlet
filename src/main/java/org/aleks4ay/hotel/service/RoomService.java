@@ -2,41 +2,69 @@ package org.aleks4ay.hotel.service;
 
 import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.dao.RoomDao;
-import org.aleks4ay.hotel.model.Category;
 import org.aleks4ay.hotel.model.Room;
 
+import java.sql.Connection;
 import java.util.List;
 
 public class RoomService {
-    private RoomDao dao = new RoomDao(ConnectionPool.getConnection());
 
     public static void main(String[] args) {
-        Room room1 = new Room(1, 101, Category.STANDARD, 2, "Номер с видом на море", 1_600.0);
-        Room room2 = new Room(2, 106, Category.SUPERIOR, 3, "Номер с wi-fi и видом на море", 2_800.0);
-        Room room3 = new Room(3, 501, Category.DELUXE, 5, "Люкс с бассейном", 100_000.0);
-        RoomService roomService = new RoomService();
-        roomService.create(room1);
-        roomService.create(room2);
-        roomService.create(room3);
+        int y=70;
+        for (long i = 20; i<20+y; i++) {
+            RoomService roomService = new RoomService();
+            final Room room = roomService.getById(i);
+            if (room != null) {
+                System.out.println(room);
+            }
+        }
     }
 
-    public Room getById(Long id) {
-        return dao.getById(id);
+    Room getById(Long id) {
+        Connection conn = ConnectionPool.getConnection();
+        RoomDao roomDao = new RoomDao(conn);
+        Room room = roomDao.getById(id);
+        ConnectionPool.closeConnection(conn);
+        return room;
     }
 
     public List<Room> getAll() {
-        return dao.getAll();
+        Connection conn = ConnectionPool.getConnection();
+        RoomDao roomDao = new RoomDao(conn);
+        List<Room> rooms = roomDao.findAll();
+        ConnectionPool.closeConnection(conn);
+        return rooms;
     }
 
     public boolean delete(Long id) {
-        return dao.delete(id);
+        Connection conn = ConnectionPool.getConnection();
+        RoomDao roomDao = new RoomDao(conn);
+        boolean result = roomDao.delete(id);
+        ConnectionPool.closeConnection(conn);
+        return result;
     }
 
     public Room update(Room room) {
-        return dao.update(room);
+        Connection conn = ConnectionPool.getConnection();
+        RoomDao roomDao = new RoomDao(conn);
+        room = roomDao.update(room);
+        ConnectionPool.closeConnection(conn);
+        return room;
     }
 
     public Room create(Room room) {
-        return dao.create(room);
+        Connection conn = ConnectionPool.getConnection();
+        RoomDao roomDao = new RoomDao(conn);
+        room = roomDao.create(room);
+        ConnectionPool.closeConnection(conn);
+        return room;
+    }
+
+    public List<Room> getAll(int positionOnPage, int page) {
+        Connection conn = ConnectionPool.getConnection();
+        RoomDao roomDao = new RoomDao(conn);
+        List<Room> rooms = roomDao.findAll(positionOnPage, page);
+        ConnectionPool.closeConnection(conn);
+        return rooms;
     }
 }

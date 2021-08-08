@@ -13,8 +13,10 @@ public class User {
     private String password;
     private boolean active = true;
     private LocalDateTime registered = LocalDateTime.now();
+    private Role role;
+    private double bill;
+//    private Set<Role> roles = new HashSet<>();
 
-    private Set<Role> roles = new HashSet<>();
     private List<Order> orders = new ArrayList<>();
 
     public User() {
@@ -90,17 +92,23 @@ public class User {
         this.registered = registered;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public double getBill() {
+        return bill;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles.isEmpty() ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
+    public void setBill(double bill) {
+        this.bill = bill;
     }
 
-    public void addRole(Role role) {
-        this.roles.add(role);
+    public Role getRole() {
+        return role;
     }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+
 
     public List<Order> getOrders() {
         return orders;
@@ -116,21 +124,15 @@ public class User {
     }
 
     public boolean isAdmin() {
-        for (Role role: roles) {
-            if (role.equals(Role.ROLE_ADMIN)) {
-                return true;
-            }
-        }
-        return false;
+        return role.equals(Role.ROLE_ADMIN);
     }
 
     public boolean isManager() {
-        for (Role role: roles) {
-            if (role.equals(Role.ROLE_MANAGER)) {
-                return true;
-            }
-        }
-        return false;
+        return role.equals(Role.ROLE_MANAGER);
+    }
+
+    public boolean isClient() {
+        return role.equals(Role.ROLE_USER);
     }
 
     public String getDateByPattern() {
@@ -147,7 +149,7 @@ public class User {
                 ", surname='" + surname + '\'' +
                 ", active=" + active +
                 ", registered=" + registered +
-                ", roles=" + roles +
+                ", role=" + role +
                 ", orders=" + orders +
                 '}';
     }

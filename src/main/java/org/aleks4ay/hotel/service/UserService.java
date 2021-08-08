@@ -1,97 +1,114 @@
 package org.aleks4ay.hotel.service;
 
 import org.aleks4ay.hotel.dao.*;
+import org.aleks4ay.hotel.exception.AlreadyException;
 import org.aleks4ay.hotel.model.Role;
 import org.aleks4ay.hotel.model.User;
 import org.aleks4ay.hotel.utils.Encrypt;
 
+import java.sql.Connection;
 import java.util.*;
 
 public class UserService {
-    private UserDao userDao = new UserDao(ConnectionPool.getConnection());
     private UserRoleService roleService = new UserRoleService();
 
     public static void main(String[] args) {
 //        new UserService().create(new User(null, "alex0", "Алексей", "Сергиенко", "1313"));
-        new UserService().getAll().forEach(System.out::println);
+        System.out.println(new UserService().getByLogin("adm"));
     }
 
     public User getById(Long id) {
+        Connection conn = ConnectionPool.getConnection();
+        UserDao userDao = new UserDao(conn);
         User user = userDao.getById(id);
-        user.setRoles(roleService.getById(id));
+        user.setRole(roleService.getById(id));
+        ConnectionPool.closeConnection(conn);
         return user;
     }
 
     public User getByLogin(String login) {
+        Connection conn = ConnectionPool.getConnection();
+        UserDao userDao = new UserDao(conn);
         User user = userDao.getByLogin(login);
-        user.setRoles(roleService.getById(user.getId()));
+        user.setRole(roleService.getById(user.getId()));
+        ConnectionPool.closeConnection(conn);
         return user;
     }
 
     public List<User> getAll() {
-        List<User> users = userDao.getAll();
-        Map<Long, Set<Role>> roleMap = roleService.getAllRoleAsMap();
+        Connection conn = ConnectionPool.getConnection();
+        UserDao userDao = new UserDao(conn);
+        List<User> users = userDao.findAll();
+        Map<Long, Role> roleMap = roleService.getAllRoleAsMap();
         for (User u : users) {
-            u.setRoles(roleMap.get(u.getId()));
+            u.setRole(roleMap.get(u.getId()));
         }
+        ConnectionPool.closeConnection(conn);
         return users;
     }
 
     public boolean delete(Long id) {
-        return userDao.delete(id);
+        Connection conn = ConnectionPool.getConnection();
+        UserDao userDao = new UserDao(conn);
+        boolean result = userDao.delete(id);
+        ConnectionPool.closeConnection(conn);
+        return result;
     }
 
     public User update(User user) {
-        return userDao.update(user);
+        Connection conn = ConnectionPool.getConnection();
+        UserDao userDao = new UserDao(conn);
+        user = userDao.update(user);
+        ConnectionPool.closeConnection(conn);
+        return user;
     }
 
-    public User create(User user) {
-        Map<String, String> loginMap = userDao.getLoginMap();
-        if (loginMap.keySet().contains(user.getLogin())) {
-            return null;
+    public User create(String login, String firstName, String lastName, String pass) {
+        Connection conn = ConnectionPool.getConnection();
+        UserDao userDao = new UserDao(conn);
+        if (checkLogin(login)) {
+            throw new AlreadyException("User with login '" + login + "' already exists");
         }
-        String encryptPassword = Encrypt.hash(user.getPassword(), "SHA-256");
-        user.setPassword(encryptPassword);
-        user.addRole(Role.ROLE_USER);
+        String encryptPassword = Encrypt.hash(pass, "SHA-256");
+        User user = new User(null, login, firstName, lastName, encryptPassword);
         user = userDao.create(user);
-        roleService.createRoles(user.getId(), user.getRoles());
+        user.setRole(Role.ROLE_USER);
+        roleService.create(user.getId(), user.getRole());
+        ConnectionPool.closeConnection(conn);
         return user;
     }
 
     public boolean checkLogin(String login) {
-        Map<String, String> loginMap = userDao.getLoginMap();
-        if (loginMap.keySet().contains(login)) {
-            return true;
-        }
-        return false;
+        Connection conn = ConnectionPool.getConnection();
+        UserDao userDao = new UserDao(conn);
+        boolean result = userDao.getByLogin(login) != null;
+        ConnectionPool.closeConnection(conn);
+        return result;
     }
 
     public boolean checkPassword(String login, String pass) {
-        Map<String, String> loginMap = userDao.getLoginMap();
-        if (loginMap.keySet().contains(login)) {
-            String passFromDb = loginMap.get(login);
-            String encriptedPassword = Encrypt.hash(pass, "SHA-256");
-            if (passFromDb.equals(encriptedPassword)) {
-                return true;
-            }
+        Connection conn = ConnectionPool.getConnection();
+        UserDao userDao = new UserDao(conn);
+        final User userFromDB = userDao.getByLogin(login);
+        if (userFromDB == null) {
+            ConnectionPool.closeConnection(conn);
+            return false;
         }
-        return false;
+        String passFromDb = userFromDB.getPassword();
+        String encryptedPassword = Encrypt.hash(pass, "SHA-256");
+        ConnectionPool.closeConnection(conn);
+        return passFromDb.equals(encryptedPassword);
     }
 
     public List<User> getAll(int positionOnPage, int page) {
-        int startPosition = positionOnPage * (page - 1);
-        List<User> users = getAll();
-        List<User> usersAfterFilter = new ArrayList<>();
-
-        if (users.size() > startPosition) {
-            for (int i = startPosition; i < startPosition + positionOnPage; i++) {
-                if (i >= users.size()) {
-                    break;
-                }
-                usersAfterFilter.add(users.get(i));
-            }
-            return usersAfterFilter;
+        Connection conn = ConnectionPool.getConnection();
+        UserDao userDao = new UserDao(conn);
+        List<User> users = userDao.findAll(positionOnPage, page);
+        Map<Long, Role> roleMap = roleService.getAllRoleAsMap();
+        for (User u : users) {
+            u.setRole(roleMap.get(u.getId()));
         }
-        return new ArrayList<>();
+        ConnectionPool.closeConnection(conn);
+        return users;
     }
 }

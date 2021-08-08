@@ -4,41 +4,40 @@ import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.dao.UserRoleDao;
 import org.aleks4ay.hotel.model.Role;
 
+import java.sql.Connection;
 import java.util.*;
 
 public class UserRoleService {
-    private UserRoleDao roleDao = new UserRoleDao(ConnectionPool.getConnection());
 
-    public static void main(String[] args) {
-        new UserRoleService().create(4L, Role.ROLE_USER);
-        new UserRoleService().create(5L, Role.ROLE_USER);
-        new UserRoleService().create(6L, Role.ROLE_USER);
-        new UserRoleService().create(10L, Role.ROLE_USER);
+    public Role getById(Long id) {
+        Connection conn = ConnectionPool.getConnection();
+        UserRoleDao roleDao = new UserRoleDao(conn);
+        Role role = roleDao.getById(id);
+        ConnectionPool.closeConnection(conn);
+        return role;
     }
 
-    public Set<Role> getById(Long id) {
-        return roleDao.getById(id);
-    }
-
-    public Map<Long, Set<Role>> getAllRoleAsMap() {
-        return roleDao.getAllRoleAsMap();
+    public Map<Long, Role> getAllRoleAsMap() {
+        Connection conn = ConnectionPool.getConnection();
+        UserRoleDao roleDao = new UserRoleDao(conn);
+        Map<Long, Role> roleMap = roleDao.getAllRoleAsMap();
+        ConnectionPool.closeConnection(conn);
+        return roleMap;
     }
 
     public boolean delete(Long id, Role role) {
-        return roleDao.delete(id, role);
+        Connection conn = ConnectionPool.getConnection();
+        UserRoleDao roleDao = new UserRoleDao(conn);
+        boolean result = roleDao.delete(id, role);
+        ConnectionPool.closeConnection(conn);
+        return result;
     }
 
     public boolean create(long id, Role role) {
-        return roleDao.createRole(id, role);
-    }
-
-    public boolean createRoles(long id, Set<Role> roles) {
-        for (Role r : roles) {
-            boolean success = create(id, r);
-            if (!success) {
-                return false;
-            }
-        }
-        return true;
+        Connection conn = ConnectionPool.getConnection();
+        UserRoleDao roleDao = new UserRoleDao(conn);
+        boolean result =  roleDao.createRole(id, role);
+        ConnectionPool.closeConnection(conn);
+        return result;
     }
 }

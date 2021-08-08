@@ -2,14 +2,31 @@
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav mr-auto" style="font-size: 1.5rem">
             <li class="nav-item">
-                <a class="nav-link gap-item" href="home"><fmt:message key="home"/></a>
+                <a class="nav-link gap-item" href="/"><fmt:message key="home"/></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link gap-item" href="/account"><fmt:message key="account"/></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link gap-item" href="/admin"><fmt:message key="admin"/></a>
-            </li>
+            <c:if test="${empty sessionScope.get('user')}">
+                <li class="nav-item">
+                    <a class="nav-link gap-item" href="/booking"><fmt:message key="booking"/></a>
+                </li>
+            </c:if>
+            <c:if test="${sessionScope.get('user').client}">
+                <li class="nav-item">
+                    <a class="nav-link gap-item" href="/user?action=room"><fmt:message key="booking"/></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link gap-item" href="/user?action=account"><fmt:message key="account"/></a>
+                </li>
+            </c:if>
+            <c:if test="${sessionScope.get('user').admin}">
+                <li class="nav-item">
+                    <a class="nav-link gap-item" href="/admin"><fmt:message key="admin"/></a>
+                </li>
+            </c:if>
+            <c:if test="${sessionScope.get('user').manager}">
+                <li class="nav-item">
+                    <a class="nav-link gap-item" href="/manager"><fmt:message key="manager"/></a>
+                </li>
+            </c:if>
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="text" placeholder="Search">

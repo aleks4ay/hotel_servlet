@@ -39,9 +39,9 @@ public class RunDao {
         User user1 = new User("login1", "pass1");
         User user2 = new User("login2", "pass2");
         User manager = new User("login3", "pass3");
-        manager.addRole(Role.ROLE_MANAGER);
+        manager.setRole(Role.ROLE_MANAGER);
         User admin = new User("adm", "adm");
-        admin.addRole(Role.ROLE_ADMIN);
+        admin.setRole(Role.ROLE_ADMIN);
         user1.setName("Alex");
         user2.setName("Vlad");
         manager.setName("Dima");

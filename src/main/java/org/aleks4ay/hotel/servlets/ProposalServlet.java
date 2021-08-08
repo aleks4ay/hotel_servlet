@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@WebServlet(urlPatterns = "/proposal")
+//@WebServlet(urlPatterns = "/proposal")
 public class ProposalServlet extends HttpServlet {
 
     @Override

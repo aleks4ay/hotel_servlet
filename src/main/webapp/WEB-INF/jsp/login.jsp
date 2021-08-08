@@ -1,27 +1,34 @@
 <%@include file="head/headerPrefixAndLanguage.jsp"%>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/logo.css">
-    <%--<link rel="stylesheet" type="text/css" href="/static/css/navbar.css">--%>
-    <style>
-        .hello_1 {
-            height: 1200px;
-            /*background-image: url(/static/img/background_1.jpg);*/
-            /*background-size: cover;*/
-            background-size: 100%;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-    </style>
-</head>
-<body class="hello_1">
+<%@include file="head/head.jsp"%>
+
+<body>
+
+<%--<%@include file="head/navbar.jsp"%>--%>
+
+
+
+<%--<form name="loginForm" method="POST" action="controller">
+    <input type="hidden" name="command" value="login" />
+    Login:<br/>
+    <input type="text" name="login" value=""/>
+    <br/>Password:<br/>
+    <input type="password" name="password" value=""/>
+    <br/>
+    ${errorLoginPassMessage}
+    <br/>
+    ${wrongAction}
+    <br/>
+    ${nullPage}
+    <br/>
+    <input type="submit" value="Log in"/>
+</form>--%>
+
+
+
 <div class="center1">
-    <form class="inner_logo" method="post" action="/login">
+    <form class="inner_logo" method="post" action="/login"> <%--action="controller"--%>
+        <%--<input type="hidden" name="command" value="login" />--%>
         <div class="mb-3">
             <label for="login1" class="form-label"> Login </label>
             <input type="text" class="form-control" id="login1" name="login" value="${oldLogin != null ? oldLogin :''}">
@@ -37,13 +44,12 @@
             </small>
         </div>
         <button type="submit" class="btn btn-outline-success">  <fmt:message key="loginNow"/>  </button>
-        <button type="button" class="btn btn-outline-danger" onclick="window.location='${not empty backUrl ? backUrl : '/home'}'" >
+        <button type="button" class="btn btn-outline-danger" onclick="window.location='${not empty backUrl ? backUrl : '/'}'" >
             <fmt:message key="cancel"/>
         </button>
-        <%--<button type="button" class="btn btn-outline-danger" onclick="window.history.back()"> <fmt:message key="cancel"/> </button>--%>
-<%--        <div style="margin-top: 30px; font-size: 1.3em">
+        <div style="margin-top: 30px; font-size: 1.3em">
             <a href='<c:url value="/registration" />'> <fmt:message key="registration"/> </a>
-        </div>--%>
+        </div>
     </form>
 </div>
 </body>
