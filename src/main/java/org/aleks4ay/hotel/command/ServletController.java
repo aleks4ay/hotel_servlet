@@ -22,7 +22,7 @@ public class ServletController extends HttpServlet{
         commands.put("login", new Login());
         commands.put("logout", new Logout());
         commands.put("registration", new Registration());
-        commands.put("booking", new Booking());
+        commands.put("guest", new Booking());
         commands.put("admin", new AdminCommand());
         commands.put("user", new UserCommand());
         commands.put("exception", new CommandException());

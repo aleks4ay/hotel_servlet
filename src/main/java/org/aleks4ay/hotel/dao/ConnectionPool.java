@@ -72,24 +72,4 @@ public final class ConnectionPool {
             }
         }
     }
-
-    public static void closeStatement(Statement statement) {
-        if (statement != null) {
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                log.debug("SQLException during close Statement from {}. {}", ConnectionPool.class, e);
-            }
-        }
-    }
-
-    public static void closeResultSet(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-                log.debug("SQLException during close ResultSet from {}. {}", ConnectionPool.class, e);
-            }
-        }
-    }
 }

@@ -3,11 +3,11 @@ package org.aleks4ay.hotel.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- * Created by aser on 31.07.2021.
- */
-public class Proposal {
+
+public class Proposal implements Entity{
     private Long id;
     private LocalDateTime registered = LocalDateTime.now();
     private LocalDate arrival;
@@ -15,15 +15,15 @@ public class Proposal {
     private int period;
     private int guests;
     private Category category;
-    private boolean newItem;
+//    private boolean newItem;
+    private Status status;
 
     private User user;
 
     public Proposal() {
     }
 
-    public Proposal(LocalDate arrival, LocalDate departure, int guests, Category category, User user, boolean newItem) {
-        this.newItem = newItem;
+    public Proposal(LocalDate arrival, LocalDate departure, int guests, Category category, User user) {
         this.arrival = arrival;
         this.departure = departure;
         this.category = category;
@@ -32,21 +32,23 @@ public class Proposal {
         setPeriod();
     }
 
-    public Long getId() {
+    @Override
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    @Override
+    public void setId(long id) {
         this.id = id;
     }
 
-    public boolean isNewItem() {
-        return newItem;
-    }
+//    public boolean isNewItem() {
+//        return newItem;
+//    }
 
-    public void setNewItem(boolean newItem) {
-        this.newItem = newItem;
-    }
+//    public void setNewItem(boolean newItem) {
+//        this.newItem = newItem;
+//    }
 
     public LocalDateTime getRegistered() {
         return registered;
@@ -96,6 +98,14 @@ public class Proposal {
         this.user = user;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public int getPeriod() {
         if (this.period == 0) {
             return (int) getArrival().until(getDeparture(), ChronoUnit.DAYS);
@@ -116,7 +126,22 @@ public class Proposal {
                 ", departure=" + departure +
                 ", period=" + period +
                 ", category=" + category +
+                ", status=" + status +
                 ", user=" + user.getLogin() +
                 '}';
+    }
+
+    public enum Status {
+        NEW,
+        MANAGED,
+        CONFIRMED;
+
+        public String getTitle() {
+            return this.toString();
+        }
+    }
+
+    public List<Status> getStatusesValue() {
+        return Arrays.asList(Status.values());
     }
 }

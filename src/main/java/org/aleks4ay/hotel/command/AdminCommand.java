@@ -49,8 +49,9 @@ public class AdminCommand implements Command {
         } else if (action.equalsIgnoreCase("room")){
             List<Room> roomList = new RoomService().getAll(POSITION_ON_PAGE, Integer.parseInt(page));
             request.setAttribute("rooms", roomList);
-            List<Category> categories = Arrays.asList(Category.values());
-            request.setAttribute("categories", categories);
+//            List<Category> categories = Arrays.asList(Category.values());
+//            request.setAttribute("categories", categories);
+            request.setAttribute("categories", Category.values());
 
         } else if (action.equalsIgnoreCase("order")){
             List<Order> orderList = new OrderService().getAll();

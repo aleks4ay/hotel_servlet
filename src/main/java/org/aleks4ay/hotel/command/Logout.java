@@ -14,13 +14,12 @@ public class Logout implements Command {
     public String execute(HttpServletRequest request) {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        String backUrl = (String) session.getAttribute("backUrl");
         if (user == null) {
             return "WEB-INF/index.jsp";
         } else {
             log.info("User '{}' was logged out.", ((User) session.getAttribute("user")).getLogin());
             request.getSession().invalidate();
-            return backUrl != null ? "redirect:" + backUrl : "redirect:WEB-INF/index.jsp";
+            return "WEB-INF/index.jsp";
         }
     }
 }

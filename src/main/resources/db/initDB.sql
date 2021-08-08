@@ -59,14 +59,14 @@ CREATE TABLE orders (
 );
 
 CREATE TABLE proposal (
-  id            BIGINT    NOT NULL PRIMARY KEY DEFAULT nextval('order_id_seq'),
-  registered    TIMESTAMP NOT NULL DEFAULT now(),
-  arrival       DATE      NOT NULL,
-  departure     DATE      NOT NULL,
-  guests        INT       NOT NULL,
-  category      VARCHAR   NOT NULL,
-  new_imem      BOOLEAN   NOT NULL DEFAULT TRUE,
-  user_id       INTEGER   NOT NULL,
+  id          BIGINT      NOT NULL PRIMARY KEY DEFAULT nextval('order_id_seq'),
+  registered  TIMESTAMP   NOT NULL DEFAULT now(),
+  arrival     DATE        NOT NULL,
+  departure   DATE        NOT NULL,
+  guests      INT         NOT NULL,
+  category    VARCHAR     NOT NULL,
+  status      VARCHAR(32) NOT NULL DEFAULT 'NEW',
+  user_id     INTEGER     NOT NULL,
   FOREIGN KEY (user_id) REFERENCES usr (id) ON DELETE CASCADE
 );
 

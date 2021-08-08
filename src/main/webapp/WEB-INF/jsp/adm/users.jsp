@@ -1,4 +1,5 @@
 <div>
+    <h2> <fmt:message key="adm_act_1"/>  </h2>
     <table class="table">
         <thead class="thead-light">
         <tr>
@@ -29,15 +30,7 @@
         </c:forEach>
         </tbody>
     </table>
-    <ul class="pagination">
-        <li class="page-item ${pg == 1 ? 'active' : ''}">
-            <a class="page-link" href="/admin?action=${action}&pg=1">1</a>
-        </li>
-        <li class="page-item ${pg == 2 ? 'active' : ''}">
-            <a class="page-link" href="/admin?action=${action}&pg=2">2</a>
-        </li>
-        <li class="page-item ${pg == 3 ? 'active' : ''}">
-            <a class="page-link" href="/admin?action=${action}&pg=3">3</a>
-        </li>
-    </ul>
+
+    <%@include file="../head/pagination.jsp"%>
+
 </div>

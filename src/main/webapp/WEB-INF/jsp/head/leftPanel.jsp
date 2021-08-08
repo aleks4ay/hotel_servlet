@@ -8,5 +8,13 @@
         <c:if test="${empty sessionScope.get('user')}">
             <h4> <fmt:message key="notEntered"/> </h4>
         </c:if>
+
+        <p>
+            <c:set var="man" value="${empty sessionScope.get('user') ? 'guest' :
+                        sessionScope.get('user').role.title == 'ADMIN' ? 'adm' :
+                        sessionScope.get('user').role.title == 'MANAGER' ? 'manager' :
+                        'user'}"/>
+            man = ${man}
+        </p>
     </form>
 </div>

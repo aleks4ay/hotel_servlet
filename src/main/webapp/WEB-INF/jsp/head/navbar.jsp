@@ -6,7 +6,7 @@
             </li>
             <c:if test="${empty sessionScope.get('user')}">
                 <li class="nav-item">
-                    <a class="nav-link gap-item" href="/booking"><fmt:message key="booking"/></a>
+                    <a class="nav-link gap-item" href="/guest?action=room"><fmt:message key="booking"/></a>
                 </li>
             </c:if>
             <c:if test="${sessionScope.get('user').client}">
