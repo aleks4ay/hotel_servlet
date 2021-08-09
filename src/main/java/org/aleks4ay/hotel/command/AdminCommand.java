@@ -9,14 +9,16 @@ import org.aleks4ay.hotel.service.RoomService;
 import org.aleks4ay.hotel.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
 
-public class AdminCommand implements Command {
-    private static int POSITION_ON_PAGE = 10;
+class AdminCommand implements Command {
+    private final static int POSITION_ON_PAGE = 10;
 
     @Override
     public String execute(HttpServletRequest request) {
+        if(request.getSession().getAttribute("user") == null) {
+            return "/WEB-INF/index.jsp";
+        }
         String action = request.getParameter("action");
         String page = request.getParameter("pg");
         if (page == null) {
@@ -49,8 +51,6 @@ public class AdminCommand implements Command {
         } else if (action.equalsIgnoreCase("room")){
             List<Room> roomList = new RoomService().getAll(POSITION_ON_PAGE, Integer.parseInt(page));
             request.setAttribute("rooms", roomList);
-//            List<Category> categories = Arrays.asList(Category.values());
-//            request.setAttribute("categories", categories);
             request.setAttribute("categories", Category.values());
 
         } else if (action.equalsIgnoreCase("order")){

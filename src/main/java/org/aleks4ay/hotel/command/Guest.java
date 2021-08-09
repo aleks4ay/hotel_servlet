@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
-public class Booking implements Command {
-    private static final int POSITION_ON_PAGE = 3;
+class Guest implements Command {
+    private static final int POSITION_ON_PAGE = 4;
 
     @Override
     public String execute(HttpServletRequest request) {

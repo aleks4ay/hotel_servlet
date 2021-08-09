@@ -1,7 +1,11 @@
-<c:set var="man" value="${empty sessionScope.get('user') ? 'guest' :
-                        sessionScope.get('user').role.title == 'ADMIN' ? 'admin' :
-                        sessionScope.get('user').role.title == 'MANAGER' ? 'manager' :
-                        'user'}"/>
+<%--<c:set var="man" value="${empty sessionScope.get('user') ? 'guest' :
+sessionScope.get('user').role.title == 'ADMIN' ? 'admin' :
+sessionScope.get('user').role.title == 'MANAGER' ? 'manager' :
+'user'}"/>--%>
+<%--<%@include file="role.jsp"%>--%>
+
+<%--@elvariable id="action" type="java.lang.String"--%>
+<%--@elvariable id="pg" type="java.lang.String"--%>
 <ul class="pagination">
     <li class="page-item ${pg == 1 ? 'active' : ''}">
         <a class="page-link" href="/${man}?action=${action}&pg=1">1</a>

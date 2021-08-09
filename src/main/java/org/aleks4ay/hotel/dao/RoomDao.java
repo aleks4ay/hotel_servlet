@@ -11,7 +11,7 @@ import java.util.List;
 public class RoomDao extends AbstractDao<Long, Room>{
     private static final Logger log = LogManager.getLogger(RoomDao.class);
     private static final String SQL_GET_ONE = "SELECT * FROM room WHERE id = ?;";
-    private static final String SQL_GET_ALL = "SELECT * FROM room ORDER BY id;";
+    private static final String SQL_GET_ALL = "SELECT * FROM room;";
     private static final String SQL_DELETE = "DELETE FROM room WHERE id = ?;";
     private static final String SQL_CREATE = "INSERT INTO room (category, guests, description, prise, number) " +
             "VALUES (?, ?, ?, ?, ?); ";
@@ -38,6 +38,15 @@ public class RoomDao extends AbstractDao<Long, Room>{
         return findAbstractAll(SQL_GET_ALL);
     }
 
+    public List<Room> findAllWithFilter(String filters) {
+        String sql = "SELECT * FROM room WHERE " + filters;
+        return findAbstractAll(sql);
+    }
+
+/*    public List<Room> doFilters(List<Room> roomList, String filter) {
+        return findAbstractAll(SQL_GET_ALL);
+    }*/
+
     public List<Room> findAll(int positionOnPage, int page) {
         return findAbstractAll(positionOnPage, page, SQL_GET_ALL);
     }
@@ -56,19 +65,7 @@ public class RoomDao extends AbstractDao<Long, Room>{
     @Override
     public Room create(Room room) {
         return createAbstract(room, SQL_CREATE);
-/*        try (PreparedStatement prepStatement = connection.prepareStatement(SQL_CREATE, new String[]{"id"})) {
-            objectMapper.insertToResultSet(prepStatement, room);
-            prepStatement.executeUpdate();
-
-            ResultSet rs = prepStatement.getGeneratedKeys();
-
-            if (rs.next()) {
-                room.setId(rs.getLong(1));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return room;*/
     }
+
+    
 }

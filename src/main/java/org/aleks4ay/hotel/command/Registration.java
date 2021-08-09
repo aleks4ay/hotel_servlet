@@ -6,9 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
 
-public class Registration implements Command {
+class Registration implements Command {
     private static final Logger log = LogManager.getLogger(Registration.class);
     private UserService userService = new UserService();
 
@@ -48,8 +47,8 @@ public class Registration implements Command {
             request.setAttribute("oldLastName", lastName);
             return "/WEB-INF/jsp/registration.jsp";
         } else {
-
             User createdUser = userService.create(login, firstName, lastName, pass);
+            System.out.println("createdUser 1 = " + createdUser);
 
             if (createdUser != null) {
                 log.info("User '{}' was registered on site", login);

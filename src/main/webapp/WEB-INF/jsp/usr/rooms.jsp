@@ -24,7 +24,7 @@
                 <td><c:out value="${room.description}" /></td>
                 <td><c:out value="${room.price}" /></td>
                 <c:if test="${not empty sessionScope.get('user')}">
-                    <td><a href='<c:url value="/user?action=booking&id=${room.number}&pg=${pg}" />'><fmt:message key="act_2"/></a></td>
+                    <td><a href='<c:url value="/user?action=booking&id=${room.id}" />'><fmt:message key="act_2"/></a></td>
                 </c:if>
                 <c:if test="${empty sessionScope.get('user')}">
                     <td> <fmt:message key="act_2"/> </td>

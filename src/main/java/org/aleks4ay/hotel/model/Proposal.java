@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class Proposal implements Entity{
-    private Long id;
+public class Proposal extends BaseEntity {
+//    private Long id;
     private LocalDateTime registered = LocalDateTime.now();
     private LocalDate arrival;
     private LocalDate departure;
@@ -32,7 +32,7 @@ public class Proposal implements Entity{
         setPeriod();
     }
 
-    @Override
+/*    @Override
     public long getId() {
         return id;
     }
@@ -40,7 +40,7 @@ public class Proposal implements Entity{
     @Override
     public void setId(long id) {
         this.id = id;
-    }
+    }*/
 
 //    public boolean isNewItem() {
 //        return newItem;
@@ -120,7 +120,7 @@ public class Proposal implements Entity{
     @Override
     public String toString() {
         return "Proposal{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", registered=" + registered +
                 ", arrival=" + arrival +
                 ", departure=" + departure +

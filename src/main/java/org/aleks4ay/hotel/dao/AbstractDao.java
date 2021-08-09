@@ -1,15 +1,15 @@
 package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.dao.mapper.ObjectMapper;
-import org.aleks4ay.hotel.model.Entity;
+import org.aleks4ay.hotel.model.BaseEntity;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractDao<K, T> {
+abstract class AbstractDao<K, T extends BaseEntity> {
 
-    protected ObjectMapper<T> objectMapper;
+    ObjectMapper<T> objectMapper;
     public abstract T getById(K key);
     public abstract List<T> findAll();
     public abstract boolean delete(K id);
@@ -18,12 +18,12 @@ public abstract class AbstractDao<K, T> {
 
     Connection connection = null;
 
-    protected AbstractDao(Connection connection, ObjectMapper objectMapper) {
+    AbstractDao(Connection connection, ObjectMapper<T> objectMapper) {
         this.connection = connection;
         this.objectMapper = objectMapper;
     }
 
-    public List<T> findAbstractAll(String sql) {
+    List<T> findAbstractAll(String sql) {
         List<T> entities = new ArrayList<>();
         try (Statement st = connection.createStatement()){
             ResultSet rs = st.executeQuery(sql);
@@ -38,7 +38,7 @@ public abstract class AbstractDao<K, T> {
         return entities;
     }
 
-    public T getAbstractById(String sql, long id) {
+    T getAbstractById(String sql, long id) {
         try (PreparedStatement prepStatement = connection.prepareStatement(sql)){
             prepStatement.setLong(1, id);
             ResultSet rs = prepStatement.executeQuery();
@@ -62,7 +62,7 @@ public abstract class AbstractDao<K, T> {
         return result;
     }
 
-    public List<T> findAbstractAll(int positionOnPage, int page, String sql) {
+    List<T> findAbstractAll(int positionOnPage, int page, String sql) {
         int startPosition = positionOnPage * (page - 1);
         List<T> entities = findAbstractAll(sql);
         List<T> roomsAfterFilter = new ArrayList<>();
@@ -90,14 +90,14 @@ public abstract class AbstractDao<K, T> {
         return result == 1;
     }
 
-    public T createAbstract(T t, String sql) {
+    T createAbstract(T t, String sql) {
         try (PreparedStatement prepStatement = connection.prepareStatement(sql, new String[]{"id"})) {
             objectMapper.insertToResultSet(prepStatement, t);
             prepStatement.executeUpdate();
 
             ResultSet rs = prepStatement.getGeneratedKeys();
             if (rs.next()) {
-                ((Entity)t).setId(rs.getLong(1));
+                t.setId(rs.getLong(1));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -105,7 +105,7 @@ public abstract class AbstractDao<K, T> {
         return t;
     }
 
-    public boolean updateStringAbstract(String s, long id, String sql) {
+    boolean updateStringAbstract(String s, long id, String sql) {
         try (PreparedStatement prepStatement = connection.prepareStatement(sql)) {
             prepStatement.setString(1, s);
             prepStatement.setLong(2, id);

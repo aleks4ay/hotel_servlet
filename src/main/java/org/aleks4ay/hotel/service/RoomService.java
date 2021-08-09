@@ -20,7 +20,7 @@ public class RoomService {
         }
     }
 
-    Room getById(Long id) {
+    public Room getById(Long id) {
         Connection conn = ConnectionPool.getConnection();
         RoomDao roomDao = new RoomDao(conn);
         Room room = roomDao.getById(id);
@@ -32,6 +32,15 @@ public class RoomService {
         Connection conn = ConnectionPool.getConnection();
         RoomDao roomDao = new RoomDao(conn);
         List<Room> rooms = roomDao.findAll();
+        ConnectionPool.closeConnection(conn);
+        return rooms;
+    }
+
+    public List<Room> getAllWithFilters(List<String> filters) {
+        Connection conn = ConnectionPool.getConnection();
+        RoomDao roomDao = new RoomDao(conn);
+        String filterAsString = filterFromListToString(filters);
+        List<Room> rooms = roomDao.findAllWithFilter(filterAsString);
         ConnectionPool.closeConnection(conn);
         return rooms;
     }
@@ -66,5 +75,16 @@ public class RoomService {
         List<Room> rooms = roomDao.findAll(positionOnPage, page);
         ConnectionPool.closeConnection(conn);
         return rooms;
+    }
+
+    public String filterFromListToString(List<String> filters) {
+        StringBuilder sb = new StringBuilder();
+        for (String f: filters) {
+            if (sb.length() != 0) {
+                sb.append(" and ");
+            }
+            sb.append(f);
+        }
+        return sb.append(";").toString();
     }
 }

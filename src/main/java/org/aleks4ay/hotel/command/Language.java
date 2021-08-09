@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class Language implements Command {
+class Language implements Command {
 
     @Override
     public String execute(HttpServletRequest request) {

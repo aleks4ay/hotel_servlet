@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 
-public class Login implements Command {
+class Login implements Command {
     private static final Logger log = LogManager.getLogger(Login.class);
     private UserService userService = new UserService();
 
@@ -16,7 +16,6 @@ public class Login implements Command {
         String login = request.getParameter("login");
         String pass = request.getParameter("log_pass");
 
-//        CommandUtils.addBackUrl(request);
         if ( (login == null || login.isEmpty()) && (pass == null || pass.isEmpty()) ) {
             log.info("Try new exit");
             CommandUtils.addBackUrl(request);
@@ -52,8 +51,6 @@ public class Login implements Command {
                 log.info("User '{}' exited on site", login);
                 return "redirect:/user?action=room";
             }
-//            log.info("User '{}' exited on site", login);
-//            String url = (String) request.getSession().getAttribute("backUrl");
             return "WEB-INF/index.jsp";
         }
     }

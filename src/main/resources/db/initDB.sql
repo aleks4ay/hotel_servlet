@@ -42,7 +42,7 @@ CREATE TABLE room (
   category         VARCHAR(32)  NOT NULL,
   guests           INT          NOT NULL,
   description      VARCHAR      NOT NULL,
-  prise            DECIMAL      NOT NULL
+  price            DECIMAL      NOT NULL
 );
 
 CREATE TABLE orders (

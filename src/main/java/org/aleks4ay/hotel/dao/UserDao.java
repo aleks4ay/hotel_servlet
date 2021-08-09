@@ -54,12 +54,6 @@ public class UserDao extends AbstractDao<Long, User>{
         return findAbstractAll(positionOnPage, page, SQL_GET_ALL);
     }
 
-/*    public Map<String, String> getLoginMap() {
-        return findAll()
-                .stream()
-                .collect(Collectors.toMap(User::getLogin, User::getPassword));
-    }*/
-
     @Override
     public boolean delete(Long id) {
         return deleteAbstract(SQL_DELETE, id);
@@ -90,6 +84,6 @@ public class UserDao extends AbstractDao<Long, User>{
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return user; // TODO: 02.08.2021
+        return user;
     }
 }

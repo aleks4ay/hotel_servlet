@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Room implements Entity{
+public class Room extends BaseEntity {
 
-    private long id;
+//    private long id;
     private int number;
     private Category category;
     private int guests;
@@ -27,7 +27,7 @@ public class Room implements Entity{
     }*/
 
     public Room(long id, int number, Category category, int guests, String description, double price) {
-        this.id = id;
+        setId(id);
         this.number = number;
         this.category = category;
         this.guests = guests;
@@ -47,14 +47,11 @@ public class Room implements Entity{
         return true;
     }
 
-    public boolean isEmpty(LocalDate date) {
-        if (statuses.keySet().contains(date)) {
-            return false;
-        }
-        return true;
+    boolean isEmpty(LocalDate date) {
+        return !statuses.keySet().contains(date);
     }
 
-    @Override
+/*    @Override
     public long getId() {
         return id;
     }
@@ -62,7 +59,7 @@ public class Room implements Entity{
     @Override
     public void setId(long id) {
         this.id = id;
-    }
+    }*/
 
     public Category getCategory() {
         return category;
@@ -96,7 +93,7 @@ public class Room implements Entity{
         this.number = number;
     }
 
-    public Map<LocalDate, RoomStatus> getStatuses() {
+    Map<LocalDate, RoomStatus> getStatuses() {
         return statuses;
     }
 
@@ -145,7 +142,7 @@ public class Room implements Entity{
     @Override
     public String toString() {
         return "Room{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", number=" + number +
                 ", category=" + category +
                 ", guests=" + guests +

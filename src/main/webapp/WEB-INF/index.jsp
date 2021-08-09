@@ -7,7 +7,9 @@
 
 <div class="container-fluid" style="margin-top:10px">
     <div class="row">
-        <%@include file="jsp/head/leftPanel.jsp"%>
+        <div class="col-sm-2">
+            <%@include file="jsp/head/leftForm.jsp"%>
+        </div>
 
         <div class="col-sm-8">
             <h1>It is site about 'Hotel'.</h1>

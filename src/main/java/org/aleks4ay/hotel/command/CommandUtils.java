@@ -10,10 +10,8 @@ final class CommandUtils {
     static void addBackUrl(HttpServletRequest request) {
         try {
             String url = new URL(request.getHeader("Referer")).getFile();
-//            System.out.println("url to back=" + url);
 
             if (!url.contains("registration") && !url.contains("login") ) {
-//                System.out.println("url to back not contain login =" + url);
                 HttpSession session = request.getSession();
                 session.setAttribute("backUrl", url);
             }

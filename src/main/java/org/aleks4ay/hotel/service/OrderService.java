@@ -2,9 +2,11 @@ package org.aleks4ay.hotel.service;
 
 import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.dao.OrderDao;
+import org.aleks4ay.hotel.exception.NotEmptyRoomException;
 import org.aleks4ay.hotel.model.*;
 
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.*;
 
 public class OrderService {
@@ -87,9 +89,13 @@ public class OrderService {
     public Order create(Order order) {
         Connection conn = ConnectionPool.getConnection();
         OrderDao orderDao = new OrderDao(conn);
-        order = orderDao.create(order);
-        ConnectionPool.closeConnection(conn);
-        return order;
+        Room room = order.getRoom();
+        if ( room.isEmpty(order.getArrival(), order.getDeparture()) ) {
+            order = orderDao.create(order);
+            ConnectionPool.closeConnection(conn);
+            return order;
+        }
+        throw new NotEmptyRoomException("This room is occupied that period.");
     }
 
     public List<Order> getAll(int positionOnPage, int page) {

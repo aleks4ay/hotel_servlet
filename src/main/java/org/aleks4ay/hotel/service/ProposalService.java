@@ -80,7 +80,6 @@ public class ProposalService {
         Connection conn = ConnectionPool.getConnection();
         ProposalDao proposalDao = new ProposalDao(conn);
         proposal.setStatus(Proposal.Status.NEW);
-        System.out.println("proposal2 = " + proposal);
         proposal = proposalDao.create(proposal);
         ConnectionPool.closeConnection(conn);
         return proposal;

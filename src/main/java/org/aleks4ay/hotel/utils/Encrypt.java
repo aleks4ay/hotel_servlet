@@ -1,13 +1,14 @@
 package org.aleks4ay.hotel.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.NoSuchElementException;
 
-/**
- * Created by aser on 01.08.2021.
- */
 public final class Encrypt {
+    private static final Logger log = LogManager.getLogger(Encrypt.class);
 
     public static String hash(String input, String algorithm) {
         MessageDigest messageDigest;
@@ -17,7 +18,7 @@ public final class Encrypt {
             messageDigest.update(input.getBytes());
             hashByte = messageDigest.digest();
         } catch (NoSuchAlgorithmException e) {
-//            logger.log(Level.INFO, e.getMessage());
+            log.warn("Exception during getting '{}' algorithm for encrypting. {}", algorithm, e.getMessage());
         }
         return bytesToHex(hashByte);
     }

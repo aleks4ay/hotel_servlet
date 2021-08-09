@@ -4,11 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +19,7 @@ public class ServletController extends HttpServlet{
         commands.put("login", new Login());
         commands.put("logout", new Logout());
         commands.put("registration", new Registration());
-        commands.put("guest", new Booking());
+        commands.put("guest", new Guest());
         commands.put("admin", new AdminCommand());
         commands.put("user", new UserCommand());
         commands.put("exception", new CommandException());
@@ -43,12 +40,6 @@ public class ServletController extends HttpServlet{
     private void processRequest(HttpServletRequest request,
                                 HttpServletResponse response)
             throws ServletException, IOException {
-/*        final Enumeration<String> headerNames = request.getHeaderNames();
-
-        while (headerNames.hasMoreElements()) {
-            String next = headerNames.nextElement();
-            System.out.println("next: " + next + " -> " + request.getHeader(next));
-        }*/
 
         String path = request.getRequestURI();
         path = path.replaceAll(".*(/app)?/", "");

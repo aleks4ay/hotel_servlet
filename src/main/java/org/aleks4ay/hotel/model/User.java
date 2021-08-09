@@ -1,12 +1,14 @@
 package org.aleks4ay.hotel.model;
 
+import org.aleks4ay.hotel.service.UserService;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class User {
+public class User extends BaseEntity{
 
-    private Long id;
+//    private long id;
     private String login;
     private String name;
     private String surname;
@@ -22,26 +24,32 @@ public class User {
     public User() {
     }
 
+    public static void main(String[] args) {
+        User user1 = new User(12L, "login1", "name", "surname", "pass1");
+        System.out.println("user1=" + user1);
+        new UserService().create("login1", "name", "surname", "pass1");
+    }
+
     public User(String login, String password) {
         this.login = login;
         this.password = password;
     }
 
     public User(Long id, String login, String name, String surname, String password) {
-        this.id = id;
+        setId(id);
         this.login = login;
         this.name = name;
         this.surname = surname;
         this.password = password;
     }
 
-    public Long getId() {
+/*    public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
+    }*/
 
     public String getLogin() {
         return login;
@@ -143,7 +151,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", login='" + login + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +

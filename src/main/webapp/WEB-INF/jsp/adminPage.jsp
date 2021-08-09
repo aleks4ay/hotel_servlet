@@ -8,7 +8,9 @@
 <div class="container-fluid" style="margin-top:10px">
     <div class="row">
 
-        <%@include file="head/leftPanel.jsp"%>
+        <div class="col-sm-2">
+            <%--<%@include file="head/leftForm.jsp"%>--%>
+        </div>
 
 
         <div class="col-sm-8">

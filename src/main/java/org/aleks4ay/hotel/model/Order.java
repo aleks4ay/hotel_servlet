@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class Order implements Entity{
+public class Order extends BaseEntity {
 
-    private long id;
+//    private long id;
     private Room room;
     private LocalDateTime registered = LocalDateTime.now();
     private LocalDate arrival;
@@ -23,7 +23,7 @@ public class Order implements Entity{
 
     public Order(long id, Room room, LocalDateTime registered, LocalDate arrival, LocalDate departure) {
         this.orderStatus = OrderStatus.NEW;
-        this.id = id;
+        setId(id);//id = id;
         this.room = room;
         this.correctPrice = room.getPrice();
         this.registered = registered;
@@ -33,7 +33,7 @@ public class Order implements Entity{
     }
 
 
-    @Override
+/*    @Override
     public long getId() {
         return id;
     }
@@ -41,7 +41,7 @@ public class Order implements Entity{
     @Override
     public void setId(long id) {
         this.id = id;
-    }
+    }*/
 
     public User getUser() {
         return user;
@@ -118,7 +118,7 @@ public class Order implements Entity{
     @Override
     public String toString() {
         return "Order{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", room=" + room +
                 ", orderStatus=" + orderStatus +
                 ", registered=" + registered +

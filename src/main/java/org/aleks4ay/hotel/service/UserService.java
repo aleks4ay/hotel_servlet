@@ -70,7 +70,7 @@ public class UserService {
             throw new AlreadyException("User with login '" + login + "' already exists");
         }
         String encryptPassword = Encrypt.hash(pass, "SHA-256");
-        User user = new User(null, login, firstName, lastName, encryptPassword);
+        User user = new User(0L, login, firstName, lastName, encryptPassword);
         user = userDao.create(user);
         user.setRole(Role.ROLE_USER);
         roleService.create(user.getId(), user.getRole());

@@ -7,7 +7,7 @@ import org.aleks4ay.hotel.model.Role;
 import java.sql.Connection;
 import java.util.*;
 
-public class UserRoleService {
+class UserRoleService {
 
     public Role getById(Long id) {
         Connection conn = ConnectionPool.getConnection();
@@ -17,7 +17,7 @@ public class UserRoleService {
         return role;
     }
 
-    public Map<Long, Role> getAllRoleAsMap() {
+    Map<Long, Role> getAllRoleAsMap() {
         Connection conn = ConnectionPool.getConnection();
         UserRoleDao roleDao = new UserRoleDao(conn);
         Map<Long, Role> roleMap = roleDao.getAllRoleAsMap();
