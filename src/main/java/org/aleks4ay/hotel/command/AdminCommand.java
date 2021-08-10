@@ -49,7 +49,9 @@ class AdminCommand implements Command {
             request.setAttribute("users", userList);
 
         } else if (action.equalsIgnoreCase("room")){
-            List<Room> roomList = new RoomService().getAll(POSITION_ON_PAGE, Integer.parseInt(page));
+            List<Room> roomList = new RoomService().getAll();
+            // TODO: 10.08.2021 POSITION_ON_PAGE, Integer.parseInt(page)
+            roomList = new RoomService().doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), roomList);
             request.setAttribute("rooms", roomList);
             request.setAttribute("categories", Category.values());
 

@@ -9,6 +9,7 @@
     <div class="row">
         <div class="col-sm-2">
             <%@include file="jsp/head/leftForm.jsp"%>
+            <%--userType = ${userType}--%>
         </div>
 
         <div class="col-sm-8">

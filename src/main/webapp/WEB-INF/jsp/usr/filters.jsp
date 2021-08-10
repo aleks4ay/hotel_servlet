@@ -1,15 +1,16 @@
 <%--@elvariable id="guests" type="java.lang.Integer"--%>
-<form  class="sticky rounded-lg shadow p-4 mb-4" method="post" action="/${man}?action=filter"
+<%--@elvariable id="order" type="org.aleks4ay.hotel.model.Order"--%>
+<form  class="sticky rounded-lg shadow p-4 mb-4" method="post" action="/user?action=filter"
        style="background-color: rgba(96, 162, 218, 0.2);">
 
     <h3><fmt:message key="filters"/></h3>
     <div class="mb-3">
         <label for="date3" class="form-label"> <fmt:message key="arrival"/>: </label>
-        <input type="date" class="form-control" id="date3"  name="filter_arrival" />
+        <input type="date" class="form-control" id="date3"  name="filter_arrival" value="${arrival}"/>
     </div>
     <div class="mb-3">
         <label for="date4" class="form-label"> <fmt:message key="departure"/>: </label>
-        <input type="date" class="form-control" id="date4" name="filter_departure" />
+        <input type="date" class="form-control" id="date4" name="filter_departure" value="${departure}"/>
     </div>
     <div class="mb-3">
         <label for="field1" class="form-label"> <fmt:message key="guests"/> </label>
@@ -29,9 +30,11 @@
             </c:forEach>
         </select>
     </div>
-    <div >
-        category = ${category}
-        guests = ${guests}
+
+    <div style="color: rgba(19, 23, 186, 0.9); font-size: 1.2em">
+        <c:if test="${not empty category}" > <p> <fmt:message key="category"/>: ${category} </p> </c:if>
+        <c:if test="${not empty guests}" > <p> <fmt:message key="guests"/>: ${guests} </p> </c:if>
+
         <button type="submit" class="btn btn-outline-success" >  <fmt:message key="filterEnter"/>  </button>
     </div>
 <%--    <div>

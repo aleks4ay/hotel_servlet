@@ -24,13 +24,13 @@
 
 
                 <div class="btn-group" style="width: 100%">
-                    <button type="button" class="btn btn-primary btn-my-r" onclick="window.location='/user?action=order'">
+                    <button type="button" class="btn btn-primary btn-my-r" onclick="window.location='/user?action=account&ap=order'">
                         <h5> <fmt:message key="adm_act_3"/> </h5>
                     </button>
-                    <button type="button" class="btn btn-primary btn-my-r" onclick="window.location='/user?action=proposal'">
+                    <button type="button" class="btn btn-primary btn-my-r" onclick="window.location='/user?action=account&ap=proposal'">
                         <h5> <fmt:message key="proposal"/> </h5>
                     </button>
-                    <button type="button" class="btn btn-primary btn-my-r" onclick="window.location='/user?action=bill'">
+                    <button type="button" class="btn btn-primary btn-my-r" onclick="window.location='/user?action=account&ap=bill'">
                         <h5> <fmt:message key="bill"/> </h5>
                     </button>
                 </div>
@@ -39,11 +39,11 @@
             <%--@elvariable id="action" type="java.lang.String"--%>
             <c:if test="${(action == 'room') or (action == 'filter')}">  <%@include file="usr/rooms.jsp"%> </c:if>
 
-            <c:if test="${action == 'order'}">  <%@include file="usr/orders.jsp"%> </c:if>
+            <c:if test="${ap == 'order'}">  <%@include file="usr/orders.jsp"%> </c:if>
 
-            <c:if test="${action == 'proposal'}">  <%@include file="usr/proposals.jsp"%> </c:if>
+            <c:if test="${ap == 'proposal'}">  <%@include file="usr/proposals.jsp"%> </c:if>
 
-            <c:if test="${action == 'bill'}">  <%@include file="usr/bill.jsp"%> </c:if>
+            <c:if test="${ap == 'bill'}">  <%@include file="usr/bill.jsp"%> </c:if>
 
             <c:if test="${action == 'booking'}">  <%@include file="usr/bookingBlank.jsp"%> </c:if>
 

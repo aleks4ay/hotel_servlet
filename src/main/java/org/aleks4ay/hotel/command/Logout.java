@@ -19,6 +19,7 @@ class Logout implements Command {
         } else {
             log.info("User '{}' was logged out.", ((User) session.getAttribute("user")).getLogin());
             request.getSession().invalidate();
+            request.setAttribute("userType", "guest");
             return "WEB-INF/index.jsp";
         }
     }

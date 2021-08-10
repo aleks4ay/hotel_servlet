@@ -13,9 +13,9 @@ public class RoomDao extends AbstractDao<Long, Room>{
     private static final String SQL_GET_ONE = "SELECT * FROM room WHERE id = ?;";
     private static final String SQL_GET_ALL = "SELECT * FROM room;";
     private static final String SQL_DELETE = "DELETE FROM room WHERE id = ?;";
-    private static final String SQL_CREATE = "INSERT INTO room (category, guests, description, prise, number) " +
+    private static final String SQL_CREATE = "INSERT INTO room (category, guests, description, price, number) " +
             "VALUES (?, ?, ?, ?, ?); ";
-    private static final String SQL_UPDATE = "UPDATE room set category=?, guests=?, description=?, prise=? " +
+    private static final String SQL_UPDATE = "UPDATE room set category=?, guests=?, description=?, price=? " +
             "WHERE number = ?;";
 
     public RoomDao(Connection connection) {
@@ -47,9 +47,9 @@ public class RoomDao extends AbstractDao<Long, Room>{
         return findAbstractAll(SQL_GET_ALL);
     }*/
 
-    public List<Room> findAll(int positionOnPage, int page) {
+/*    public List<Room> findAll(int positionOnPage, int page) {
         return findAbstractAll(positionOnPage, page, SQL_GET_ALL);
-    }
+    }*/
 
     @Override
     public boolean delete(Long id) {

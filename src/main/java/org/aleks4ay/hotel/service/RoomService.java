@@ -2,9 +2,11 @@ package org.aleks4ay.hotel.service;
 
 import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.dao.RoomDao;
+import org.aleks4ay.hotel.model.BaseEntity;
 import org.aleks4ay.hotel.model.Room;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoomService {
@@ -36,15 +38,6 @@ public class RoomService {
         return rooms;
     }
 
-    public List<Room> getAllWithFilters(List<String> filters) {
-        Connection conn = ConnectionPool.getConnection();
-        RoomDao roomDao = new RoomDao(conn);
-        String filterAsString = filterFromListToString(filters);
-        List<Room> rooms = roomDao.findAllWithFilter(filterAsString);
-        ConnectionPool.closeConnection(conn);
-        return rooms;
-    }
-
     public boolean delete(Long id) {
         Connection conn = ConnectionPool.getConnection();
         RoomDao roomDao = new RoomDao(conn);
@@ -68,11 +61,22 @@ public class RoomService {
         ConnectionPool.closeConnection(conn);
         return room;
     }
-
-    public List<Room> getAll(int positionOnPage, int page) {
+/*
+    public List<Room> getAll(int positionOnPage, int page*//*, List<String> filters*//*) {
         Connection conn = ConnectionPool.getConnection();
         RoomDao roomDao = new RoomDao(conn);
-        List<Room> rooms = roomDao.findAll(positionOnPage, page);
+        List<Room> allRoom = roomDao.findAll();
+        List<Room> roomsAfterFilter = getAllWithFilters(filters uu);
+        List<Room> roomsAfterPagination = doPagination(positionOnPage, page, allRoom);
+        ConnectionPool.closeConnection(conn);
+        return roomsAfterPagination;
+    }*/
+
+    public List<Room> getAllWithFilters(List<String> filters) {
+        Connection conn = ConnectionPool.getConnection();
+        RoomDao roomDao = new RoomDao(conn);
+        String filterAsString = filterFromListToString(filters);
+        List<Room> rooms = roomDao.findAllWithFilter(filterAsString);
         ConnectionPool.closeConnection(conn);
         return rooms;
     }
@@ -86,5 +90,21 @@ public class RoomService {
             sb.append(f);
         }
         return sb.append(";").toString();
+    }
+
+    public List<Room> doPagination(int positionOnPage, int page, List<Room> entities) {
+        int startPosition = positionOnPage * (page - 1);
+        List<Room> roomsAfterFilter = new ArrayList<>();
+
+        if (entities.size() > startPosition) {
+            for (int i = startPosition; i < startPosition + positionOnPage; i++) {
+                if (i >= entities.size()) {
+                    break;
+                }
+                roomsAfterFilter.add(entities.get(i));
+            }
+            return roomsAfterFilter;
+        }
+        return new ArrayList<>();
     }
 }
