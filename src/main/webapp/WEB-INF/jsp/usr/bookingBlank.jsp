@@ -14,14 +14,24 @@
                 <input type="date" class="form-control" id="date4" name="date_departure"  value="${order.departure}"/>
             </div>
             <p> <fmt:message key="name"/>: ${order.user.name} </p>
+            <input type="hidden" value="${order.user.name}">
+
             <p> <fmt:message key="surname"/>: ${order.user.surname} </p>
-            <%--<p> <fmt:message key="arrival"/>: ${order.arrival} </p>--%>
-            <%--<p> <fmt:message key="departure"/>: ${order.departure} </p>--%>
-            <%--<p> <fmt:message key="period"/>: ${order.period} </p>--%>
+            <input type="hidden" value="${order.user.surname}">
+
             <p> <fmt:message key="roomNumber"/>: ${order.room.number} </p>
+            <input type="hidden" value="${order.room.number}">
+
             <p> <fmt:message key="category"/>: ${order.room.category} </p>
+            <input type="hidden" value="${order.room.category}">
+
             <p> <fmt:message key="guestsQuantity"/>: ${order.room.guests} </p>
+            <input type="hidden" value="${order.room.guests}">
+
             <p> <fmt:message key="description"/>: ${order.room.description} </p>
+            <input type="hidden" value="${order.room.description}">
+
+            <input type="hidden" value="${order.room.price}">
             <p> <h3> <fmt:message key="cost"/>: ${order.room.price} &nbsp; <fmt:message key="currency"/> </h3> </p>
         </div>
         <div class="btn-group" style="width: 100%">

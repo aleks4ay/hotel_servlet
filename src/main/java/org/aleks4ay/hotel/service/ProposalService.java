@@ -84,13 +84,17 @@ public class ProposalService {
         ConnectionPool.closeConnection(conn);
         return proposal;
     }
-
+/*
     public List<Proposal> getAll(int positionOnPage, int page) {
         Connection conn = ConnectionPool.getConnection();
         ProposalDao proposalDao = new ProposalDao(conn);
         List<Proposal> proposals = proposalDao.findAll(positionOnPage, page);
         ConnectionPool.closeConnection(conn);
         return proposals;
+    }*/
+
+    public List<Proposal> doPagination(int positionOnPage, int page, List<Proposal> entities) {
+        return new UtilService<Proposal>().doPagination(positionOnPage, page, entities);
     }
 
     public boolean updateStatus(Proposal.Status status, long id) {

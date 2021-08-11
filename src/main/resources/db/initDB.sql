@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS orders;
-DROP TABLE IF EXISTS vacancies;
+DROP TABLE IF EXISTS schedule;
 DROP TABLE IF EXISTS proposal;
 DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS usr;
@@ -7,13 +7,10 @@ DROP TABLE IF EXISTS room;
 
 DROP SEQUENCE IF EXISTS id_seq;
 DROP SEQUENCE IF EXISTS order_id_seq;
--- DROP SEQUENCE IF EXISTS room_id_seq;
--- DROP SEQUENCE IF EXISTS vacancies_id_seq;
 
 CREATE SEQUENCE id_seq START WITH 1;
 CREATE SEQUENCE order_id_seq START WITH 1000001;
--- CREATE SEQUENCE room_id_seq START WITH 101;
--- CREATE SEQUENCE vacancies_id_seq START WITH 1;
+
 
 CREATE TABLE usr
 (
@@ -45,19 +42,6 @@ CREATE TABLE room (
   price            DECIMAL      NOT NULL
 );
 
-CREATE TABLE orders (
-  id            BIGINT      NOT NULL PRIMARY KEY DEFAULT nextval('order_id_seq'),
-  registered    TIMESTAMP   NOT NULL DEFAULT now(),
-  arrival       DATE        NOT NULL,
-  departure     DATE        NOT NULL,
-  correct_price DECIMAL     NOT NULL,
-  status        VARCHAR(32) NOT NULL,
-  user_id       INTEGER     NOT NULL,
-  room_id       INTEGER     NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES usr (id) ON DELETE CASCADE,
-  FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE
-);
-
 CREATE TABLE proposal (
   id          BIGINT      NOT NULL PRIMARY KEY DEFAULT nextval('order_id_seq'),
   registered  TIMESTAMP   NOT NULL DEFAULT now(),
@@ -70,12 +54,27 @@ CREATE TABLE proposal (
   FOREIGN KEY (user_id) REFERENCES usr (id) ON DELETE CASCADE
 );
 
-CREATE TABLE vacancies (
+CREATE TABLE schedule (
   id          BIGINT      NOT NULL PRIMARY KEY DEFAULT nextval('id_seq'),
-  day         DATE        NOT NULL,
+  arrival     DATE        NOT NULL,
+  departure   DATE        NOT NULL,
   status      VARCHAR(32) NOT NULL,
-  room_id     INTEGER     NOT NULL,
-  user_id     INTEGER     NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES usr (id) ON DELETE CASCADE,
-  FOREIGN KEY (room_id) REFERENCES room (number) ON DELETE CASCADE
+  room_id     BIGINT      NOT NULL,
+  CONSTRAINT vacancies_arrival_idx UNIQUE (room_id, arrival),
+  CONSTRAINT vacancies_departure_idx UNIQUE (room_id, departure),
+  FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE
 );
+
+CREATE TABLE orders (
+  id            BIGINT      NOT NULL PRIMARY KEY DEFAULT nextval('order_id_seq'),
+  registered    TIMESTAMP   NOT NULL DEFAULT now(),
+  correct_price DECIMAL     NOT NULL,
+  status        VARCHAR(32) NOT NULL,
+  user_id       BIGINT      NOT NULL,
+  room_id       BIGINT      NOT NULL,
+  timetable_id  BIGINT      NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES usr (id) ON DELETE CASCADE,
+  FOREIGN KEY (room_id) REFERENCES room (id) ON DELETE CASCADE,
+  FOREIGN KEY (timetable_id) REFERENCES schedule (id) ON DELETE CASCADE
+);
+

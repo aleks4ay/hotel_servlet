@@ -2,8 +2,10 @@ package org.aleks4ay.hotel.dao.mapper;
 
 import org.aleks4ay.hotel.model.User;
 
-import java.sql.*;
-import java.util.Map;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class UserMapper implements ObjectMapper<User> {
     @Override
@@ -18,12 +20,6 @@ public class UserMapper implements ObjectMapper<User> {
         user.setActive(rs.getBoolean("enabled"));
         user.setBill(rs.getDouble("bill"));
         return user;
-    }
-
-    @Override
-    public User makeUnique(Map<Long, User> cache, User user) {
-        cache.putIfAbsent(user.getId(), user);
-        return cache.get(user.getId());
     }
 
     @Override

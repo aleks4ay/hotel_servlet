@@ -6,16 +6,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class Proposal extends BaseEntity {
-//    private Long id;
     private LocalDateTime registered = LocalDateTime.now();
     private LocalDate arrival;
     private LocalDate departure;
     private int period;
     private int guests;
     private Category category;
-//    private boolean newItem;
     private Status status;
 
     private User user;
@@ -31,24 +28,6 @@ public class Proposal extends BaseEntity {
         this.user = user;
         setPeriod();
     }
-
-/*    @Override
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(long id) {
-        this.id = id;
-    }*/
-
-//    public boolean isNewItem() {
-//        return newItem;
-//    }
-
-//    public void setNewItem(boolean newItem) {
-//        this.newItem = newItem;
-//    }
 
     public LocalDateTime getRegistered() {
         return registered;

@@ -20,11 +20,11 @@ class AdminCommand implements Command {
             return "/WEB-INF/index.jsp";
         }
         String action = request.getParameter("action");
-        String page = request.getParameter("pg");
+/*        String page = request.getParameter("pg");
         if (page == null) {
             page = "1";
         }
-        request.setAttribute("pg", page);
+        request.setAttribute("pg", page);*/
         request.setAttribute("itemOnPage", POSITION_ON_PAGE);
 
         if (action == null) {
@@ -38,20 +38,23 @@ class AdminCommand implements Command {
             int guests = Integer.parseInt(request.getParameter("guests"));
             Category category = Category.valueOf(request.getParameter("category"));
 
-            new RoomService().create(new Room(0L, number, category, guests, description, price));
+            new RoomService().create(new Room(number, category, guests, description, price));
             return "redirect:/admin?action=room";
         }
 
         request.setAttribute("action", action);
 
         if (action.equalsIgnoreCase("user")) {
-            List<User> userList = new UserService().getAll(POSITION_ON_PAGE, Integer.parseInt(page));
+            UserService userService = new UserService();
+            List<User> userList = userService.getAll();
+            userList = userService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), userList);
             request.setAttribute("users", userList);
 
         } else if (action.equalsIgnoreCase("room")){
-            List<Room> roomList = new RoomService().getAll();
-            // TODO: 10.08.2021 POSITION_ON_PAGE, Integer.parseInt(page)
-            roomList = new RoomService().doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), roomList);
+            RoomService roomService = new RoomService();
+            List<Room> roomList = roomService.getAll();
+//            request.getAttribute("pg");
+            roomList = roomService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), roomList); // TODO: 10.08.2021
             request.setAttribute("rooms", roomList);
             request.setAttribute("categories", Category.values());
 

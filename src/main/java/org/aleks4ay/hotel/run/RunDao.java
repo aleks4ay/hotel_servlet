@@ -30,11 +30,11 @@ public class RunDao {
     }
 
     public void init() {
-        Room room1 = new Room(1, 101, Category.STANDARD, 2, "Номер с видом на море", 1_600.0);
-        Room room2 = new Room(2, 106, Category.SUPERIOR, 3, "Номер с wi-fi и видом на море", 2_800.0);
-        Room room3 = new Room(3, 501, Category.DELUXE, 5, "Люкс с бассейном", 100_000.0);
+        Room room1 = new Room(101, Category.STANDARD, 2, "Номер с видом на море", 1_600.0);
+        Room room2 = new Room(106, Category.SUPERIOR, 3, "Номер с wi-fi и видом на море", 2_800.0);
+        Room room3 = new Room(501, Category.DELUXE, 5, "Люкс с бассейном", 100_000.0);
 
-        room1.setStatus(LocalDate.now(), RoomStatus.BOOKED);
+//        room1.setStatus(LocalDate.now(), Schedule.RoomStatus.BOOKED);
 
         User user1 = new User("login1", "pass1");
         User user2 = new User("login2", "pass2");
@@ -53,11 +53,11 @@ public class RunDao {
         admin.setSurname("Lev");
 
 
-        Order order1 = new Order(2L, room1, LocalDateTime.now(), LocalDate.of(2021, 7, 30), LocalDate.of(2021, 8, 2));
-        Order order2 = new Order(3L, room1, LocalDateTime.now(), LocalDate.of(2021, 8, 2), LocalDate.of(2021, 8, 5));
-        Order order3 = new Order(4L, room2, LocalDateTime.now(), LocalDate.of(2021, 8, 4), LocalDate.of(2021, 8, 8));
-        Order order4 = new Order(5L, room2, LocalDateTime.now(), LocalDate.of(2021, 8, 5), LocalDate.of(2021, 8, 6));
-        Order order5 = new Order(6L, room3, LocalDateTime.now(), LocalDate.of(2021, 8, 8), LocalDate.of(2021, 8, 10));
+        Order order1 = new Order(room1, LocalDateTime.now());
+        Order order2 = new Order(room1, LocalDateTime.now());
+        Order order3 = new Order(room2, LocalDateTime.now());
+        Order order4 = new Order(room2, LocalDateTime.now());
+        Order order5 = new Order(room3, LocalDateTime.now());
 
         user1.addOrder(order1);
         user2.addOrder(order2);

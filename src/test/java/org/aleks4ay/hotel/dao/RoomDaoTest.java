@@ -2,6 +2,7 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.model.Room;
 import org.aleks4ay.hotel.service.RoomService;
+import org.aleks4ay.hotel.service.UtilService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class RoomDaoTest {
         List<String> filters = new ArrayList<>();
         filters.add(" guests = " + "3");
         filters.add(" category = " + "'STANDARD'");
-        String filterAsString = new RoomService().filterFromListToString(filters);
+        String filterAsString = UtilService.filterFromListToString(filters);
         List<Room> rooms = roomDao.findAllWithFilter(filterAsString);
 //        List<Room> roomsAfterFilter = new RoomService().getAllWithFilters(filters);
         rooms.forEach(System.out::println);

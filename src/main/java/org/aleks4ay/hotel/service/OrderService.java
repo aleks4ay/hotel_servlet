@@ -7,6 +7,7 @@ import org.aleks4ay.hotel.model.*;
 
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class OrderService {
@@ -86,11 +87,15 @@ public class OrderService {
         return result;
     }
 
-    public Order create(Order order) {
+    public Order create(long room_id, LocalDate dateStart, LocalDate dateEnd, User user) {
         Connection conn = ConnectionPool.getConnection();
         OrderDao orderDao = new OrderDao(conn);
-        Room room = order.getRoom();
-        if ( room.isEmpty(order.getArrival(), order.getDeparture()) ) {
+
+        Room room = new Room(room_id);
+        Order order = new Order(room, LocalDateTime.now());
+        order.setUser(user);
+
+        if (room.isEmpty(dateStart, dateEnd) ) {
             order = orderDao.create(order);
             ConnectionPool.closeConnection(conn);
             return order;
@@ -98,15 +103,11 @@ public class OrderService {
         throw new NotEmptyRoomException("This room is occupied that period.");
     }
 
-    public List<Order> getAll(int positionOnPage, int page) {
-        Connection conn = ConnectionPool.getConnection();
-        OrderDao orderDao = new OrderDao(conn);
-        List<Order> orders = orderDao.findAll(positionOnPage, page);
-        ConnectionPool.closeConnection(conn);
-        return orders;
+    public List<Order> doPagination(int positionOnPage, int page, List<Order> entities) {
+        return new UtilService<Order>().doPagination(positionOnPage, page, entities);
     }
 
-    public boolean updateStatus(OrderStatus status, long id) {
+    public boolean updateStatus(Order.Status status, long id) {
         Connection conn = ConnectionPool.getConnection();
         OrderDao orderDao = new OrderDao(conn);
         boolean result = orderDao.updateStatus(status.toString(), id);

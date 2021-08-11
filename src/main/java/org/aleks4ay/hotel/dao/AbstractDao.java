@@ -51,7 +51,7 @@ abstract class AbstractDao<K, T extends BaseEntity> {
         return null;
     }
 
-    boolean deleteAbstract(String sql, long id) {
+    public boolean deleteAbstract(String sql, long id) {
         boolean result = false;
         try (PreparedStatement prepStatement = connection.prepareStatement(sql)) {
             prepStatement.setLong(1, id);
@@ -62,7 +62,7 @@ abstract class AbstractDao<K, T extends BaseEntity> {
         return result;
     }
 
-    List<T> findAbstractAll(int positionOnPage, int page, String sql) {
+/*    List<T> findAbstractAll(int positionOnPage, int page, String sql) {
         int startPosition = positionOnPage * (page - 1);
         List<T> entities = findAbstractAll(sql);
         List<T> roomsAfterFilter = new ArrayList<>();
@@ -77,7 +77,7 @@ abstract class AbstractDao<K, T extends BaseEntity> {
             return roomsAfterFilter;
         }
         return new ArrayList<>();
-    }
+    }*/
 
     boolean updateAbstract(String sqlCreate, T t) {
         int result = 0;

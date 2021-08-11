@@ -8,7 +8,6 @@ import java.util.*;
 
 public class User extends BaseEntity{
 
-//    private long id;
     private String login;
     private String name;
     private String surname;
@@ -17,11 +16,14 @@ public class User extends BaseEntity{
     private LocalDateTime registered = LocalDateTime.now();
     private Role role;
     private double bill;
-//    private Set<Role> roles = new HashSet<>();
 
     private List<Order> orders = new ArrayList<>();
 
     public User() {
+    }
+
+    public User(long id) {
+        super(id);
     }
 
     public static void main(String[] args) {
@@ -42,14 +44,6 @@ public class User extends BaseEntity{
         this.surname = surname;
         this.password = password;
     }
-
-/*    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }*/
 
     public String getLogin() {
         return login;
@@ -123,7 +117,10 @@ public class User extends BaseEntity{
     }
 
     public void setOrders(List<Order> orders) {
-        this.orders = orders;
+        for (Order o : orders) {
+            addOrder(o);
+        }
+//        this.orders = orders;
     }
 
     public void addOrder(Order order) {

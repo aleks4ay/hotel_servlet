@@ -16,8 +16,8 @@
         <label for="field1" class="form-label"> <fmt:message key="guests"/> </label>
 
         <select id="field1" name="filter_guests" class="col-md-12 form-control">
-            <option value="1" ${empty guests or guests == 1 ? 'selected' : ''}> 1 </option>
-            <option value="2" ${guests == 2 ? 'selected' : ''} > 2 </option>
+            <option value="1" ${guests == 1 ? 'selected' : ''}> 1 </option>
+            <option value="2" ${guests == 2 ? 'selected' : ''}> 2 </option>
             <option value="3" ${guests == 3 ? 'selected' : ''}> 3 </option>
             <option value="4" ${guests == 4 ? 'selected' : ''}> 4 </option>
         </select>

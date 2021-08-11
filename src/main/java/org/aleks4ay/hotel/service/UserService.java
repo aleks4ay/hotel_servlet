@@ -100,15 +100,7 @@ public class UserService {
         return passFromDb.equals(encryptedPassword);
     }
 
-    public List<User> getAll(int positionOnPage, int page) {
-        Connection conn = ConnectionPool.getConnection();
-        UserDao userDao = new UserDao(conn);
-        List<User> users = userDao.findAll(positionOnPage, page);
-        Map<Long, Role> roleMap = roleService.getAllRoleAsMap();
-        for (User u : users) {
-            u.setRole(roleMap.get(u.getId()));
-        }
-        ConnectionPool.closeConnection(conn);
-        return users;
+    public List<User> doPagination(int positionOnPage, int page, List<User> entities) {
+        return new UtilService<User>().doPagination(positionOnPage, page, entities);
     }
 }

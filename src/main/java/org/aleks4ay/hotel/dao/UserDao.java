@@ -50,9 +50,9 @@ public class UserDao extends AbstractDao<Long, User>{
         return findAbstractAll(SQL_GET_ALL);
     }
 
-    public List<User> findAll(int positionOnPage, int page) {
+/*    public List<User> findAll(int positionOnPage, int page) {
         return findAbstractAll(positionOnPage, page, SQL_GET_ALL);
-    }
+    }*/
 
     @Override
     public boolean delete(Long id) {

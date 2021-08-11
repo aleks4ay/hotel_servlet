@@ -1,11 +1,11 @@
 package org.aleks4ay.hotel.dao.mapper;
 
-import org.aleks4ay.hotel.dao.mapper.ObjectMapper;
 import org.aleks4ay.hotel.model.Category;
 import org.aleks4ay.hotel.model.Room;
 
-import java.sql.*;
-import java.util.Map;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class RoomMapper implements ObjectMapper<Room> {
     @Override
@@ -18,12 +18,6 @@ public class RoomMapper implements ObjectMapper<Room> {
         room.setDescription(rs.getString("description"));
         room.setPrice(rs.getDouble("price"));
         return room;
-    }
-
-    @Override
-    public Room makeUnique(Map<Long, Room> cache, Room room) {
-        cache.putIfAbsent(room.getId(), room);
-        return cache.get(room.getId());
     }
 
     @Override

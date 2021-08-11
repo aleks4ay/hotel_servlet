@@ -31,10 +31,6 @@ public class ProposalDao extends AbstractDao<Long, Proposal>{
         return findAbstractAll(SQL_GET_ALL);
     }
 
-    public List<Proposal> findAll(int positionOnPage, int page) {
-        return findAbstractAll(positionOnPage, page, SQL_GET_ALL);
-    }
-
     @Override
     public boolean delete(Long id) {
         return deleteAbstract(SQL_DELETE, id);

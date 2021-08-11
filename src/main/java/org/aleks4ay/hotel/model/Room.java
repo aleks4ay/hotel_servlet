@@ -1,33 +1,28 @@
 package org.aleks4ay.hotel.model;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Room extends BaseEntity {
 
-//    private long id;
     private int number;
     private Category category;
     private int guests;
     private String description;
     private double price;
     private byte[] roomView;
-    private Map<LocalDate, RoomStatus> statuses = new HashMap<>();
+    private List<Schedule> schedules = new ArrayList<>();
 
     public Room() {
     }
 
-/*    public Room(int number, Category category, int guests, String description, double price) {
-        this.number = number;
-        this.category = category;
-        this.guests = guests;
-        this.description = description;
-        this.price = price;
-    }*/
+    public Room(long id) {
+        super(id);
+    }
 
-    public Room(long id, int number, Category category, int guests, String description, double price) {
-        setId(id);
+    public Room(int number, Category category, int guests, String description, double price) {
         this.number = number;
         this.category = category;
         this.guests = guests;
@@ -36,30 +31,40 @@ public class Room extends BaseEntity {
     }
 
     public boolean isEmpty(LocalDate start, LocalDate end) {
-        LocalDate date = start;
-
-        while (!date.isAfter((end))) {
-            if (statuses.keySet().contains(date)) {
+        for (Schedule t : schedules) {
+            if (!start.isBefore(t.getArrival()) && !start.isAfter(t.getDeparture())
+                    || !end.isBefore(t.getArrival()) && !end.isAfter(t.getDeparture()) ) {
+                System.out.println("found occupied room: " + start + " - " + end);
+                System.out.println("Schedule: " + t.getArrival() + " - " + t.getDeparture());
                 return false;
             }
-            date = date.plusDays(1);
         }
         return true;
     }
 
-    boolean isEmpty(LocalDate date) {
-        return !statuses.keySet().contains(date);
+    public List<Schedule> getSchedules() {
+        return schedules;
     }
 
-/*    @Override
-    public long getId() {
-        return id;
+    public void setSchedules(List<Schedule> schedules) {
+        for ( Schedule sch : schedules) {
+            sch.setRoom(this);
+            this.schedules.add(sch);
+        }
     }
 
-    @Override
-    public void setId(long id) {
-        this.id = id;
-    }*/
+    public void addSchedule(Schedule schedule) {
+        schedule.setRoom(this);
+        this.schedules.add(schedule);
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
 
     public Category getCategory() {
         return category;
@@ -85,43 +90,6 @@ public class Room extends BaseEntity {
         this.description = description;
     }
 
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    Map<LocalDate, RoomStatus> getStatuses() {
-        return statuses;
-    }
-
-    public void setStatuses(Map<LocalDate, RoomStatus> statuses) {
-        this.statuses = statuses;
-    }
-
-    public boolean setStatus(LocalDate date, RoomStatus status) {
-        RoomStatus oldStatus = statuses.get(date);
-        if (oldStatus == null) {
-            if (status.equals(RoomStatus.EMPTY)) {
-                return false;
-            } else {
-                statuses.put(date, status);
-                return true;
-            }
-        }
-        if (status.equals(RoomStatus.EMPTY)) {
-            statuses.remove(date);
-            return true;
-        } else {
-            statuses.put(date, status);
-            return true;
-        }
-    }
-
-
-
     public double getPrice() {
         return price;
     }
@@ -129,7 +97,6 @@ public class Room extends BaseEntity {
     public void setPrice(double price) {
         this.price = price;
     }
-
 
     public byte[] getRoomView() {
         return roomView;
@@ -143,12 +110,14 @@ public class Room extends BaseEntity {
     public String toString() {
         return "Room{" +
                 "id=" + getId() +
-                ", number=" + number +
+                "number=" + number +
                 ", category=" + category +
                 ", guests=" + guests +
                 ", description='" + description + '\'' +
                 ", price=" + price +
-                ", statuses=" + statuses +
+                ", roomView=" + Arrays.toString(roomView) +
+                ", schedules=" + schedules +
                 '}';
     }
+
 }

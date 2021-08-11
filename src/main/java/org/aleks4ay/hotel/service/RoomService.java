@@ -75,13 +75,13 @@ public class RoomService {
     public List<Room> getAllWithFilters(List<String> filters) {
         Connection conn = ConnectionPool.getConnection();
         RoomDao roomDao = new RoomDao(conn);
-        String filterAsString = filterFromListToString(filters);
+        String filterAsString = UtilService.filterFromListToString(filters);
         List<Room> rooms = roomDao.findAllWithFilter(filterAsString);
         ConnectionPool.closeConnection(conn);
         return rooms;
     }
 
-    public String filterFromListToString(List<String> filters) {
+/*    public String filterFromListToString(List<String> filters) {
         StringBuilder sb = new StringBuilder();
         for (String f: filters) {
             if (sb.length() != 0) {
@@ -90,10 +90,11 @@ public class RoomService {
             sb.append(f);
         }
         return sb.append(";").toString();
-    }
+    }*/
 
     public List<Room> doPagination(int positionOnPage, int page, List<Room> entities) {
-        int startPosition = positionOnPage * (page - 1);
+        return new UtilService<Room>().doPagination(positionOnPage, page, entities);
+/*        int startPosition = positionOnPage * (page - 1);
         List<Room> roomsAfterFilter = new ArrayList<>();
 
         if (entities.size() > startPosition) {
@@ -105,6 +106,6 @@ public class RoomService {
             }
             return roomsAfterFilter;
         }
-        return new ArrayList<>();
+        return new ArrayList<>();*/
     }
 }

@@ -1,47 +1,29 @@
 package org.aleks4ay.hotel.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 public class Order extends BaseEntity {
 
-//    private long id;
-    private Room room;
     private LocalDateTime registered = LocalDateTime.now();
-    private LocalDate arrival;
-    private LocalDate departure;
-    private int period;
     private double correctPrice;
-//    private double cost;
-    private OrderStatus orderStatus;
+    private Status status;
 
+    private Room room;
     private User user;
+    private Schedule schedule;
 
     public Order() {
     }
 
-    public Order(long id, Room room, LocalDateTime registered, LocalDate arrival, LocalDate departure) {
-        this.orderStatus = OrderStatus.NEW;
-        setId(id);//id = id;
+    public Order(long id) {
+        super(id);
+    }
+
+    public Order(Room room, LocalDateTime registered) {
         this.room = room;
         this.correctPrice = room.getPrice();
         this.registered = registered;
-        this.arrival = arrival;
-        this.departure = departure;
-        setPeriod();
     }
-
-
-/*    @Override
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(long id) {
-        this.id = id;
-    }*/
 
     public User getUser() {
         return user;
@@ -60,6 +42,14 @@ public class Order extends BaseEntity {
         this.correctPrice = room.getPrice();
     }
 
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
     public LocalDateTime getRegistered() {
         return registered;
     }
@@ -68,39 +58,12 @@ public class Order extends BaseEntity {
         this.registered = registered;
     }
 
-    public LocalDate getArrival() {
-        return arrival;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setArrival(LocalDate arrival) {
-        this.arrival = arrival;
-    }
-
-    public LocalDate getDeparture() {
-        return departure;
-    }
-
-    public void setDeparture(LocalDate departure) {
-        this.departure = departure;
-    }
-
-    public int getPeriod() {
-        if (this.period == 0) {
-            return (int) getArrival().until(getDeparture(), ChronoUnit.DAYS);
-        }
-        return period;
-    }
-
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
-    }
-
-    public void setPeriod() {
-        this.period = (int) getArrival().until(getDeparture(), ChronoUnit.DAYS);
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public double getCorrectPrice() {
@@ -112,21 +75,27 @@ public class Order extends BaseEntity {
     }
 
     public double getCost() {
-        return getCorrectPrice() * getPeriod();
+        return getCorrectPrice() * getSchedule().getPeriod();
     }
 
     @Override
     public String toString() {
         return "Order{" +
                 "id=" + getId() +
-                ", room=" + room +
-                ", orderStatus=" + orderStatus +
                 ", registered=" + registered +
-                ", arrival=" + arrival +
-                ", departure=" + departure +
                 ", correctPrice=" + correctPrice +
-                ", cost=" + getCost() +
-//                ", user=" + user +
+                ", status=" + status +
+                ", room=" + room.getNumber() +
+                ", user=" + user.getLogin() +
                 '}';
+    }
+
+    public enum Status {
+        NEW,
+        CONFIRMED,
+//        MANAGED,
+        PAID,
+        CANCELED,
+        COMPLETED
     }
 }

@@ -6,7 +6,6 @@ import org.aleks4ay.hotel.service.UserService;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.Map;
 
 public class ProposalMapper implements ObjectMapper<Proposal> {
     @Override
@@ -23,12 +22,6 @@ public class ProposalMapper implements ObjectMapper<Proposal> {
         user.setId(rs.getLong("user_id"));
         proposal.setUser(user);
         return proposal;
-    }
-
-    @Override
-    public Proposal makeUnique(Map<Long, Proposal> cache, Proposal proposal) {
-        cache.putIfAbsent(proposal.getId(), proposal);
-        return cache.get(proposal.getId());
     }
 
     @Override

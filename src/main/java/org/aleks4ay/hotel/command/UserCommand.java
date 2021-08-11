@@ -5,6 +5,7 @@ import org.aleks4ay.hotel.service.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,10 @@ class UserCommand implements Command {
         //user?action=newProposal
         if (action.equalsIgnoreCase("newProposal")) {
             return doNewProposal(request, user);
+        }
+        //user?action=newOrder&id=22
+        if (action.equalsIgnoreCase("newOrder")) {
+            return doNewOrder(request, user);
         }
         //user?action=filter
         if (action.equalsIgnoreCase("filter")) {
@@ -168,6 +173,20 @@ class UserCommand implements Command {
     }
 
 
+    private String doNewOrder(HttpServletRequest request, User user) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String dateStartString = request.getParameter("date_arrival");
+        String dateEndString = request.getParameter("date_departure");
+        LocalDate dateStart = LocalDate.parse(dateStartString, formatter);
+        LocalDate dateEnd = LocalDate.parse(dateEndString, formatter);
+
+        long room_id = Long.parseLong(request.getParameter("id"));
+        new OrderService().create(room_id, dateStart, dateEnd, user);
+        return "redirect:/user?action=account&ap=order";
+    }
+
+
     private String doBooking(HttpServletRequest request) {
         System.out.println("Booking");
         User user = (User) request.getSession().getAttribute("user");
@@ -198,8 +217,8 @@ class UserCommand implements Command {
             dateEnd = dateStart.plusDays(1);
         }
 
-        order.setArrival(dateStart);
-        order.setDeparture(dateEnd);
+//        order.setArrival(dateStart);
+//        order.setDeparture(dateEnd);
         request.setAttribute("order", order);
 
         return "WEB-INF/jsp/userPage.jsp";
