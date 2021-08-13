@@ -7,47 +7,39 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.Optional;
 
 public class ProposalDao extends AbstractDao<Long, Proposal>{
     private static final Logger log = LogManager.getLogger(ProposalDao.class);
-    private static final String SQL_GET_ONE = "SELECT * FROM proposal WHERE id = ?;";
-    private static final String SQL_GET_ALL = "SELECT * FROM proposal;";
-    private static final String SQL_DELETE = "DELETE FROM proposal WHERE id = ?;";
-    private static final String SQL_CREATE = "INSERT INTO proposal (registered, arrival, departure, guests," +
-            " category, status, user_id) VALUES (?, ?, ?, ?, ?, ?, ?); ";
-    private static final String SQL_UPDATE_STATUS = "UPDATE proposal SET status=? WHERE id=?;";
 
     public ProposalDao(Connection connection) {
         super(connection, new ProposalMapper());
     }
 
     @Override
-    public Proposal getById(Long id) {
-        return getAbstractById(SQL_GET_ONE, id);
+    public Optional<Proposal> findById(Long id) {
+        return getAbstractById("SELECT * FROM proposal WHERE id = ?;", id);
     }
 
     @Override
     public List<Proposal> findAll() {
-        return findAbstractAll(SQL_GET_ALL);
+        return findAbstractAll("SELECT * FROM proposal;");
     }
 
-    @Override
+/*    @Override
     public boolean delete(Long id) {
-        return deleteAbstract(SQL_DELETE, id);
-    }
+        return deleteAbstract("DELETE FROM proposal WHERE id = ?;", id);
+    }*/
 
     @Override
-    public Proposal update(Proposal proposal) {
-        return null;
-    }
-
-    @Override
-    public Proposal create(Proposal proposal) {
-        return createAbstract(proposal, SQL_CREATE);
+    public Optional<Proposal> create(Proposal proposal) {
+        String sql = "INSERT INTO proposal (registered, arrival, departure, guests," +
+                " category, status, user_id) VALUES (?, ?, ?, ?, ?, ?, ?); ";
+        return createAbstract(proposal, sql);
     }
 
     public boolean updateStatus(String s, long id) {
-        return updateStringAbstract(s, id, SQL_UPDATE_STATUS);
+        return updateStringAbstract(s, id, "UPDATE proposal SET status=? WHERE id=?;");
     }
 
 }

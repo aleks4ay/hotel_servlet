@@ -4,14 +4,14 @@
        style="background-color: rgba(96, 162, 218, 0.2);">
 
     <h3><fmt:message key="filters"/></h3>
-    <div class="mb-3">
+    <%--<div class="mb-3">
         <label for="date3" class="form-label"> <fmt:message key="arrival"/>: </label>
         <input type="date" class="form-control" id="date3"  name="filter_arrival" value="${arrival}"/>
     </div>
     <div class="mb-3">
         <label for="date4" class="form-label"> <fmt:message key="departure"/>: </label>
         <input type="date" class="form-control" id="date4" name="filter_departure" value="${departure}"/>
-    </div>
+    </div>--%>
     <div class="mb-3">
         <label for="field1" class="form-label"> <fmt:message key="guests"/> </label>
 

@@ -67,7 +67,7 @@ public class Schedule extends BaseEntity {
     public String toString() {
         return "Schedule{" +
                 "id=" + getId() +
-                "arrival=" + arrival +
+                ", arrival=" + arrival +
                 ", departure=" + departure +
                 ", status=" + status +
                 ", room=" + room.getNumber() +

@@ -26,8 +26,8 @@
                 <td><c:out value="${order.user.surname}" /></td>
                 <td><c:out value="${order.room.number}" /></td>
                 <td><c:out value="${order.room.category.title}" /></td>
-                <td><c:out value="${order.arrival}" /></td>
-                <td><c:out value="${order.departure}" /></td>
+                <td><c:out value="${order.schedule.arrival}" /></td>
+                <td><c:out value="${order.schedule.departure}" /></td>
                 <td><c:out value="${order.room.guests}" /></td>
                 <td><c:out value="${order.room.description}" /></td>
                 <td><c:out value="${order.registered}" /></td>

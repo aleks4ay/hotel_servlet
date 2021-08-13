@@ -4,27 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum Category {
-    STANDARD("STANDARD"),
-    SUPERIOR("SUPERIOR"),
-    FAMILY_ROOM("FAMILY_ROOM"),
-    SUITE("SUITE"),
-    DELUXE("DELUXE");
-
-    private String title;
-
-    Category(String title) {
-        this.title = title;
-    }
+    STANDARD,
+    SUPERIOR,
+    FAMILY_ROOM,
+    SUITE,
+    DELUXE;
 
     public String getTitle() {
-        return title;
-    }
-
-    @Override
-    public String toString() {
-        return "Category['" +
-                title + '\'' +
-                ']';
+        return this.toString();
     }
 
     public List<Category> getCategoryValues() {

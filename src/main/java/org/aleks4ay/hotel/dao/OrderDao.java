@@ -2,16 +2,15 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.dao.mapper.OrderMapper;
 import org.aleks4ay.hotel.model.Order;
-import org.aleks4ay.hotel.model.Room;
-import org.aleks4ay.hotel.model.Schedule;
-import org.aleks4ay.hotel.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class OrderDao extends AbstractDao<Long, Order>{
     private static final Logger log = LogManager.getLogger(OrderDao.class);
@@ -20,25 +19,8 @@ public class OrderDao extends AbstractDao<Long, Order>{
         super(connection, new OrderMapper());
     }
 
-    public static void main(String[] args) {
-        OrderDao dao;
-        Connection connection;
-        connection = ConnectionPool.getConnection();
-        dao = new OrderDao(connection);
-
-        Room room = new RoomDao(connection).getById(21L);
-        Order tempOrder = new Order(room, LocalDateTime.now());
-        User user = new UserDao(connection).getByLogin("rt");
-//        tempOrder.setUser(user);
-        user.addOrder(tempOrder);
-        Schedule schedule = new Schedule(LocalDate.of(2021, 8, 17), LocalDate.of(2021, 8, 20), Schedule.RoomStatus.BOOKED, room);
-        tempOrder.setSchedule(schedule);
-        Order actual = dao.create(tempOrder);
-        System.out.println(actual);
-    }
-
     @Override
-    public Order getById(Long id) { // TODO: 12.08.2021 lizi
+    public Optional<Order> findById(Long id) { // TODO: 12.08.2021 lizi
         return getAbstractById("SELECT * FROM orders WHERE id = ?;", id);
     }
 
@@ -48,90 +30,29 @@ public class OrderDao extends AbstractDao<Long, Order>{
     }
 
     @Override
-    public boolean delete(Long id) {
-        return deleteAbstract("DELETE FROM orders WHERE id = ?;", id);
-    }
+    public Optional<Order> create(Order order) {
+        Optional<Order> newOrder = Optional.empty();
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO orders (registered, correct_price," +
+                        " status, user_id, room_id, timetable_id) VALUES (?, ?, ?, ?, ?, ?); "
+                        , new String[]{"id"}) ) {
 
-    @Override
-    public Order update(Order room) {
-        return null;
-    }
+            objectMapper.insertToResultSet(statement, order);
 
-    @Override
-    public Order create(Order order) {
-        boolean result = false;
-        try {
-            connection.setAutoCommit(false);
-            PreparedStatement ps = connection.prepareStatement("SELECT count(*) FROM timetable WHERE room_id=? AND " +
-                    "(arrival BETWEEN ? AND ? OR departure BETWEEN ? AND ?);");
-            ps.setLong(1, order.getRoom().getId());
-            ps.setDate(2, Date.valueOf(order.getSchedule().getArrival()));
-            ps.setDate(4, Date.valueOf(order.getSchedule().getArrival()));
-
-            ps.setDate(3, Date.valueOf(order.getSchedule().getDeparture()));
-            ps.setDate(5, Date.valueOf(order.getSchedule().getDeparture()));
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                if (rs.getInt(1) > 0) {
-                    result = false;
-                    log.info("Selected room #{} already occupied.", order.getRoom().getNumber());
-                } else {
-                    result = true;
-                }
-            }
-
-            if (result) {
-                PreparedStatement ps2 = connection.prepareStatement(
-                        "INSERT INTO timetable (arrival, departure, status, room_id) VALUES (?, ?, ?, ?);"
-                        , new String[]{"id"});
-                ps2.setDate(1, Date.valueOf(order.getSchedule().getArrival()));
-                ps2.setDate(2, Date.valueOf(order.getSchedule().getDeparture()));
-                ps2.setString(3, order.getSchedule().getStatus().toString());
-                ps2.setLong(4, order.getRoom().getId());
-                ps2.executeUpdate();
-                ResultSet rs2 = ps2.getGeneratedKeys();
-                if (rs2.next()) {
-                    long scheduleId = rs2.getLong(1);
-                    order.getSchedule().setId(scheduleId);
-                    result = true;
-                } else {
-                    log.info("Can't insert new Schedule to DB. {}", order.getSchedule());
-                    result = false;
-                }
-            }
-
-            if (result) {
-                PreparedStatement ps3 = connection.prepareStatement("INSERT INTO orders (registered, correct_price," +
-                                " status, user_id, room_id, timetable_id) VALUES (?, ?, ?, ?, ?, ?); "
-                        , new String[]{"id"});
-                objectMapper.insertToResultSet(ps3, order);
-
-                ps3.executeUpdate();
-                ResultSet rs3 = ps3.getGeneratedKeys();
-                if (rs3.next()) {
-                    order.setId(rs3.getLong(1));
-                    result = true;
-                } else {
-                    log.info("Can't insert new Order to DB. {}", order);
-                    result = false;
-                }
-            }
-
-            if (result) {
-                connection.commit();
+            statement.executeUpdate();
+            ResultSet rs3 = statement.getGeneratedKeys();
+            if (rs3.next()) {
+                order.setId(rs3.getLong(1));
+                newOrder = Optional.of(order);
             } else {
-                connection.rollback();
+                log.info("Can't insert new Order to DB. {}", order);
             }
-            connection.setAutoCommit(true);
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn("Exception during create order '{}'. {}", order, e);
         }
-        return result ? order : null;
+        return newOrder;
     }
 
     public boolean updateStatus(String s, long id) {
         return updateStringAbstract(s, id, "UPDATE orders SET status=? WHERE id=?;");
     }
-
 }

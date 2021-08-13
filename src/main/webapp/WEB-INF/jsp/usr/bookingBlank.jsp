@@ -7,11 +7,11 @@
         <div>
             <div class="mb-3">
                 <label for="date3" class="form-label"> <fmt:message key="arrival"/>: </label>
-                <input type="date" class="form-control" id="date3"  name="date_arrival" value="${order.arrival}"/>
+                <input type="date" class="form-control" id="date3"  name="date_arrival" value="${arrival}"/>
             </div>
             <div class="mb-3">
                 <label for="date4" class="form-label"> <fmt:message key="departure"/>: </label>
-                <input type="date" class="form-control" id="date4" name="date_departure"  value="${order.departure}"/>
+                <input type="date" class="form-control" id="date4" name="date_departure"  value="${departure}"/>
             </div>
             <p> <fmt:message key="name"/>: ${order.user.name} </p>
             <input type="hidden" value="${order.user.name}">

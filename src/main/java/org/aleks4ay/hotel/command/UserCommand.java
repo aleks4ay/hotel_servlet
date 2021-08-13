@@ -4,6 +4,7 @@ import org.aleks4ay.hotel.model.*;
 import org.aleks4ay.hotel.service.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class UserCommand implements Command {
-    private static final int POSITION_ON_PAGE = 10;
+    private static final int POSITION_ON_PAGE = 5;
 
     @Override
     public String execute(HttpServletRequest request) {
@@ -20,32 +21,24 @@ class UserCommand implements Command {
         User user = (User) request.getSession().getAttribute("user");
 
         String action = request.getParameter("action");
+        System.out.println("ACTION = " + action);
         request.setAttribute("action", action);
         request.setAttribute("itemOnPage", POSITION_ON_PAGE);
         request.setAttribute("categories", Category.values());
 
         //user?action=account when 'NotUser'
         if(     (userType.equalsIgnoreCase("guest") || user == null)
-                && !action.equalsIgnoreCase("room")
+                && !action.contains("room")
                 && !action.equalsIgnoreCase("filter") ) {
             return "/WEB-INF/index.jsp";
         }
-        //user?action=
-        if (action == null) {
-            action = "room"; // TODO: 10.08.2021 delete?
-        }
         //user?action=room
-        if (action.equalsIgnoreCase("room")) {
-            RoomService roomService = new RoomService();
-            List<Room> roomList;
-            if (request.getAttribute("filters") != null) {
-                roomList = roomService.getAllWithFilters((List<String>) request.getAttribute("filters"));
-            } else {
-                roomList = roomService.getAll();
-            }
-            roomList = roomService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), roomList);
-
-            request.setAttribute("rooms", roomList);
+        if (action.equalsIgnoreCase("room") || action.contains("room")) {
+            return getRoom(request);
+        }
+        //user?action=setDate
+        if (action.equalsIgnoreCase("setDate")) {
+            return setDate(request);
         }
         //user?action=booking
         if (action.equalsIgnoreCase("booking")) {
@@ -69,22 +62,15 @@ class UserCommand implements Command {
         }
         //user?action=account&ap=***
         if (action.equalsIgnoreCase("account")) {
-//            action = "order";
-//            request.setAttribute("action", action);
             return doAccount(request, user);
         }
         return "WEB-INF/jsp/userPage.jsp";
     }
 
+    private String setDate(HttpServletRequest request) {
+        return "redirect:/user?action=room";
+    }
 
-/*
-    private String getGuestPage(HttpServletRequest request) {
-
-        List<Room> roomList = new RoomService().getAll(POSITION_ON_PAGE, Integer.parseInt(page));
-        request.setAttribute("rooms", roomList);
-        request.setAttribute("action", "room");
-        return "/WEB-INF/jsp/userPage.jsp";
-    }*/
 
     private String doChangeBill(HttpServletRequest request, User user) {
         int number = Integer.parseInt(request.getParameter("addBill"));
@@ -94,37 +80,48 @@ class UserCommand implements Command {
     }
 
 
+    private String getRoom(HttpServletRequest request) {
+        RoomService roomService = new RoomService();
+        List<Room> roomList;
+        List<String> filters = new ArrayList<>();
+
+        Object categoryObj = request.getAttribute("category");
+        Object guestsObj = request.getAttribute("guests");
+
+        if (categoryObj != null) {
+            filters.add(" category = '" + request.getAttribute("category") + "'");
+        }
+        if (guestsObj != null) {
+            filters.add(" guests = " + request.getAttribute("guests"));
+        }
+
+        if (filters.size() > 0) {
+            filters.forEach(System.out::println);
+            roomList = roomService.getAllWithFilters(filters);
+        } else {
+            roomList = roomService.getAll();
+        }
+        roomList = roomService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), roomList);
+
+        request.setAttribute("rooms", roomList);
+        return "WEB-INF/jsp/userPage.jsp";
+    }
+
+
     private String doFiltering(HttpServletRequest request) {
         List<String> filters = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateStartString = request.getParameter("filter_arrival");
-        String dateEndString = request.getParameter("filter_departure");
-
-/*        System.out.println("dateStartString from filter = " + dateStartString);
-        System.out.println("dateEndString from filter = " + dateEndString);*/
-        LocalDate dateStart = null;
-        LocalDate dateEnd = null;
-
-        if (!dateStartString.isEmpty()) {
-            dateStart = LocalDate.parse(dateStartString, formatter);
-        }
-        if (!dateEndString.isEmpty()) {
-            dateEnd = LocalDate.parse(dateEndString, formatter);
-        }
 
         String categoryString = request.getParameter("filter_category");
         String guestsString = request.getParameter("filter_guests");
 
         request.setAttribute("category", request.getParameter("filter_category"));
         request.setAttribute("guests", Integer.parseInt(guestsString));
-        request.setAttribute("arrival", dateStart);
-        request.setAttribute("departure", dateEnd);
 
         filters.add(" guests = " + guestsString);
         filters.add(" category = '" + categoryString + "'");
         request.setAttribute("filters", filters);
 
-        return "/user?action=room";
+        return "redirect:/user?action=room";
     }
 
 
@@ -188,39 +185,45 @@ class UserCommand implements Command {
 
 
     private String doBooking(HttpServletRequest request) {
-        System.out.println("Booking");
+//        System.out.println("Booking");
         User user = (User) request.getSession().getAttribute("user");
-        request.setAttribute("action", "booking");
+        HttpSession session = request.getSession();
+//        request.setAttribute("action", "booking");
         long id = Long.parseLong(request.getParameter("id"));
         Order order = new Order();
         order.setUser(user);
-        order.setRoom(new RoomService().getById(id));
+        order.setRoom(new RoomService().getById(id).get());
+
+//        System.out.println("arr=" + request.getParameter("arrival"));
+//        System.out.println("dep=" + request.getParameter("departure"));
+//        System.out.println("arr2=" + request.getParameter("date_arrival"));
+//        System.out.println("dep2=" + request.getParameter("date_departure"));
 
         LocalDate dateStart = null;
         LocalDate dateEnd = null;
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateStartString = request.getParameter("date_arrival");
-        String dateEndString = request.getParameter("date_departure");
-        if (dateStartString != null) {
-            dateStart = LocalDate.parse(dateStartString, formatter);
-            if (dateEndString != null) {
-                dateEnd = LocalDate.parse(dateEndString, formatter);
-            } else if (dateEndString == null) {
+        if (session.getAttribute("arrival") != null) {
+            dateStart = (LocalDate) session.getAttribute("arrival");
+        }
+        if (session.getAttribute("departure") != null) {
+            dateEnd = (LocalDate) session.getAttribute("departure");
+        }
+
+        if (dateStart == null) {
+            if (dateEnd == null) {
+                dateStart = LocalDate.now();
                 dateEnd = dateStart.plusDays(1);
+            } else {
+                dateStart = dateEnd.minusDays(1);
             }
-        } else if (dateEndString != null) {
-            dateEnd = LocalDate.parse(dateEndString, formatter);
-            dateStart = dateEnd.minusDays(1);
-        } else {
-            dateStart = LocalDate.now();
+        } else if (dateEnd == null) {
             dateEnd = dateStart.plusDays(1);
         }
 
-//        order.setArrival(dateStart);
-//        order.setDeparture(dateEnd);
         request.setAttribute("order", order);
 
+        request.setAttribute("arrival", dateStart);
+        request.setAttribute("departure", dateEnd);
         return "WEB-INF/jsp/userPage.jsp";
     }
 

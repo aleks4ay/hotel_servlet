@@ -1,5 +1,6 @@
 package org.aleks4ay.hotel.dao.mapper;
 
+import org.aleks4ay.hotel.model.Role;
 import org.aleks4ay.hotel.model.User;
 
 import java.sql.PreparedStatement;
@@ -19,6 +20,7 @@ public class UserMapper implements ObjectMapper<User> {
         user.setRegistered(rs.getTimestamp("registered").toLocalDateTime());
         user.setActive(rs.getBoolean("enabled"));
         user.setBill(rs.getDouble("bill"));
+        user.setRole(Role.valueOf(rs.getString("role")));
         return user;
     }
 

@@ -1,5 +1,8 @@
 <div>
     <h2> <fmt:message key="adm_act_2"/>  </h2>
+
+    <%@include file="../head/dateField.jsp"%>
+
     <table class="table">
         <thead class="thead-light">
         <tr>

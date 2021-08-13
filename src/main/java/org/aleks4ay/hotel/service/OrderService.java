@@ -2,39 +2,41 @@ package org.aleks4ay.hotel.service;
 
 import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.dao.OrderDao;
-import org.aleks4ay.hotel.exception.NotEmptyRoomException;
 import org.aleks4ay.hotel.model.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class OrderService {
+    private static final Logger log = LogManager.getLogger(OrderService.class);
+
     private UserService userService = new UserService();
     private RoomService roomService = new RoomService();
+    private ScheduleService scheduleService = new ScheduleService();
 
     public static void main(String[] args) {
-        int y=1600;
-        for (long i = 1000001; i<1000001+y; i++) {
-            OrderService service = new OrderService();
-            final Order order = service.getById(i);
-            if (order != null) {
-                System.out.print(order);
-            }
-        }
+        OrderService orderService = new OrderService();
+        final Optional<User> user1 = orderService.userService.getByLogin("12");
+        orderService.create(20L, LocalDate.of(2021, 8, 12), LocalDate.of(2021, 8, 16), user1.get());
+
     }
 
-    public Order getById(Long id) {
+    public Optional<Order> getById(Long id) {
         Connection conn = ConnectionPool.getConnection();
         OrderDao orderDao = new OrderDao(conn);
-        Order order = orderDao.getById(id);
-        if (order != null) {
-            order.setUser(userService.getById(order.getUser().getId()));
-            order.setRoom(roomService.getById(order.getRoom().getId()));
+        Optional<Order> optional = orderDao.findById(id);
+        if (optional.isPresent()) {
+            Order order = optional.get();
+            order.setUser(userService.getById(order.getUser().getId()).orElse(null));
+            order.setRoom(roomService.getById(order.getRoom().getId()).orElse(null));
         }
         ConnectionPool.closeConnection(conn);
-        return order;
+        return optional;
     }
 
     public List<Order> getAll() {
@@ -79,28 +81,51 @@ public class OrderService {
         return orders;
     }
 
-    public boolean delete(Long id) {
+/*    public boolean delete(Long id) {
         Connection conn = ConnectionPool.getConnection();
         OrderDao orderDao = new OrderDao(conn);
         boolean result = orderDao.delete(id);
         ConnectionPool.closeConnection(conn);
         return result;
-    }
+    }*/
 
-    public Order create(long room_id, LocalDate dateStart, LocalDate dateEnd, User user) {
-        Connection conn = ConnectionPool.getConnection();
-        OrderDao orderDao = new OrderDao(conn);
+    public Optional<Order> create(long room_id, LocalDate dateStart, LocalDate dateEnd, User user) {
+        Optional<Order> orderOptional = Optional.empty();
 
-        Room room = new Room(room_id);
-        Order order = new Order(room, LocalDateTime.now());
-        order.setUser(user);
+        Connection connection = ConnectionPool.getConnection();
+        OrderDao orderDao = new OrderDao(connection);
 
-        if (room.isEmpty(dateStart, dateEnd) ) {
-            order = orderDao.create(order);
-            ConnectionPool.closeConnection(conn);
-            return order;
+        Order builtOrder = buildOrder(room_id, dateStart, dateEnd, user);
+
+        try {
+            connection.setAutoCommit(false);
+
+            boolean result = scheduleService.checkRoom(builtOrder.getSchedule());
+
+            if (result) {
+                result = scheduleService.createSchedule(builtOrder.getSchedule());
+            }
+
+            if (result) {
+                orderOptional = orderDao.create(builtOrder);
+                result = orderOptional.isPresent();
+            }
+
+            if (result) {
+                connection.commit();
+                Order o = orderOptional.get();
+                log.info("Was create new Order from {} to {} for {}. Room: {}."
+                        ,o.getSchedule().getArrival(), o.getSchedule().getDeparture()
+                        ,o.getUser().getName(), o.getRoom().getNumber());
+            } else {
+                connection.rollback();
+            }
+            connection.setAutoCommit(true);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        throw new NotEmptyRoomException("This room is occupied that period.");
+        return orderOptional;
     }
 
     public List<Order> doPagination(int positionOnPage, int page, List<Order> entities) {
@@ -113,5 +138,27 @@ public class OrderService {
         boolean result = orderDao.updateStatus(status.toString(), id);
         ConnectionPool.closeConnection(conn);
         return result;
+    }
+
+    private Order buildOrder(long room_id, LocalDate dateStart, LocalDate dateEnd, User user) {
+
+        Room room = roomService.getById(room_id).orElse(null);
+
+        Order tempOrder = new Order(room, LocalDateTime.now());
+        user.addOrder(tempOrder);
+        Order.Status orderStatus = Order.Status.CONFIRMED;
+        Schedule.RoomStatus roomStatus = Schedule.RoomStatus.BOOKED;
+        if (user.isManager()) {
+            orderStatus = Order.Status.NEW;
+            roomStatus = Schedule.RoomStatus.RESERVED;
+        }
+        Schedule schedule = new Schedule(dateStart, dateEnd, roomStatus, room);
+
+        tempOrder.setRoom(room);
+        tempOrder.setSchedule(schedule);
+        tempOrder.setUser(user);
+        user.addOrder(tempOrder);
+        tempOrder.setStatus(orderStatus);
+        return tempOrder;
     }
 }

@@ -27,3 +27,6 @@ public class OrderMapper implements ObjectMapper<Order> {
         statement.setLong(6, order.getSchedule().getId());
     }
 }
+/*
+* "INSERT INTO orders (registered, correct_price, status, user_id, room_id, timetable_id
+* */

@@ -5,18 +5,16 @@ import org.aleks4ay.hotel.model.Schedule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleDao {
+    private static final Logger log = LogManager.getLogger(ScheduleDao.class);
+
     private Connection connection = null;
     private ScheduleMapper scheduleMapper;
 
-    private static final Logger log = LogManager.getLogger(ScheduleDao.class);
     private static final String SQL_CREATE = "INSERT INTO timetable (arrival, departure, status, room_id) VALUES (?, ?, ?, ?);";
 
     public ScheduleDao(Connection connection) {
@@ -32,10 +30,11 @@ public class ScheduleDao {
 
             result = prepStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn("Exception during delete schedule '{}'. {}", schedule, e);
         }
         return result == 1;
     }
+
 
     public boolean updateStatus(Schedule schedule) {
         try (PreparedStatement prepStatement = connection.prepareStatement("UPDATE timetable SET status=? WHERE id=?;")) {
@@ -44,40 +43,65 @@ public class ScheduleDao {
             return prepStatement.executeUpdate() == 1;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn("Exception during update Status for schedule '{}'. {}", schedule, e);
+        }
+        return false;
+    }
+
+    public boolean checkRoom(Schedule schedule) {
+        try (PreparedStatement ps = connection.prepareStatement("SELECT count(*) FROM timetable WHERE room_id=? AND " +
+                "(arrival BETWEEN ? AND ? OR departure BETWEEN ? AND ?);")) {
+            ps.setLong(1, schedule.getRoom().getId());
+            ps.setDate(2, Date.valueOf(schedule.getArrival()));
+            ps.setDate(4, Date.valueOf(schedule.getArrival()));
+
+            ps.setDate(3, Date.valueOf(schedule.getDeparture()));
+            ps.setDate(5, Date.valueOf(schedule.getDeparture()));
+            ResultSet rs = ps.executeQuery();
+            return rs.next() && rs.getInt(1) == 0;
+        } catch (SQLException e) {
+            log.warn("Exception during check room schedule '{}'. {}", schedule, e);
+        }
+        return false;
+    }
+
+    public boolean createSchedule(Schedule schedule) {
+        try (PreparedStatement ps2 = connection.prepareStatement(
+                "INSERT INTO timetable (arrival, departure, status, room_id) VALUES (?, ?, ?, ?);"
+                , new String[]{"id"}) ) {
+            ps2.setDate(1, Date.valueOf(schedule.getArrival()));
+            ps2.setDate(2, Date.valueOf(schedule.getDeparture()));
+            ps2.setString(3, schedule.getStatus().toString());
+            ps2.setLong(4, schedule.getRoom().getId());
+            ps2.executeUpdate();
+            ResultSet rs2 = ps2.getGeneratedKeys();
+            if (rs2.next()) {
+                long scheduleId = rs2.getLong(1);
+                schedule.setId(scheduleId);
+                return true;
+            } else {
+                log.info("Can't insert new Schedule to DB. {}", schedule);
+            }
+        } catch (SQLException e) {
+            log.warn("Exception during create schedule '{}'. {}", schedule, e);
         }
         return false;
     }
 
 
-/*    public Schedule create(Schedule schedule) {
-        try (PreparedStatement prepStatement = connection.prepareStatement(SQL_CREATE, new String[]{"id"})) {
-            scheduleMapper.insertToResultSet(prepStatement, schedule);
-            prepStatement.executeUpdate();
-
-            ResultSet rs = prepStatement.getGeneratedKeys();
-            if (rs.next()) {
-                schedule.setId(rs.getLong(1));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return schedule;
-    }*/
-
     public List<Schedule> getScheduleByRoomId(long roomId) {
-        List<Schedule> vacancies = new ArrayList<>();
+        List<Schedule> schedules = new ArrayList<>();
         try (PreparedStatement st = connection.prepareStatement("SELECT * FROM timetable WHERE room_id=?")){
             st.setLong(1, roomId);
 
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                vacancies.add(scheduleMapper.extractFromResultSet(rs));
+                schedules.add(scheduleMapper.extractFromResultSet(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.warn("Exception during getting schedule for Room with id '{}'. {}", roomId, e);
         }
-        return vacancies;
+        return schedules;
     }
 }

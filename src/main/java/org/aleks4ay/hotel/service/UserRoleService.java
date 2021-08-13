@@ -9,7 +9,7 @@ import java.util.*;
 
 class UserRoleService {
 
-    public Role getById(Long id) {
+    /*public Role getById(Long id) {
         Connection conn = ConnectionPool.getConnection();
         UserRoleDao roleDao = new UserRoleDao(conn);
         Role role = roleDao.getById(id);
@@ -39,5 +39,5 @@ class UserRoleService {
         boolean result =  roleDao.createRole(id, role);
         ConnectionPool.closeConnection(conn);
         return result;
-    }
+    }*/
 }

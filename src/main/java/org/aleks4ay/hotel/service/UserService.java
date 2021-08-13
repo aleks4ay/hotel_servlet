@@ -5,65 +5,55 @@ import org.aleks4ay.hotel.exception.AlreadyException;
 import org.aleks4ay.hotel.model.Role;
 import org.aleks4ay.hotel.model.User;
 import org.aleks4ay.hotel.utils.Encrypt;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.util.*;
 
 public class UserService {
-    private UserRoleService roleService = new UserRoleService();
+
+    private static final Logger log = LogManager.getLogger(UserService.class);
 
     public static void main(String[] args) {
-//        new UserService().create(new User(null, "alex0", "Алексей", "Сергиенко", "1313"));
-        System.out.println(new UserService().getByLogin("adm"));
+        new UserService().create("alex2", "Алексей", "Сергиенко", "1313");
+        System.out.println(new UserService().getByLogin("alex"));
+        System.out.println(new UserService().getByLogin("alex2"));
     }
 
-    public User getById(Long id) {
+    public Optional<User> getById(Long id) {
         Connection conn = ConnectionPool.getConnection();
         UserDao userDao = new UserDao(conn);
-        User user = userDao.getById(id);
-        user.setRole(roleService.getById(id));
+        Optional<User> userOptional = userDao.findById(id);
         ConnectionPool.closeConnection(conn);
-        return user;
+        return userOptional;
     }
 
-    public User getByLogin(String login) {
+    public Optional<User> getByLogin(String login) {
         Connection conn = ConnectionPool.getConnection();
         UserDao userDao = new UserDao(conn);
-        User user = userDao.getByLogin(login);
-        user.setRole(roleService.getById(user.getId()));
+        Optional<User> userOptional = userDao.getByLogin(login);
         ConnectionPool.closeConnection(conn);
-        return user;
+        return userOptional;
     }
 
     public List<User> getAll() {
         Connection conn = ConnectionPool.getConnection();
         UserDao userDao = new UserDao(conn);
         List<User> users = userDao.findAll();
-        Map<Long, Role> roleMap = roleService.getAllRoleAsMap();
-        for (User u : users) {
-            u.setRole(roleMap.get(u.getId()));
-        }
         ConnectionPool.closeConnection(conn);
         return users;
     }
 
-    public boolean delete(Long id) {
+    public boolean update(User user) {
         Connection conn = ConnectionPool.getConnection();
         UserDao userDao = new UserDao(conn);
-        boolean result = userDao.delete(id);
+        boolean result = userDao.update(user);
         ConnectionPool.closeConnection(conn);
         return result;
     }
 
-    public User update(User user) {
-        Connection conn = ConnectionPool.getConnection();
-        UserDao userDao = new UserDao(conn);
-        user = userDao.update(user);
-        ConnectionPool.closeConnection(conn);
-        return user;
-    }
-
-    public User create(String login, String firstName, String lastName, String pass) {
+    public Optional<User> create(String login, String firstName, String lastName, String pass) {
         Connection conn = ConnectionPool.getConnection();
         UserDao userDao = new UserDao(conn);
         if (checkLogin(login)) {
@@ -71,17 +61,17 @@ public class UserService {
         }
         String encryptPassword = Encrypt.hash(pass, "SHA-256");
         User user = new User(0L, login, firstName, lastName, encryptPassword);
-        user = userDao.create(user);
         user.setRole(Role.ROLE_USER);
-        roleService.create(user.getId(), user.getRole());
+        Optional<User> userOptional = userDao.create(user);
+        userDao.createRole(user);
         ConnectionPool.closeConnection(conn);
-        return user;
+        return userOptional;
     }
 
     public boolean checkLogin(String login) {
         Connection conn = ConnectionPool.getConnection();
         UserDao userDao = new UserDao(conn);
-        boolean result = userDao.getByLogin(login) != null;
+        boolean result = userDao.getByLogin(login).isPresent();
         ConnectionPool.closeConnection(conn);
         return result;
     }
@@ -89,15 +79,15 @@ public class UserService {
     public boolean checkPassword(String login, String pass) {
         Connection conn = ConnectionPool.getConnection();
         UserDao userDao = new UserDao(conn);
-        final User userFromDB = userDao.getByLogin(login);
-        if (userFromDB == null) {
+        final Optional<User> userFromDB = userDao.getByLogin(login);
+        if (userFromDB.isPresent()) {
+            String passFromDb = userFromDB.get().getPassword();
+            String encryptedPassword = Encrypt.hash(pass, "SHA-256");
             ConnectionPool.closeConnection(conn);
-            return false;
+            return passFromDb.equals(encryptedPassword);
         }
-        String passFromDb = userFromDB.getPassword();
-        String encryptedPassword = Encrypt.hash(pass, "SHA-256");
         ConnectionPool.closeConnection(conn);
-        return passFromDb.equals(encryptedPassword);
+        return false;
     }
 
     public List<User> doPagination(int positionOnPage, int page, List<User> entities) {

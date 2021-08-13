@@ -110,7 +110,7 @@ public class Room extends BaseEntity {
     public String toString() {
         return "Room{" +
                 "id=" + getId() +
-                "number=" + number +
+                ", number=" + number +
                 ", category=" + category +
                 ", guests=" + guests +
                 ", description='" + description + '\'' +

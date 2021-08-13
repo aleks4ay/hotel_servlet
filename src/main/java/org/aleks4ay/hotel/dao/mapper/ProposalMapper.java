@@ -34,11 +34,4 @@ public class ProposalMapper implements ObjectMapper<Proposal> {
         statement.setString(6, proposal.getStatus().toString());
         statement.setLong(7, proposal.getUser().getId());
     }
-
-    public static void main(String[] args) {
-        User user = new UserService().getByLogin("rt");
-        Proposal proposal = new Proposal(LocalDate.of(2021, 8, 8), LocalDate.of(2021, 8, 10), 3, Category.STANDARD, user);
-        System.out.println("proposal = " + proposal);
-        new ProposalService().create(proposal);
-    }
 }

@@ -6,34 +6,21 @@ import org.aleks4ay.hotel.model.Proposal;
 import org.aleks4ay.hotel.model.User;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProposalService {
     private UserService userService = new UserService();
 
-    public static void main(String[] args) {
-        int y=1600;
-        for (long i = 1000001; i<1000001+y; i++) {
-            ProposalService service = new ProposalService();
-            final Proposal order = service.getById(i);
-            if (order != null) {
-                System.out.print(order);
-            }
-        }
-    }
-
-    public Proposal getById(Long id) {
+    public Optional<Proposal> getById(Long id) {
         Connection conn = ConnectionPool.getConnection();
         ProposalDao proposalDao = new ProposalDao(conn);
-        Proposal proposal = proposalDao.getById(id);
-        if (proposal != null) {
-            proposal.setUser(userService.getById(proposal.getUser().getId()));
+        Optional<Proposal> proposalOptional = proposalDao.findById(id);
+        if (proposalOptional.isPresent()) {
+            Proposal proposal = proposalOptional.get();
+            proposal.setUser(userService.getById(proposal.getUser().getId()).orElse(null));
         }
         ConnectionPool.closeConnection(conn);
-        return proposal;
+        return proposalOptional;
     }
 
     public List<Proposal> getAll() {
@@ -68,21 +55,14 @@ public class ProposalService {
         return orders;
     }
 
-    public boolean delete(Long id) {
-        Connection conn = ConnectionPool.getConnection();
-        ProposalDao proposalDao = new ProposalDao(conn);
-        boolean result = proposalDao.delete(id);
-        ConnectionPool.closeConnection(conn);
-        return result;
-    }
 
-    public Proposal create(Proposal proposal) {
+    public Optional<Proposal> create(Proposal proposal) {
         Connection conn = ConnectionPool.getConnection();
         ProposalDao proposalDao = new ProposalDao(conn);
         proposal.setStatus(Proposal.Status.NEW);
-        proposal = proposalDao.create(proposal);
+        Optional<Proposal> proposalOptional = proposalDao.create(proposal);
         ConnectionPool.closeConnection(conn);
-        return proposal;
+        return proposalOptional;
     }
 /*
     public List<Proposal> getAll(int positionOnPage, int page) {

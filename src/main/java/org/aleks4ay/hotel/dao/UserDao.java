@@ -7,83 +7,96 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class UserDao extends AbstractDao<Long, User>{
     private static final Logger log = LogManager.getLogger(UserDao.class);
-
-    private static final String SQL_GET_ONE = "SELECT * FROM usr WHERE id = ?;";
-    private static final String SQL_GET_BY_LOGIN = "SELECT * FROM usr WHERE login = ?;";
-    private static final String SQL_GET_ALL = "SELECT * FROM usr;";
-    private static final String SQL_DELETE = "DELETE FROM usr WHERE id = ?;";
-    private static final String SQL_CREATE = "INSERT INTO usr " +
-            "(name, surname, password, registered, enabled, bill, login) VALUES (?, ?, ?, ?, ?, ?, ?); ";
-    private static final String SQL_UPDATE = "UPDATE usr set " +
-            "name=?, surname=?, password=?, registered=?, enabled=?, bill=? WHERE login=?;";
 
     public UserDao(Connection connection) {
         super(connection, new UserMapper());
     }
 
     @Override
-    public User getById(Long id) {
-        return getAbstractById(SQL_GET_ONE, id);
+    public Optional<User> findById(Long id) {
+        return getAbstractById("SELECT * FROM usr JOIN user_roles ON id = ? AND usr.id=user_id;", id);
     }
 
-    public User getByLogin(String name) {
+    public Optional<User> getByLogin(String name) {
+        Optional<User> result = Optional.empty();
+        String SQL_GET_BY_LOGIN = "SELECT * FROM usr JOIN user_roles ON login = ? AND usr.id=user_id;";
         try (PreparedStatement prepStatement = connection.prepareStatement(SQL_GET_BY_LOGIN)) {
 
             prepStatement.setString(1, name);
             ResultSet rs = prepStatement.executeQuery();
             if (rs.next()) {
-                return objectMapper.extractFromResultSet(rs);
+                result = Optional.of(objectMapper.extractFromResultSet(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return result;
     }
 
     @Override
     public List<User> findAll() {
-        return findAbstractAll(SQL_GET_ALL);
+        return findAbstractAll("SELECT * FROM usr JOIN user_roles ON usr.id=user_id;");
     }
 
 /*    public List<User> findAll(int positionOnPage, int page) {
         return findAbstractAll(positionOnPage, page, SQL_GET_ALL);
     }*/
-
-    @Override
+/*
     public boolean delete(Long id) {
-        return deleteAbstract(SQL_DELETE, id);
+        return deleteAbstract("DELETE FROM usr WHERE id = ?;", id);
+    }*/
+
+//    @Override
+    public boolean update(User user) {
+        String sql = "UPDATE usr set name=?, surname=?, password=?, registered=?, enabled=?, bill=? WHERE login=?;";
+        return updateAbstract(sql, user);
+    }
+
+    public boolean updateRole(User user) {
+        String sql = "UPDATE user_roles set role=? WHERE user_id=?;";
+        return updateStringAbstract(user.getRole().toString(), user.getId(), sql);
+    }
+
+    public boolean createRole(User user) {
+        int result = 0;
+        String sql = "INSERT INTO user_roles (role, user_id) VALUES (?, ?);";
+        try (PreparedStatement prepStatement = connection.prepareStatement(sql)) {
+            prepStatement.setString(1, user.getRole().toString());
+            prepStatement.setLong(2, user.getId());
+            result = prepStatement.executeUpdate();
+        } catch (SQLException e) {
+            log.warn("Exception during change 'Role' with id = '{}'. {}", user.getId(), e);
+            e.printStackTrace();
+        }
+        return result == 1;
     }
 
     @Override
-    public User update(User user) {
-        boolean result = updateAbstract(SQL_UPDATE, user);
-        return result ? user : null;
-    }
+    public Optional<User> create(User user) {
+        Optional<User> result = Optional.empty();
+        String sql = "INSERT INTO usr (name, surname, password, registered, enabled, bill, login) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?); ";
+        try (PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id", "registered", "enabled"})) {
 
-    @Override
-    public User create(User user) {
-        try (PreparedStatement prepStatement = connection.prepareStatement(
-                SQL_CREATE, new String[]{"id", "registered", "enabled"})) {
+            objectMapper.insertToResultSet(ps, user);
+            ps.executeUpdate();
 
-            objectMapper.insertToResultSet(prepStatement, user);
-            prepStatement.executeUpdate();
-
-            ResultSet rs = prepStatement.getGeneratedKeys();
+            ResultSet rs = ps.getGeneratedKeys();
 
             if (rs.next()) {
                 user.setId(rs.getLong(1));
                 user.setRegistered(rs.getTimestamp(2).toLocalDateTime());
                 user.setActive(rs.getBoolean(3));
+                result = Optional.of(user);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return user;
+        return result;
     }
 }
