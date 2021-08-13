@@ -45,6 +45,15 @@ public class UserService {
         return users;
     }
 
+    public Map<Long, User> getAllAsMap() {
+        List<User> users = getAll();
+        Map<Long, User> userMap = new HashMap<>();
+        for (User u : users) {
+            userMap.put(u.getId(), u);
+        }
+        return userMap;
+    }
+
     public boolean update(User user) {
         Connection conn = ConnectionPool.getConnection();
         UserDao userDao = new UserDao(conn);

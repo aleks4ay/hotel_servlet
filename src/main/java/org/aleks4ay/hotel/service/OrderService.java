@@ -1,5 +1,6 @@
 package org.aleks4ay.hotel.service;
 
+import com.sun.org.apache.xpath.internal.operations.Or;
 import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.dao.OrderDao;
 import org.aleks4ay.hotel.model.*;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class OrderService {
     private static final Logger log = LogManager.getLogger(OrderService.class);
@@ -22,7 +24,12 @@ public class OrderService {
     public static void main(String[] args) {
         OrderService orderService = new OrderService();
         final Optional<User> user1 = orderService.userService.getByLogin("12");
-        orderService.create(20L, LocalDate.of(2021, 8, 12), LocalDate.of(2021, 8, 16), user1.get());
+        final Optional<Order> order = orderService.getById(1000006L);
+        System.out.println(order);
+        List<Order> orders = orderService.getAll();
+        orders.forEach(System.out::println);
+//        orderService.create(20L, LocalDate.of(2021, 8, 12), LocalDate.of(2021, 8, 16), user1.get());
+
 
     }
 
@@ -34,6 +41,7 @@ public class OrderService {
             Order order = optional.get();
             order.setUser(userService.getById(order.getUser().getId()).orElse(null));
             order.setRoom(roomService.getById(order.getRoom().getId()).orElse(null));
+            order.setSchedule(scheduleService.getById(order.getSchedule().getId()).orElse(null));
         }
         ConnectionPool.closeConnection(conn);
         return optional;
@@ -43,42 +51,24 @@ public class OrderService {
         Connection conn = ConnectionPool.getConnection();
         OrderDao orderDao = new OrderDao(conn);
         List<Order> orders = orderDao.findAll();
-        Map<Long, Room> rooms = new HashMap<>();
-        Map<Long, User> users = new HashMap<>();
-
-        for (Room r : roomService.getAll()) {
-            rooms.put(r.getId(), r);
-        }
-        for (User u : userService.getAll()) {
-            users.put(u.getId(), u);
-        }
+        Map<Long, Room> rooms = roomService.getAllAsMap();
+        Map<Long, User> users = userService.getAllAsMap();
+        Map<Long, Schedule> schedules = scheduleService.getAllAsMap();
 
         for (Order o : orders) {
             o.setUser(users.get(o.getUser().getId()));
             o.setRoom(rooms.get(o.getRoom().getId()));
+            o.setSchedule(schedules.get(o.getSchedule().getId()));
         }
         ConnectionPool.closeConnection(conn);
         return orders;
     }
 
     public List<Order> getAllByUser(User user) {
-        Connection conn = ConnectionPool.getConnection();
-        OrderDao orderDao = new OrderDao(conn);
-        List<Order> orders = new ArrayList<>();
-        Map<Long, Room> rooms = new HashMap<>();
-
-        for (Room r : roomService.getAll()) {
-            rooms.put(r.getId(), r);
-        }
-        for (Order o : orderDao.findAll()) {
-            if (o.getUser().getId() == user.getId()) {
-                o.setUser(user);
-                o.setRoom(rooms.get(o.getRoom().getId()));
-                orders.add(o);
-            }
-        }
-        ConnectionPool.closeConnection(conn);
-        return orders;
+        return getAll()
+                .stream()
+                .filter(order -> order.getUser().getId() == user.getId())
+                .collect(Collectors.toList());
     }
 
 /*    public boolean delete(Long id) {

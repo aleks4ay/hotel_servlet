@@ -47,11 +47,6 @@
 
             <c:if test="${action == 'booking'}">  <%@include file="usr/bookingBlank.jsp"%> </c:if>
 
-
-            <p>begin: ${arrival}</p>
-            <p>begin from session: ${sessionScope.get('arrival')}</p>
-            <p>begin: ${departure}</p>
-            <p>begin from session: ${sessionScope.get('departure')}</p>
         </div>
 
 

@@ -8,14 +8,13 @@ import org.apache.logging.log4j.Logger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ScheduleDao {
     private static final Logger log = LogManager.getLogger(ScheduleDao.class);
 
     private Connection connection = null;
     private ScheduleMapper scheduleMapper;
-
-    private static final String SQL_CREATE = "INSERT INTO timetable (arrival, departure, status, room_id) VALUES (?, ?, ?, ?);";
 
     public ScheduleDao(Connection connection) {
         this.connection = connection;
@@ -101,6 +100,38 @@ public class ScheduleDao {
             }
         } catch (SQLException e) {
             log.warn("Exception during getting schedule for Room with id '{}'. {}", roomId, e);
+        }
+        return schedules;
+    }
+
+
+    public Optional<Schedule> getById(long id) {
+        Optional<Schedule> scheduleOptional = Optional.empty();
+        try (PreparedStatement st = connection.prepareStatement("SELECT * FROM timetable WHERE id=?")){
+            st.setLong(1, id);
+
+            ResultSet rs = st.executeQuery();
+
+            if (rs.next()) {
+                scheduleOptional = Optional.of(scheduleMapper.extractFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            log.warn("Exception during getting schedule with id '{}'. {}", id, e);
+        }
+        return scheduleOptional;
+    }
+
+    public List<Schedule> getAll() {
+        List<Schedule> schedules = new ArrayList<>();
+        try (Statement st = connection.createStatement()){
+
+            ResultSet rs = st.executeQuery("SELECT * FROM timetable;");
+
+            while (rs.next()) {
+                schedules.add(scheduleMapper.extractFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            log.warn("Exception during getting all schedule. {}", e);
         }
         return schedules;
     }

@@ -111,16 +111,27 @@ class UserCommand implements Command {
     private String doFiltering(HttpServletRequest request) {
         List<String> filters = new ArrayList<>();
 
-        String categoryString = request.getParameter("filter_category");
-        String guestsString = request.getParameter("filter_guests");
+        String filterButtonName = request.getParameter("filter");
 
-        request.setAttribute("category", request.getParameter("filter_category"));
-        request.setAttribute("guests", Integer.parseInt(guestsString));
+        if (filterButtonName != null && filterButtonName.equalsIgnoreCase("filterCansel")) {
+            request.removeAttribute("category");
+            request.removeAttribute("guests");
+            request.getSession().removeAttribute("category");
+            request.getSession().removeAttribute("guests");
+            request.getSession().removeAttribute("arrival");
+            request.getSession().removeAttribute("departure");
+        } else {
+//        System.out.println("filterButtonName=" + filterButtonName);
+            String categoryString = request.getParameter("filter_category");
+            String guestsString = request.getParameter("filter_guests");
 
-        filters.add(" guests = " + guestsString);
-        filters.add(" category = '" + categoryString + "'");
-        request.setAttribute("filters", filters);
+            request.setAttribute("category", request.getParameter("filter_category"));
+            request.setAttribute("guests", Integer.parseInt(guestsString));
 
+            filters.add(" guests = " + guestsString);
+            filters.add(" category = '" + categoryString + "'");
+            request.setAttribute("filters", filters);
+        }
         return "redirect:/user?action=room";
     }
 
@@ -193,11 +204,6 @@ class UserCommand implements Command {
         Order order = new Order();
         order.setUser(user);
         order.setRoom(new RoomService().getById(id).get());
-
-//        System.out.println("arr=" + request.getParameter("arrival"));
-//        System.out.println("dep=" + request.getParameter("departure"));
-//        System.out.println("arr2=" + request.getParameter("date_arrival"));
-//        System.out.println("dep2=" + request.getParameter("date_departure"));
 
         LocalDate dateStart = null;
         LocalDate dateEnd = null;

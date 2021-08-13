@@ -35,7 +35,13 @@
         <c:if test="${not empty category}" > <p> <fmt:message key="category"/>: ${category} </p> </c:if>
         <c:if test="${not empty guests}" > <p> <fmt:message key="guests"/>: ${guests} </p> </c:if>
 
-        <button type="submit" class="btn btn-outline-success" >  <fmt:message key="filterEnter"/>  </button>
+        <button type="submit" class="btn btn-outline-success" name="filter" value="applyFilter">
+            <fmt:message key="filterEnter"/>
+        </button>
+        <hr/>
+        <button type="submit" class="btn btn-outline-success" name="filter" value="filterCansel">
+            <fmt:message key="filterCansel"/>
+        </button>
     </div>
 <%--    <div>
         <input type="submit" name="Search2" value="${'Search_2'}"/>

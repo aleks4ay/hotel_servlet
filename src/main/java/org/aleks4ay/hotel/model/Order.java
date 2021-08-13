@@ -83,6 +83,8 @@ public class Order extends BaseEntity {
         return "Order{" +
                 "id=" + getId() +
                 ", registered=" + registered +
+                ", arrival=" + schedule.getArrival() +
+                ", departure=" + schedule.getDeparture() +
                 ", correctPrice=" + correctPrice +
                 ", status=" + status +
                 ", room=" + room.getNumber() +
