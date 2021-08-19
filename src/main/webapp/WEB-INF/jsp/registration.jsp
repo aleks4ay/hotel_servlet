@@ -10,7 +10,7 @@
         <form class="inner_logo" method="post" action="/registration">
             <div class="mb-3">
                 <label for="login1" class="form-label"> Login </label>
-                <input type="text" class="form-control" id="login1"  name="loginNew"
+                <input type="text" class="form-control" id="login1"  name="loginNew" required
                        value="${oldLogin != null ? oldLogin : ''}">
                 <small class="text-danger">
                     <c:if test="${not empty warnLogin}"> <fmt:message key="userExists"/> </c:if>
@@ -22,7 +22,7 @@
                     <fmt:message key="firstName"/>
                 </label>
                 <input type="text" class="form-control" id="name1"  name="firstName"
-                       value="${oldFirstName != null ? oldFirstName : ''}">
+                       value="${oldFirstName != null ? oldFirstName : ''}" required>
                 <small class="text-danger">
                     <c:if test="${not empty warnFirstName}"> <fmt:message key="emptyField"/> </c:if>
                 </small>
@@ -32,30 +32,22 @@
                     <fmt:message key="lastName"/>
                 </label>
                 <input type="text" class="form-control" id="name2"  name="lastName"
-                       value="${oldLastName != null ? oldLastName : ''}">
+                       value="${oldLastName != null ? oldLastName : ''}" required>
                 <small class="text-danger">
                     <c:if test="${not empty warnLastName}"> <fmt:message key="emptyField"/> </c:if>
                 </small>
             </div>
-    <%--        <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" >
-            </div>--%>
+
             <div class="mb-3">
                 <label for="pass" class="form-label">
                     <fmt:message key="password"/>
                 </label>
-                <input type="password" class="form-control" id="pass" name="log_pass">
+                <input type="password" class="form-control" id="pass" name="log_pass" required>
                 <small class="text-danger">
                     <c:if test="${not empty warnPass}"> <fmt:message key="emptyField"/> </c:if>
                 </small>
             </div>
-<%--            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1" name="checkLogin">
-                <label class="form-check-label" for="exampleCheck1">
-                    <fmt:message key="loginNow"/>
-                </label>
-            </div>--%>
+
             <button type="submit" class="btn btn-outline-success">
                 <fmt:message key="register"/>
             </button>

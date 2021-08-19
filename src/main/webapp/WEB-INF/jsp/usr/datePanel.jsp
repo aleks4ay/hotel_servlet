@@ -1,6 +1,5 @@
 <form  class="sticky rounded-lg shadow p-4 mb-4" method="post" action="/user?action=newProposal"
        style="background-color: rgba(96, 162, 218, 0.2);">
-    <%--<h3><fmt:message key="cart_1"/></h3>--%>
     <div class="mb-3">
         <label for="date3" class="form-label"> <fmt:message key="arrival"/>: </label>
         <input type="date" class="form-control" id="date3"  name="arrival2" />
@@ -39,11 +38,3 @@
         <input  type="submit" name="newProposal2" value="${'newProposal_2'}" />
     </div>
 </form>
-<%--
-
-<form action="/user?action=new" method="post">
-
-    <input type="submit" name="newOrder" value="Order" />
-    <input type="submit" name="newProposal" value="Proposal" />
-
-</form>--%>

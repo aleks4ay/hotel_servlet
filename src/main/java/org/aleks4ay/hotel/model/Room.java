@@ -2,18 +2,20 @@ package org.aleks4ay.hotel.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class Room extends BaseEntity {
 
+    private long id;
     private int number;
     private Category category;
     private int guests;
     private String description;
-    private double price;
-    private byte[] roomView;
-    private List<Schedule> schedules = new ArrayList<>();
+    private long price;
+    private String imgName;
+
+    private List<Order> orders = new ArrayList<>();
 
     public Room() {
     }
@@ -22,40 +24,23 @@ public class Room extends BaseEntity {
         super(id);
     }
 
-    public Room(int number, Category category, int guests, String description, double price) {
+    public Room(int number, Category category, int guests, String description, long price, String imgName) {
         this.number = number;
         this.category = category;
         this.guests = guests;
         this.description = description;
         this.price = price;
+        this.imgName = imgName;
     }
 
-    public boolean isEmpty(LocalDate start, LocalDate end) {
-        for (Schedule t : schedules) {
-            if (!start.isBefore(t.getArrival()) && !start.isAfter(t.getDeparture())
-                    || !end.isBefore(t.getArrival()) && !end.isAfter(t.getDeparture()) ) {
-                System.out.println("found occupied room: " + start + " - " + end);
-                System.out.println("Schedule: " + t.getArrival() + " - " + t.getDeparture());
-                return false;
-            }
-        }
-        return true;
+    @Override
+    public long getId() {
+        return id;
     }
 
-    public List<Schedule> getSchedules() {
-        return schedules;
-    }
-
-    public void setSchedules(List<Schedule> schedules) {
-        for ( Schedule sch : schedules) {
-            sch.setRoom(this);
-            this.schedules.add(sch);
-        }
-    }
-
-    public void addSchedule(Schedule schedule) {
-        schedule.setRoom(this);
-        this.schedules.add(schedule);
+    @Override
+    public void setId(long id) {
+        this.id = id;
     }
 
     public int getNumber() {
@@ -90,34 +75,76 @@ public class Room extends BaseEntity {
         this.description = description;
     }
 
-    public double getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(long price) {
         this.price = price;
     }
 
-    public byte[] getRoomView() {
-        return roomView;
+    public String getImgName() {
+        return imgName;
     }
 
-    public void setRoomView(byte[] roomView) {
-        this.roomView = roomView;
+    public void setImgName(String imgName) {
+        this.imgName = imgName;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    void addOrder(Order order) {
+        orders.add(order);
+    }
+
+    public boolean isEmpty(LocalDate start, LocalDate end) {
+/*        for (Schedule t : schedules) {
+            if (!start.isBefore(t.getArrival()) && !start.isAfter(t.getDeparture())
+                    || !end.isBefore(t.getArrival()) && !end.isAfter(t.getDeparture()) ) {
+                System.out.println("found occupied room: " + start + " - " + end);
+                System.out.println("Schedule: " + t.getArrival() + " - " + t.getDeparture());
+                return false;
+            }
+        }*/
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Room room = (Room) o;
+        return getId() == room.getId() &&
+                getNumber() == room.getNumber() &&
+                getGuests() == room.getGuests() &&
+                getPrice() == room.getPrice() &&
+                getCategory() == room.getCategory() &&
+                Objects.equals(getDescription(), room.getDescription()) &&
+                Objects.equals(getImgName(), room.getImgName()) &&
+                Objects.equals(getOrders(), room.getOrders());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getNumber(), getCategory(), getGuests(), getDescription(), getPrice(), getImgName(), getOrders());
     }
 
     @Override
     public String toString() {
         return "Room{" +
-                "id=" + getId() +
+                "id=" + id +
                 ", number=" + number +
                 ", category=" + category +
                 ", guests=" + guests +
                 ", description='" + description + '\'' +
                 ", price=" + price +
-                ", roomView=" + Arrays.toString(roomView) +
-                ", schedules=" + schedules +
+                ", imgName='" + imgName + '\'' +
                 '}';
     }
-
 }

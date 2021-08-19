@@ -24,8 +24,6 @@
                 <td><c:out value="${user.active}" /></td>
                 <td><c:out value="${user.registered}" /></td>
                 <td><c:out value="${user.role.title}" /></td>
-                <%--<td><a href='<c:url value="/order?action=select&id=${room.number}&pg=${pg}" />'><fmt:message key="act_1"/></a></td>--%>
-                <%--<td><a href='<c:url value="/order?action=booking&id=${room.number}&pg=${pg}" />'><fmt:message key="act_2"/></a></td>--%>
             </tr>
         </c:forEach>
         </tbody>

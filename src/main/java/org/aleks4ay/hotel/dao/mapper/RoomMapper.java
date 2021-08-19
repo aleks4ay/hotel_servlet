@@ -16,7 +16,8 @@ public class RoomMapper implements ObjectMapper<Room> {
         room.setCategory(Category.valueOf(rs.getString("category")));
         room.setGuests(rs.getInt("guests"));
         room.setDescription(rs.getString("description"));
-        room.setPrice(rs.getDouble("price"));
+        room.setImgName(rs.getString("img_name"));
+        room.setPrice(rs.getLong("price"));
         return room;
     }
 
@@ -26,6 +27,7 @@ public class RoomMapper implements ObjectMapper<Room> {
         statement.setInt(2, room.getGuests());
         statement.setString(3, room.getDescription());
         statement.setDouble(4, room.getPrice());
-        statement.setInt(5, room.getNumber());
+        statement.setString(5, room.getImgName());
+        statement.setInt(6, room.getNumber());
     }
 }

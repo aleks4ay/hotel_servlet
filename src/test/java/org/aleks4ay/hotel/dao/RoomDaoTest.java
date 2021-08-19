@@ -1,76 +1,87 @@
 package org.aleks4ay.hotel.dao;
 
+import org.aleks4ay.hotel.exception.NotEmptyRoomException;
+import org.aleks4ay.hotel.model.Category;
 import org.aleks4ay.hotel.model.Room;
-import org.aleks4ay.hotel.service.RoomService;
 import org.aleks4ay.hotel.service.UtilService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.sql.Statement;
+import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class RoomDaoTest {
-    private Room room1, room2, room3;
-    private List<Room> rooms = new LinkedList<>();
-    private RoomDao roomDao;
+    private ConnectionPool connectionPool = new ConnectionPoolTest();
+    private RoomDao dao;
     private Connection conn;
 
-    @Before
-    public void setUp() {
-        this.conn = ConnectionPool.getConnection();
-        this.roomDao = new RoomDao(conn);
+    @BeforeEach
+    public void setUp() throws Exception {
+        conn = connectionPool.getConnection();
+        dao = new RoomDao(conn);
+        Statement statement = conn.createStatement();
+        statement.execute("delete from room where true;");
+        statement.execute("ALTER sequence id_seq restart with 1;");
+        statement.execute("insert into room (number, category, guests, description, img_name, price) VALUES " +
+                "(101, 'STANDARD',1,'description 1','101.jpg', 410.00), " +
+                "(102, 'SUITE',4,'description 2','102.jpg', 420.00);");
     }
 
-    @After
-    public void tearDown() throws Exception {
-
+    @AfterEach
+    public void tearDown() {
+        connectionPool.closeConnection(conn);
     }
+
 
     @Test
-    public void getById() throws Exception {
-
-    }
-
-    @Test
-    public void findAll() throws Exception {
-
+    public void getById() {
+        Room expected = new Room(101, Category.STANDARD, 1, "description 1", 410, "101.jpg");
+        expected.setId(1L);
+        assertEquals(dao.findById(1L).get(), expected);
     }
 
     @Test
     public void findAllWithFilter() throws Exception {
         List<String> filters = new ArrayList<>();
-        filters.add(" guests = " + "3");
-        filters.add(" category = " + "'STANDARD'");
+        filters.add(" guests = " + "4");
+        filters.add(" category = " + "'SUITE'");
         String filterAsString = UtilService.filterFromListToString(filters);
-        List<Room> rooms = roomDao.findAllWithFilter(filterAsString);
-//        List<Room> roomsAfterFilter = new RoomService().getAllWithFilters(filters);
-        rooms.forEach(System.out::println);
-        assertEquals(1, rooms.size());
+        List<Room> actualRooms = dao.findAllWithFilter(filterAsString);
+        Room expectedRoom = new Room(102, Category.SUITE, 4, "description 2", 420L, "102.jpg");
+        expectedRoom.setId(2L);
+        List<Room> expectedRooms = Collections.singletonList(expectedRoom);
+        assertEquals(expectedRooms, actualRooms);
     }
 
     @Test
-    public void findAll1() throws Exception {
+    public void findAll()  {
+        final List<Room> rooms = dao.findAll();
+        assertEquals(2, rooms.size());
+    }
 
+
+    @Test
+    public void update()  {
+        Room roomFromDb = dao.findById(1L).orElseThrow(() -> new NotEmptyRoomException("room not found"));
+        roomFromDb.setGuests(3);
+        dao.update(roomFromDb);
+        Room roomAfterUpdate = dao.findById(1L).orElseThrow(() -> new NotEmptyRoomException("room not found"));
+        assertEquals(roomFromDb, roomAfterUpdate);
     }
 
     @Test
-    public void delete() throws Exception {
-
-    }
-
-    @Test
-    public void update() throws Exception {
-
-    }
-
-    @Test
-    public void create() throws Exception {
-        ConnectionPool.closeConnection(this.conn);
+    public void create() {
+        Room room = new Room(301, Category.SUITE,1,"description 1", 880, "101.jpg");
+        assertEquals(0L, room.getId());
+        Optional<Room> roomOptional = dao.create(room);
+        assertNotEquals(0L, roomOptional.get().getId());
     }
 
 }

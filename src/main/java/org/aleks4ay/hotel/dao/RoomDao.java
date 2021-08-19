@@ -2,14 +2,11 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.dao.mapper.RoomMapper;
 import org.aleks4ay.hotel.model.Room;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
 
 public class RoomDao extends AbstractDao<Long, Room>{
-    private static final Logger log = LogManager.getLogger(RoomDao.class);
 
     public RoomDao(Connection connection) {
         super(connection, new RoomMapper());
@@ -18,9 +15,7 @@ public class RoomDao extends AbstractDao<Long, Room>{
     @Override
     public Optional<Room> findById(Long id) {
         return getAbstractById("SELECT * FROM room WHERE id = ?;", id);
-//        return getAbstractById("SELECT * FROM room JOIN timetable ON room.id = 21 AND room.id = room_id;", id);
     }
-
 
     @Override
     public List<Room> findAll() {
@@ -32,26 +27,14 @@ public class RoomDao extends AbstractDao<Long, Room>{
         return findAbstractAll(sql);
     }
 
-/*    public List<Room> doFilters(List<Room> roomList, String filter) {
-        return findAbstractAll(SQL_GET_ALL);
-    }*/
-
-/*    public List<Room> findAll(int positionOnPage, int page) {
-        return findAbstractAll(positionOnPage, page, SQL_GET_ALL);
-    }*/
-
-//    public boolean delete(Long id) {
-//        return deleteAbstract("DELETE FROM room WHERE id = ?;", id);
-//    }
-
-    public boolean update(Room room) {
-        String sql = "UPDATE room set category=?, guests=?, description=?, price=? WHERE number = ?;";
-        return updateAbstract(sql, room);
-    }
-
     @Override
     public Optional<Room> create(Room room) {
-        String sql = "INSERT INTO room (category, guests, description, price, number) VALUES (?, ?, ?, ?, ?); ";
+        String sql = "INSERT INTO room (category, guests, description, price, img_name, number) VALUES (?, ?, ?, ?, ?, ?); ";
         return createAbstract(room, sql);
+    }
+
+    public boolean update(Room room) {
+        String sql = "UPDATE room set category=?, guests=?, description=?, price=?, img_name=? where number=?;";
+        return updateAbstract(sql, room);
     }
 }

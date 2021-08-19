@@ -9,7 +9,6 @@
             <th scope="col"><fmt:message key="n"/></th>
             <th scope="col"><fmt:message key="number"/></th>
             <th scope="col"><fmt:message key="category"/></th>
-            <%--<th scope="col"><fmt:message key="roomStatus"/></th>--%>
             <th scope="col"><fmt:message key="guests"/></th>
             <th scope="col"><fmt:message key="description"/></th>
             <th scope="col"><fmt:message key="price"/></th>

@@ -4,10 +4,10 @@ public class BaseEntity {
 
     private long id;
 
-    public BaseEntity() {
+    BaseEntity() {
     }
 
-    public BaseEntity(long id) {
+    BaseEntity(long id) {
         this.id = id;
     }
 

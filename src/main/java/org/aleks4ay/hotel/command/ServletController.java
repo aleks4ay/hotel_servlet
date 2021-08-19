@@ -26,13 +26,11 @@ public class ServletController extends HttpServlet{
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        log.debug("Do get request to {}", req.getRequestURI());
         processRequest(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        log.debug("Do post request to {}", req.getRequestURI());
         processRequest(req, resp);
     }
 
@@ -40,13 +38,12 @@ public class ServletController extends HttpServlet{
                                 HttpServletResponse response)
             throws ServletException, IOException {
 
-        String path = request.getRequestURI();
-        path = path.replaceAll(".*(/app)?/", "");
+        String path = request.getRequestURI().replaceAll(".*(/app)?/", "");
         Command command = commands.getOrDefault(path, (r)->"/WEB-INF/index.jsp");
         String urlPage = command.execute(request);
         if (urlPage.contains("redirect:")) {
             log.debug("redirect to=" + urlPage.replaceAll("redirect:", ""));
-            response.sendRedirect(urlPage.replaceAll("redirect:", "")); //replaceAll("redirect:", "/app")
+            response.sendRedirect(urlPage.replaceAll("redirect:", ""));
         } else {
             log.debug("forward to=" + urlPage);
             request.getRequestDispatcher(urlPage).forward(request, response);

@@ -7,9 +7,24 @@
 
 <div class="container-fluid" style="margin-top:10px">
     <div class="row">
+        <div class="col-sm-3">
+            <h2>[[#{head_text_2}]]</h2>
+            <h3>[[#{head_text_3}]]</h3>
+        </div>
+
+        <div class="col-sm-8">
+
+            <img style="width: 100%" src="/static/img/background.jpg"/>
+
+        </div>
+
+    </div>
+</div>
+
+<%--<div class="container-fluid" style="margin-top:10px">
+    <div class="row">
         <div class="col-sm-2">
             <%@include file="jsp/head/leftForm.jsp"%>
-            <%--userType = ${userType}--%>
         </div>
 
         <div class="col-sm-8">
@@ -19,7 +34,7 @@
 
         <div class="col-sm-2"> </div>
     </div>
-</div>
+</div>--%>
 
 </body>
 </html>

@@ -13,11 +13,9 @@ abstract class AbstractDao<K, T extends BaseEntity> {
     public abstract Optional<T> findById(K key);
     public abstract List<T> findAll();
     public abstract Optional<T> create(T t);
-//    public abstract boolean delete(K id);
-//    public abstract boolean update(T t);
 
     ObjectMapper<T> objectMapper;
-    Connection connection = null;
+    Connection connection;
 
     AbstractDao(Connection connection, ObjectMapper<T> objectMapper) {
         this.connection = connection;
@@ -53,21 +51,10 @@ abstract class AbstractDao<K, T extends BaseEntity> {
         return result;
     }
 
-    public boolean deleteAbstract(String sql, long id) {
-        boolean result = false;
-        try (PreparedStatement prepStatement = connection.prepareStatement(sql)) {
-            prepStatement.setLong(1, id);
-            result = (1 == prepStatement.executeUpdate());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 
-
-    boolean updateAbstract(String sqlCreate, T t) {
+    boolean updateAbstract(String sql, T t) {
         int result = 0;
-        try (PreparedStatement prepStatement = connection.prepareStatement(sqlCreate)) {
+        try (PreparedStatement prepStatement = connection.prepareStatement(sql)) {
             objectMapper.insertToResultSet(prepStatement, t);
             result = prepStatement.executeUpdate();
         } catch (SQLException e) {

@@ -1,6 +1,5 @@
 package org.aleks4ay.hotel.service;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
 import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.dao.OrderDao;
 import org.aleks4ay.hotel.model.*;
@@ -8,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -17,50 +15,29 @@ import java.util.stream.Collectors;
 public class OrderService {
     private static final Logger log = LogManager.getLogger(OrderService.class);
 
-    private UserService userService = new UserService();
-    private RoomService roomService = new RoomService();
-    private ScheduleService scheduleService = new ScheduleService();
+    private ConnectionPool connectionPool;
+    private UserService userService;
+    private RoomService roomService;
 
-    public static void main(String[] args) {
-        OrderService orderService = new OrderService();
-        final Optional<User> user1 = orderService.userService.getByLogin("12");
-        final Optional<Order> order = orderService.getById(1000006L);
-        System.out.println(order);
-        List<Order> orders = orderService.getAll();
-        orders.forEach(System.out::println);
-//        orderService.create(20L, LocalDate.of(2021, 8, 12), LocalDate.of(2021, 8, 16), user1.get());
-
-
-    }
-
-    public Optional<Order> getById(Long id) {
-        Connection conn = ConnectionPool.getConnection();
-        OrderDao orderDao = new OrderDao(conn);
-        Optional<Order> optional = orderDao.findById(id);
-        if (optional.isPresent()) {
-            Order order = optional.get();
-            order.setUser(userService.getById(order.getUser().getId()).orElse(null));
-            order.setRoom(roomService.getById(order.getRoom().getId()).orElse(null));
-            order.setSchedule(scheduleService.getById(order.getSchedule().getId()).orElse(null));
-        }
-        ConnectionPool.closeConnection(conn);
-        return optional;
+    public OrderService(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+        this.userService = new UserService(connectionPool);
+        this.roomService = new RoomService(connectionPool);
     }
 
     public List<Order> getAll() {
-        Connection conn = ConnectionPool.getConnection();
-        OrderDao orderDao = new OrderDao(conn);
-        List<Order> orders = orderDao.findAll();
-        Map<Long, Room> rooms = roomService.getAllAsMap();
+        Connection conn = connectionPool.getConnection();
+        List<Order> orders = new OrderDao(conn).findAll();
         Map<Long, User> users = userService.getAllAsMap();
-        Map<Long, Schedule> schedules = scheduleService.getAllAsMap();
+        Map<Long, Room> rooms = roomService.getAllAsMap();
 
         for (Order o : orders) {
             o.setUser(users.get(o.getUser().getId()));
-            o.setRoom(rooms.get(o.getRoom().getId()));
-            o.setSchedule(schedules.get(o.getSchedule().getId()));
+            if (rooms.containsKey(o.getRoom().getId())) {
+                o.setRoom(rooms.get(o.getRoom().getId()));
+            }
         }
-        ConnectionPool.closeConnection(conn);
+        connectionPool.closeConnection(conn);
         return orders;
     }
 
@@ -71,37 +48,25 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-/*    public boolean delete(Long id) {
-        Connection conn = ConnectionPool.getConnection();
-        OrderDao orderDao = new OrderDao(conn);
-        boolean result = orderDao.delete(id);
-        ConnectionPool.closeConnection(conn);
-        return result;
-    }*/
 
     public Optional<Order> create(long room_id, LocalDate dateStart, LocalDate dateEnd, User user) {
         Optional<Order> orderOptional = Optional.empty();
 
-        Connection connection = ConnectionPool.getConnection();
-        OrderDao orderDao = new OrderDao(connection);
+        Connection conn = connectionPool.getConnection();
 
         Order builtOrder = buildOrder(room_id, dateStart, dateEnd, user);
 
-        try {
-            connection.setAutoCommit(false);
-
-            boolean result = scheduleService.checkRoom(builtOrder.getSchedule());
-
-            if (result) {
-                result = scheduleService.createSchedule(builtOrder.getSchedule());
+        /*try {
+            if (connection != null) {
+                connection.setAutoCommit(false);
             }
+            boolean result = checkRoom(builtOrder.getRoom());
 
-            if (result) {
-                orderOptional = orderDao.create(builtOrder);
+            if (scheduleService.createSchedule(builtOrder.getSchedule())) {
+                orderOptional = new OrderDao(connection).create(builtOrder);
                 result = orderOptional.isPresent();
             }
-
-            if (result) {
+            if (result && connection != null) {
                 connection.commit();
                 Order o = orderOptional.get();
                 log.info("Was create new Order from {} to {} for {}. Room: {}."
@@ -114,20 +79,8 @@ public class OrderService {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
         return orderOptional;
-    }
-
-    public List<Order> doPagination(int positionOnPage, int page, List<Order> entities) {
-        return new UtilService<Order>().doPagination(positionOnPage, page, entities);
-    }
-
-    public boolean updateStatus(Order.Status status, long id) {
-        Connection conn = ConnectionPool.getConnection();
-        OrderDao orderDao = new OrderDao(conn);
-        boolean result = orderDao.updateStatus(status.toString(), id);
-        ConnectionPool.closeConnection(conn);
-        return result;
     }
 
     private Order buildOrder(long room_id, LocalDate dateStart, LocalDate dateEnd, User user) {
@@ -137,15 +90,12 @@ public class OrderService {
         Order tempOrder = new Order(room, LocalDateTime.now());
         user.addOrder(tempOrder);
         Order.Status orderStatus = Order.Status.CONFIRMED;
-        Schedule.RoomStatus roomStatus = Schedule.RoomStatus.BOOKED;
+        /*Schedule.RoomStatus roomStatus = Schedule.RoomStatus.BOOKED;
         if (user.isManager()) {
             orderStatus = Order.Status.NEW;
             roomStatus = Schedule.RoomStatus.RESERVED;
-        }
-        Schedule schedule = new Schedule(dateStart, dateEnd, roomStatus, room);
+        }*/
 
-        tempOrder.setRoom(room);
-        tempOrder.setSchedule(schedule);
         tempOrder.setUser(user);
         user.addOrder(tempOrder);
         tempOrder.setStatus(orderStatus);

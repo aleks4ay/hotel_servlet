@@ -28,10 +28,7 @@
                 </li>
             </c:if>
         </ul>
-        <%--<form class="form-inline my-2 my-lg-0">--%>
-            <%--<input class="form-control mr-sm-2" type="text" placeholder="Search">--%>
-            <%--<button class="btn btn-success my-2 my-sm-0" type="button">Search</button>--%>
-        <%--</form>--%>
+
         <ul class="navbar-nav" style="font-size: 1.2rem; align-items: flex-end">
             <li>
                 <label style="color: rgba(60, 189, 234, 0.54)">
@@ -47,10 +44,12 @@
                 &nbsp;&nbsp;&nbsp;
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value="/lang?language=ru"/>" <c:if test="${language=='ru'}">style="color: #d54d38"</c:if> >RU</a>
+                <a class="nav-link" href="<c:url value="/lang?language=ru"/>" <c:if test="${language=='ru'}">
+                    style="color: #d54d38"</c:if> >RU</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value="/lang?language=en"/>" <c:if test="${language=='en'}">style="color: #d54d38"</c:if> >EN</a>
+                <a class="nav-link" href="<c:url value="/lang?language=en"/>" <c:if test="${language=='en'}">
+                    style="color: #d54d38"</c:if> >EN</a>
             </li>
             <li>
                 &nbsp;

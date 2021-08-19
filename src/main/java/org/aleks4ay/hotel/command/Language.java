@@ -1,7 +1,5 @@
 package org.aleks4ay.hotel.command;
 
-import org.aleks4ay.hotel.model.User;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.net.MalformedURLException;
@@ -16,11 +14,9 @@ class Language implements Command {
         HttpSession session = request.getSession();
         session.setAttribute("language", language);
 
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
+        if (session.getAttribute("user") != null) {
             try {
-                String path = new URL(request.getHeader("Referer")).getFile();
-                return "redirect:" + path;
+                return "redirect:" + new URL(request.getHeader("Referer")).getFile();
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();

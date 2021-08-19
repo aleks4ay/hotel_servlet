@@ -4,7 +4,6 @@
     <div class="mb-3">
         <label for="date1" class="form-label"> <fmt:message key="arrival"/>: </label>
         <input type="date" class="form-control" id="date1"  name="arrival" />
-        <%--<input type="datetime" class="form-control" id="date1" name="arrival" />--%>
     </div>
     <div class="mb-3">
         <label for="date2" class="form-label"> <fmt:message key="departure"/>: </label>

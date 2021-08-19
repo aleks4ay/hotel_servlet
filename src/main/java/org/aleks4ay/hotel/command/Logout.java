@@ -13,8 +13,7 @@ class Logout implements Command {
     @Override
     public String execute(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
+        if (session.getAttribute("user") == null) {
             return "WEB-INF/index.jsp";
         } else {
             log.info("User '{}' was logged out.", ((User) session.getAttribute("user")).getLogin());

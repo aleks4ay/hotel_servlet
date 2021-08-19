@@ -1,12 +1,12 @@
 package org.aleks4ay.hotel.command;
 
+import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.model.*;
 import org.aleks4ay.hotel.service.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,46 +21,36 @@ class UserCommand implements Command {
         User user = (User) request.getSession().getAttribute("user");
 
         String action = request.getParameter("action");
-        System.out.println("ACTION = " + action);
         request.setAttribute("action", action);
         request.setAttribute("itemOnPage", POSITION_ON_PAGE);
         request.setAttribute("categories", Category.values());
 
-        //user?action=account when 'NotUser'
         if(     (userType.equalsIgnoreCase("guest") || user == null)
                 && !action.contains("room")
                 && !action.equalsIgnoreCase("filter") ) {
             return "/WEB-INF/index.jsp";
         }
-        //user?action=room
         if (action.equalsIgnoreCase("room") || action.contains("room")) {
             return getRoom(request);
         }
-        //user?action=setDate
         if (action.equalsIgnoreCase("setDate")) {
             return setDate(request);
         }
-        //user?action=booking
         if (action.equalsIgnoreCase("booking")) {
             return doBooking(request);
         }
-        //user?action=newProposal
         if (action.equalsIgnoreCase("newProposal")) {
             return doNewProposal(request, user);
         }
-        //user?action=newOrder&id=22
         if (action.equalsIgnoreCase("newOrder")) {
             return doNewOrder(request, user);
         }
-        //user?action=filter
         if (action.equalsIgnoreCase("filter")) {
             return doFiltering(request);
         }
-        //user?action=changeBill
         if (action.equalsIgnoreCase("changeBill")) {
             return doChangeBill(request, user);
         }
-        //user?action=account&ap=***
         if (action.equalsIgnoreCase("account")) {
             return doAccount(request, user);
         }
@@ -74,14 +64,14 @@ class UserCommand implements Command {
 
     private String doChangeBill(HttpServletRequest request, User user) {
         int number = Integer.parseInt(request.getParameter("addBill"));
-        user.setBill(user.getBill() + number);
-        new UserService().update(user);
+        user.addBill(number);
+        new UserService(new ConnectionPool()).update(user);
         return "redirect:/user?action=account&ap=bill";
     }
 
 
     private String getRoom(HttpServletRequest request) {
-        RoomService roomService = new RoomService();
+        RoomService roomService = new RoomService(new ConnectionPool());
         List<Room> roomList;
         List<String> filters = new ArrayList<>();
 
@@ -121,7 +111,6 @@ class UserCommand implements Command {
             request.getSession().removeAttribute("arrival");
             request.getSession().removeAttribute("departure");
         } else {
-//        System.out.println("filterButtonName=" + filterButtonName);
             String categoryString = request.getParameter("filter_category");
             String guestsString = request.getParameter("filter_guests");
 
@@ -138,23 +127,15 @@ class UserCommand implements Command {
 
     private String doAccount(HttpServletRequest request, User user) {
         String actionPage = request.getParameter("ap");
-        //user?action=account&ap=
         if (actionPage == null) {
             actionPage = "order";
         }
-        //user?action=account&ap=order
         if (actionPage.equalsIgnoreCase("order")) {
-            List<Order> orderList = new OrderService().getAllByUser(user);
+            List<Order> orderList = new OrderService(new ConnectionPool()).getAllByUser(user);
             user.setOrders(orderList);
             request.setAttribute("orders", orderList);
-        //user?action=account&ap=proposal
-        } else if (actionPage.equalsIgnoreCase("proposal")) {
-            List<Proposal> proposalList = new ProposalService().getAllByUser(user);
-            request.setAttribute("proposals", proposalList);
-        //user?action=account&ap=bill
         } else if (actionPage.equalsIgnoreCase("bill")) {
             request.setAttribute("bill", user.getBill());
-
         }
         request.setAttribute("ap", actionPage);
         return "WEB-INF/jsp/userPage.jsp";
@@ -176,7 +157,7 @@ class UserCommand implements Command {
 
         int guests = Integer.parseInt(request.getParameter("field1"));
         Category category = Category.valueOf(request.getParameter("field2"));
-        new ProposalService().create(new Proposal(dateStart, dateEnd, guests, category, user));
+//        new ProposalService().create(new Proposal(dateStart, dateEnd, guests, category, user));
         return "redirect:/user?action=account&ap=proposal";
     }
 
@@ -184,30 +165,24 @@ class UserCommand implements Command {
     private String doNewOrder(HttpServletRequest request, User user) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateStartString = request.getParameter("date_arrival");
-        String dateEndString = request.getParameter("date_departure");
-        LocalDate dateStart = LocalDate.parse(dateStartString, formatter);
-        LocalDate dateEnd = LocalDate.parse(dateEndString, formatter);
+        LocalDate dateStart = LocalDate.parse(request.getParameter("date_arrival"), formatter);
+        LocalDate dateEnd = LocalDate.parse(request.getParameter("date_departure"), formatter);
 
         long room_id = Long.parseLong(request.getParameter("id"));
-        new OrderService().create(room_id, dateStart, dateEnd, user);
+        new OrderService(new ConnectionPool()).create(room_id, dateStart, dateEnd, user);
         return "redirect:/user?action=account&ap=order";
     }
 
 
     private String doBooking(HttpServletRequest request) {
-//        System.out.println("Booking");
-        User user = (User) request.getSession().getAttribute("user");
         HttpSession session = request.getSession();
-//        request.setAttribute("action", "booking");
         long id = Long.parseLong(request.getParameter("id"));
         Order order = new Order();
-        order.setUser(user);
-        order.setRoom(new RoomService().getById(id).get());
+        order.setUser((User) request.getSession().getAttribute("user"));
+        order.setRoom(new RoomService(new ConnectionPool()).getById(id).get());
 
         LocalDate dateStart = null;
         LocalDate dateEnd = null;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         if (session.getAttribute("arrival") != null) {
             dateStart = (LocalDate) session.getAttribute("arrival");
         }
@@ -232,6 +207,4 @@ class UserCommand implements Command {
         request.setAttribute("departure", dateEnd);
         return "WEB-INF/jsp/userPage.jsp";
     }
-
-    // TODO: 10.08.2021  getDateStart(),  getDateEnd()
 }

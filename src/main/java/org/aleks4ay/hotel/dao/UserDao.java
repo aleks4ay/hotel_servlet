@@ -22,19 +22,32 @@ public class UserDao extends AbstractDao<Long, User>{
     }
 
     public Optional<User> getByLogin(String name) {
-        Optional<User> result = Optional.empty();
-        String SQL_GET_BY_LOGIN = "SELECT * FROM usr JOIN user_roles ON login = ? AND usr.id=user_id;";
+        String SQL_GET_BY_LOGIN = "SELECT * FROM usr INNER JOIN user_roles ON login = ? AND usr.id=user_id;";
         try (PreparedStatement prepStatement = connection.prepareStatement(SQL_GET_BY_LOGIN)) {
-
             prepStatement.setString(1, name);
             ResultSet rs = prepStatement.executeQuery();
             if (rs.next()) {
-                result = Optional.of(objectMapper.extractFromResultSet(rs));
+                return Optional.of(objectMapper.extractFromResultSet(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return result;
+        return Optional.empty();
+    }
+
+    public Optional<User> getByLoginAndPassword(String name, String pass) {
+        String sql = "SELECT * FROM usr INNER JOIN user_roles ON login = ? AND password = ? AND usr.id=user_id;";
+        try (PreparedStatement prepStatement = connection.prepareStatement(sql)) {
+            prepStatement.setString(1, name);
+            prepStatement.setString(2, pass);
+            ResultSet rs = prepStatement.executeQuery();
+            if (rs.next()) {
+                return Optional.of(objectMapper.extractFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -42,17 +55,8 @@ public class UserDao extends AbstractDao<Long, User>{
         return findAbstractAll("SELECT * FROM usr JOIN user_roles ON usr.id=user_id;");
     }
 
-/*    public List<User> findAll(int positionOnPage, int page) {
-        return findAbstractAll(positionOnPage, page, SQL_GET_ALL);
-    }*/
-/*
-    public boolean delete(Long id) {
-        return deleteAbstract("DELETE FROM usr WHERE id = ?;", id);
-    }*/
-
-//    @Override
     public boolean update(User user) {
-        String sql = "UPDATE usr set name=?, surname=?, password=?, registered=?, enabled=?, bill=? WHERE login=?;";
+        String sql = "UPDATE usr set name=?, surname=?, password=?, registered=?, active=?, bill=? WHERE login=?;";
         return updateAbstract(sql, user);
     }
 
@@ -78,9 +82,9 @@ public class UserDao extends AbstractDao<Long, User>{
     @Override
     public Optional<User> create(User user) {
         Optional<User> result = Optional.empty();
-        String sql = "INSERT INTO usr (name, surname, password, registered, enabled, bill, login) " +
+        String sql = "INSERT INTO usr (name, surname, password, registered, active, bill, login) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?); ";
-        try (PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id", "registered", "enabled"})) {
+        try (PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id", "registered", "active"})) {
 
             objectMapper.insertToResultSet(ps, user);
             ps.executeUpdate();

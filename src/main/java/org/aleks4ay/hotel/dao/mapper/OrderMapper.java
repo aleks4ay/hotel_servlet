@@ -9,24 +9,30 @@ public class OrderMapper implements ObjectMapper<Order> {
     public Order extractFromResultSet(ResultSet rs) throws SQLException {
         Order order = new Order(rs.getLong("id"));
         order.setRegistered(rs.getTimestamp("registered").toLocalDateTime());
-        order.setCorrectPrice(rs.getDouble("correct_price"));
+        order.setArrival(rs.getDate("arrival").toLocalDate());
+        order.setDeparture(rs.getDate("departure").toLocalDate());
+        order.setGuests(rs.getInt("guests"));
+        order.setCategory(Category.valueOf(rs.getString("category")));
+        order.setCorrectPrice(rs.getLong("correct_price"));
+        order.setPeriod(rs.getInt("period"));
         order.setStatus(Order.Status.valueOf(rs.getString("status")));
         order.setUser(new User(rs.getLong("user_id")));
-        order.setRoom(new Room(rs.getLong("room_id")));
-        order.setSchedule(new Schedule(rs.getLong("timetable_id")));
+        if (rs.getLong("room_id") != 0L) {
+            order.setRoom(new Room(rs.getLong("room_id")));
+        }
         return order;
     }
 
     @Override
     public void insertToResultSet(PreparedStatement statement, Order order) throws SQLException {
         statement.setTimestamp(1, Timestamp.valueOf(order.getRegistered()));
-        statement.setDouble(2, order.getCorrectPrice());
-        statement.setString(3, order.getStatus().toString());
-        statement.setLong(4, order.getUser().getId());
-        statement.setLong(5, order.getRoom().getId());
-        statement.setLong(6, order.getSchedule().getId());
+        statement.setDate(2, Date.valueOf(order.getArrival()));
+        statement.setDate(3, Date.valueOf(order.getDeparture()));
+        statement.setInt(4, order.getGuests());
+        statement.setString(5, order.getCategory().getTitle());
+        statement.setDouble(6, order.getCorrectPrice());
+        statement.setInt(7, order.getPeriod());
+        statement.setString(8, order.getStatus().toString());
+        statement.setLong(9, order.getUser().getId());
     }
 }
-/*
-* "INSERT INTO orders (registered, correct_price, status, user_id, room_id, timetable_id
-* */

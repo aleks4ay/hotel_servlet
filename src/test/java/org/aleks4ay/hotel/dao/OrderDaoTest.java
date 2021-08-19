@@ -1,32 +1,29 @@
 package org.aleks4ay.hotel.dao;
 
-import org.aleks4ay.hotel.model.Order;
-import org.aleks4ay.hotel.model.Room;
-import org.aleks4ay.hotel.model.Schedule;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+//import org.junit.jupiter.api.AfterEach;
+//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
+
+import org.junit.*;
 
 import java.sql.Connection;
-import java.time.LocalDate;
-
-import static org.junit.Assert.*;
 
 
 public class OrderDaoTest {
 
-    OrderDao dao;
-    Connection connection;
+    private ConnectionPool connectionPool = new ConnectionPoolTest();
+    private OrderDao dao;
+    private Connection connection;
 
     @Before
     public void setUp() throws Exception {
-        connection = ConnectionPool.getConnection();
+        connection = connectionPool.getConnection();
         dao = new OrderDao(connection);
     }
 
     @After
     public void tearDown() throws Exception {
-        ConnectionPool.closeConnection(connection);
+        connectionPool.closeConnection(connection);
     }
 
     @Test

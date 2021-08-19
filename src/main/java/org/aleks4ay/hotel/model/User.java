@@ -1,7 +1,9 @@
 package org.aleks4ay.hotel.model;
 
+import org.aleks4ay.hotel.exception.NoMoneyException;
 import org.aleks4ay.hotel.service.UserService;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -14,8 +16,8 @@ public class User extends BaseEntity{
     private String password;
     private boolean active = true;
     private LocalDateTime registered = LocalDateTime.now();
+    private BigDecimal bill;
     private Role role;
-    private double bill;
 
     private List<Order> orders = new ArrayList<>();
 
@@ -24,12 +26,6 @@ public class User extends BaseEntity{
 
     public User(long id) {
         super(id);
-    }
-
-    public static void main(String[] args) {
-        User user1 = new User(12L, "login1", "name", "surname", "pass1");
-        System.out.println("user1=" + user1);
-        new UserService().create("login1", "name", "surname", "pass1");
     }
 
     public User(String login, String password) {
@@ -43,6 +39,17 @@ public class User extends BaseEntity{
         this.name = name;
         this.surname = surname;
         this.password = password;
+    }
+
+    public User(String login, String name, String surname, String password, boolean active, LocalDateTime registered,
+                double money) {
+        this.login = login;
+        this.name = name;
+        this.surname = surname;
+        this.password = password;
+        this.active = active;
+        this.registered = registered;
+        setBill(money);
     }
 
     public String getLogin() {
@@ -71,7 +78,6 @@ public class User extends BaseEntity{
 
     public String getPassword() {
         return password;
-//        return Encrypt.hash(password, "SHA-256");
     }
 
     public void setPassword(String password) {
@@ -94,14 +100,6 @@ public class User extends BaseEntity{
         this.registered = registered;
     }
 
-    public double getBill() {
-        return bill;
-    }
-
-    public void setBill(double bill) {
-        this.bill = bill;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -110,17 +108,46 @@ public class User extends BaseEntity{
         this.role = role;
     }
 
-
-
     public List<Order> getOrders() {
         return orders;
+    }
+
+    public BigDecimal getBill() {
+        return bill;
+    }
+
+    public void setBill(BigDecimal bigDecimal) {
+        bill = bigDecimal;
+        bill = bill.setScale(2, BigDecimal.ROUND_FLOOR);
+    }
+
+    public void setBill(double money) {
+        bill = new BigDecimal(Double.toString(money));
+        bill = bill.setScale(2, BigDecimal.ROUND_FLOOR);
+    }
+
+    public void addBill(double money) {
+        if (bill == null) {
+            bill = new BigDecimal(Double.toString(money));
+            bill = bill.setScale(2, BigDecimal.ROUND_FLOOR);
+        } else {
+            bill = bill.add(new BigDecimal(Double.toString(money)));
+        }
+    }
+
+    public void reduceBill(double money) {
+        if (bill.doubleValue() > money) {
+            BigDecimal reducedMoney = new BigDecimal(Double.toString(money));
+            bill = bill.subtract(reducedMoney);
+        } else {
+            throw new NoMoneyException("Sorry, there are not enough funds in your account");
+        }
     }
 
     public void setOrders(List<Order> orders) {
         for (Order o : orders) {
             addOrder(o);
         }
-//        this.orders = orders;
     }
 
     public void addOrder(Order order) {
@@ -129,15 +156,15 @@ public class User extends BaseEntity{
     }
 
     public boolean isAdmin() {
-        return role.equals(Role.ROLE_ADMIN);
+        return role == Role.ROLE_ADMIN;
     }
 
     public boolean isManager() {
-        return role.equals(Role.ROLE_MANAGER);
+        return role == Role.ROLE_MANAGER;
     }
 
     public boolean isClient() {
-        return role.equals(Role.ROLE_USER);
+        return role == Role.ROLE_USER;
     }
 
     public String getDateByPattern() {
@@ -154,8 +181,35 @@ public class User extends BaseEntity{
                 ", surname='" + surname + '\'' +
                 ", active=" + active +
                 ", registered=" + registered +
+                ", bill=" + bill +
                 ", role=" + role +
                 ", orders=" + orders +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return isActive() == user.isActive() &&
+                getLogin().equals(user.getLogin()) &&
+                Objects.equals(getName(), user.getName()) &&
+                Objects.equals(getSurname(), user.getSurname()) &&
+                Objects.equals(getPassword(), user.getPassword()) &&
+                Objects.equals(getRegistered(), user.getRegistered()) &&
+                Objects.equals(getBill(), user.getBill()) &&
+                getRole() == user.getRole() &&
+                Objects.equals(getOrders(), user.getOrders());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLogin(), getName(), getSurname(), getPassword(), isActive(), getRegistered(), getBill(),
+                getRole(), getOrders());
+    }
+
+    //    public User getUser() {
+//        return this;
+//    }
 }

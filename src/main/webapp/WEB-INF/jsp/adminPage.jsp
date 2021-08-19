@@ -9,7 +9,6 @@
     <div class="row">
 
         <div class="col-sm-2">
-            <%--<%@include file="head/leftForm.jsp"%>--%>
         </div>
 
 
@@ -26,8 +25,6 @@
                 </button>
             </div>
 
-
-            <%--@elvariable id="action" type="java.lang.String"--%>
             <c:if test="${fn:contains(action, 'user')}">  <%@include file="adm/users.jsp"%> </c:if>
 
             <c:if test="${fn:contains(action, 'room')}">  <%@include file="adm/rooms.jsp"%> </c:if>

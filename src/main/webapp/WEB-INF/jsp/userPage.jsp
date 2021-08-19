@@ -9,7 +9,6 @@
     <div class="row">
 
         <div class="col-sm-2">
-            <%--<%@include file="head/leftForm.jsp"%>--%>
             <c:if test="${(action == 'room') or (action == 'filter')}">  <%@include file="usr/filters.jsp"%> </c:if>
 
             <c:if test="${(sessionScope.get('user').client) and (action != 'room') and (action != 'filter')}">
@@ -36,7 +35,6 @@
                 </div>
             </c:if>
 
-            <%--@elvariable id="action" type="java.lang.String"--%>
             <c:if test="${(action == 'room') or (action == 'filter')}">  <%@include file="usr/rooms.jsp"%> </c:if>
 
             <c:if test="${ap == 'order'}">  <%@include file="usr/orders.jsp"%> </c:if>

@@ -1,7 +1,6 @@
 package org.aleks4ay.hotel.service;
 
 import org.aleks4ay.hotel.model.BaseEntity;
-import org.aleks4ay.hotel.model.Room;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
 
 public final class UtilService<T> {
 
-    public List<T> doPagination(int positionOnPage, int page, List<? extends BaseEntity> entities) {
+    List<T> doPagination(int positionOnPage, int page, List<? extends BaseEntity> entities) {
         int startPosition = positionOnPage * (page - 1);
         List<T> roomsAfterFilter = new ArrayList<>();
 
