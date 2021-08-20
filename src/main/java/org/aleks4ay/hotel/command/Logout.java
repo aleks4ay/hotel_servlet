@@ -5,21 +5,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 class Logout implements Command {
     private static final Logger log = LogManager.getLogger(Logout.class);
 
     @Override
     public String execute(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        if (session.getAttribute("user") == null) {
-            return "WEB-INF/index.jsp";
-        } else {
-            log.info("User '{}' was logged out.", ((User) session.getAttribute("user")).getLogin());
+        if (request.getSession().getAttribute("user") != null) {
+            log.info("User '{}' was logged out.", ((User) request.getSession().getAttribute("user")).getLogin());
             request.getSession().invalidate();
             request.setAttribute("userType", "guest");
-            return "WEB-INF/index.jsp";
         }
+        return "WEB-INF/jsp/index.jsp";
     }
 }

@@ -10,48 +10,56 @@ import org.aleks4ay.hotel.service.RoomService;
 import org.aleks4ay.hotel.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 class AdminCommand implements Command {
-    private final static int POSITION_ON_PAGE = 8;
+    private final static int POSITION_ON_PAGE = 4;
+    private final RoomService roomService = new RoomService(new ConnectionPool());
+    private final UserService userService = new UserService(new ConnectionPool());
+    private final OrderService orderService = new OrderService(new ConnectionPool());
 
     @Override
     public String execute(HttpServletRequest request) {
         if(request.getSession().getAttribute("user") == null) {
-            return "/WEB-INF/index.jsp";
+            return "/WEB-INF/jsp/index.jsp";
         }
         String action = request.getParameter("action") == null ? "user" : request.getParameter("action");
         request.setAttribute("itemOnPage", POSITION_ON_PAGE);
 
-        if (action.equalsIgnoreCase("newRoom")){
-            int number = Integer.parseInt(request.getParameter("number"));
-            String description = request.getParameter("description");
-            long price = Long.parseLong(request.getParameter("price"));
-            int guests = Integer.parseInt(request.getParameter("guests"));
-            Category category = Category.valueOf(request.getParameter("category"));
-            String imgName = request.getParameter("imgName");
-
-            new RoomService(new ConnectionPool()).create(new Room(number, category, guests, description, price, imgName));
-            return "redirect:/admin?action=room";
+        if (action.equalsIgnoreCase("newRoom") || action.equalsIgnoreCase("saveChangedRoom")){
+            if (action.equalsIgnoreCase("newRoom")) {
+                roomService.create(Utils.getNewRoomFromRequest(request, true));
+            } else {
+                roomService.update(Utils.getNewRoomFromRequest(request, false));
+            }
+            return "redirect:/admin?action=room&pg=" + request.getAttribute("pg");
         }
 
         request.setAttribute("action", action);
 
+        if (action.equalsIgnoreCase("changeRoom")) {
+            request.setAttribute("categories", Category.values());
+            request.setAttribute("room", roomService.getById(Long.parseLong(request.getParameter("id"))));
+            return "WEB-INF/jsp/adminPage.jsp";
+        }
+
         if (action.equalsIgnoreCase("user")) {
-            UserService userService = new UserService(new ConnectionPool());
-            List<User> userList = userService.findAll();
+            List<User> userList = userService.findAll("login");
             userList = userService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), userList);
             request.setAttribute("users", userList);
 
         } else if (action.equalsIgnoreCase("room")){
-            RoomService roomService = new RoomService(new ConnectionPool());
-            List<Room> roomList = roomService.getAll();
+            Utils.initSortMethod(request);
+            List<Room> roomList = roomService.getAll((String) request.getAttribute("sortMethod"), new ArrayList<>());
             roomList = roomService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), roomList);
+
             request.setAttribute("rooms", roomList);
             request.setAttribute("categories", Category.values());
 
         } else if (action.equalsIgnoreCase("order")){
-            List<Order> orderList = new OrderService(new ConnectionPool()).getAll();
+            List<Order> orderList = orderService.findAll("id");
+            orderList = orderService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), orderList);
             request.setAttribute("orders", orderList);
         }
         return "WEB-INF/jsp/adminPage.jsp";

@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 public class Order extends BaseEntity {
 
-    private long id;
     private LocalDate arrival;
     private LocalDate departure;
     private int period;
@@ -32,16 +32,6 @@ public class Order extends BaseEntity {
         this.room = room;
         this.correctPrice = room.getPrice();
         this.registered = registered;
-    }
-
-    @Override
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(long id) {
-        this.id = id;
     }
 
     public LocalDate getArrival() {
@@ -116,6 +106,11 @@ public class Order extends BaseEntity {
         this.user = user;
     }
 
+    public void setUserDeeply(User user) {
+        this.user = user;
+        user.addOrder(this);
+    }
+
     public Room getRoom() {
         return room;
     }
@@ -163,7 +158,7 @@ public class Order extends BaseEntity {
     @Override
     public String toString() {
         return "Order{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", arrival=" + arrival +
                 ", departure=" + departure +
                 ", period=" + period +
@@ -172,8 +167,33 @@ public class Order extends BaseEntity {
                 ", registered=" + registered +
                 ", correctPrice=" + correctPrice +
                 ", status=" + status +
+                ", room=" + room +
                 ", user=" + user.getLogin() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return getId() == order.getId() &&
+                getPeriod() == order.getPeriod() &&
+                getGuests() == order.getGuests() &&
+                getCorrectPrice() == order.getCorrectPrice() &&
+                Objects.equals(getArrival(), order.getArrival()) &&
+                Objects.equals(getDeparture(), order.getDeparture()) &&
+                getCategory() == order.getCategory() &&
+                Objects.equals(getRegistered(), order.getRegistered()) &&
+                getStatus() == order.getStatus() &&
+                getUser().equals(order.getUser()) &&
+                Objects.equals(getInvoice(), order.getInvoice()) &&
+                Objects.equals(getRoom(), order.getRoom());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getArrival(), getDeparture(), getPeriod(), getGuests(), getCategory(), getRegistered(), getCorrectPrice(), getStatus(), getUser(), getRoom(), getInvoice());
     }
 
     public enum Status {

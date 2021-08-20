@@ -1,33 +1,31 @@
-package org.aleks4ay.hotel.dao;
+package org.aleks4ay.hotel.service;
 
-import org.aleks4ay.hotel.exception.NotEmptyRoomException;
-import org.aleks4ay.hotel.model.*;
+import org.aleks4ay.hotel.dao.ConnectionPool;
+import org.aleks4ay.hotel.dao.ConnectionPoolTest;
+import org.aleks4ay.hotel.model.Invoice;
 import org.aleks4ay.hotel.model.Order;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.sql.*;
-import java.time.LocalDate;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.time.LocalDateTime;
-import java.util.List;
 
-import org.junit.*;
 import static org.junit.Assert.*;
 
-
-public class OrderDaoTest {
-    private final ConnectionPool connectionPool = new ConnectionPoolTest();
-    private OrderDao dao;
+public class InvoiceServiceTest {
     private Connection conn;
-    private User userOne;
-    private Order orderOne;
+    private final ConnectionPool connectionPool = new ConnectionPoolTest();
+    private InvoiceService invoiceService = new InvoiceService(new ConnectionPoolTest());
 
     @Before
     public void setUp() throws Exception {
         conn = connectionPool.getConnection();
-        dao = new OrderDao(conn);
         Statement statement = conn.createStatement();
         statement.execute("delete from usr where true;");
         statement.execute("delete from orders where true;");
         statement.execute("delete from room where true;");
+        statement.execute("delete from invoice where true;");
         statement.execute("ALTER sequence id_seq restart with 1;");
         statement.execute("insert into usr (login, name, surname, password, registered, active, bill) VALUES " +
                 "('login1', 'name1', 'surname1', '0B14D501A594442A01C6859541BCB3E8164D183D32937B851835442F69D5C94E', " +
@@ -52,68 +50,29 @@ public class OrderDaoTest {
         statement.execute("insert into order_invoice (order_id, invoice_id) VALUES (6, 9), (7, 10);");
     }
 
-    @Before
-    public void setStartValue() {
-        userOne = new User(
-                "login1", "name1", "surname1",
-                "0B14D501A594442A01C6859541BCB3E8164D183D32937B851835442F69D5C94E", true,
-                LocalDateTime.of(2021, 9, 10, 15, 54, 44), 10);
-        userOne.setId(1L);
-        userOne.setRole(Role.ROLE_USER);
-        orderOne = new Order(LocalDate.of(2021, 9, 3), LocalDate.of(2021, 9, 4), 1, Category.STANDARD,
-                LocalDateTime.of(2021, 9, 10, 15, 54, 44), 410);
-        orderOne.setStatus(Order.Status.BOOKED);
-        orderOne.setUser(userOne);
-    }
-
-    @After
-    public void tearDown() {
-        connectionPool.closeConnection(conn);
-    }
 
     @Test
     public void findById() {
-        System.out.println(dao.findById(6L).get());
-        System.out.println(dao.findById(8L).get());
-        assertEquals(Order.class, dao.findById(8L).get().getClass());
+        assertEquals(Invoice.class, invoiceService.findById(10L).getClass());
     }
 
     @Test
-    public void findByIdIfNotRoom() {
-        Order actual = dao.findById(8L).get();
-        assertNull(actual.getRoom());
+    public void findByOrderId() {
+        assertEquals(Invoice.class, invoiceService.findByOrderId(6L).getClass());
     }
 
     @Test
     public void findAll() {
-        assertEquals(3, dao.findAll("id").size());
+        assertEquals(2, invoiceService.findAll("id").size());
     }
 
     @Test
-    public void findAllByUser() {
-        List<Order> orders = dao.findAllByUser(1L, "id");
-        assertEquals(2, orders.size());
-    }
-
-    @Test
-    public void checkRoomByRoomIdIfEmpty() {
-        int quantityOccupiedRoom = dao.checkRoomByRoomId(4L, LocalDate.of(2021, 9, 3), LocalDate.of(2021, 9, 4));
-        assertEquals(0, quantityOccupiedRoom);
-    }
-
-    @Test
-    public void checkRoomByRoomIdIfNotEmpty() {
-        int quantityOccupiedRoom = dao.checkRoomByRoomId(4L, LocalDate.of(2021, 9, 2), LocalDate.of(2021, 9, 14));
-        assertEquals(2, quantityOccupiedRoom);
-    }
-
-    @Test
-    public void saveRoomLink() {
-        Order expected = dao.create(orderOne).orElseThrow(() -> new NotEmptyRoomException("this room occupied"));
-        Room room = new Room(4L);
-        expected.setRoom(room);
-        dao.saveRoomLink(expected);
-        Order actual = dao.findById(11L).get();
-        assertEquals(expected.getRoom(), actual.getRoom());
+    public void create() {
+        Order order = new Order(8L);
+        Invoice invoice = new Invoice(LocalDateTime.of(2021, 9, 10, 15, 54, 44), Invoice.Status.NEW, order);
+        invoiceService.create(invoice);
+        Invoice actual = invoiceService.findById(11L);
+        assertNotEquals(0L, actual.getId());
+        assertNotEquals(0L, actual.getOrder().getId());
     }
 }

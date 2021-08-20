@@ -11,7 +11,7 @@
     </div>
     <div class="mb-3">
         <label for="field1" class="form-label"> <fmt:message key="guests"/> </label>
-        <select id="field1" name="field1" class="col-md-12 form-control">
+        <select id="field1" name="guests" class="col-md-12 form-control">
             <option value="1"> 1 </option>
             <option value="2"> 2 </option>
             <option value="3"> 3 </option>
@@ -20,7 +20,7 @@
     </div>
     <div class="mb-3">
         <label for="field2" class="form-label"> <fmt:message key="category"/> </label>
-        <select id="field2" name="field2" class="col-md-12 form-control">
+        <select id="field2" name="category" class="col-md-12 form-control">
             <c:forEach items="${categories}" var="category">
                 <option value="${category}"> ${category} </option>
             </c:forEach>
@@ -28,10 +28,7 @@
     </div>
     <div >
         <c:if test="${not empty sessionScope.get('user')}">
-            <button type="submit" class="btn btn-outline-success" >  <fmt:message key="cart_2"/>  </button>
-        </c:if>
-        <c:if test="${empty sessionScope.get('user')}">
-            <button type="submit" class="btn btn-outline-success" disabled >  <fmt:message key="cart_2"/>  </button>
+            <button type="submit" class="btn btn-outline-success"> <fmt:message key="cart_2"/>  </button>
         </c:if>
     </div>
 </form>

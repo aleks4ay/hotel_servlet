@@ -7,7 +7,6 @@ import java.util.Objects;
 
 public class Room extends BaseEntity {
 
-    private long id;
     private int number;
     private Category category;
     private int guests;
@@ -31,16 +30,6 @@ public class Room extends BaseEntity {
         this.description = description;
         this.price = price;
         this.imgName = imgName;
-    }
-
-    @Override
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(long id) {
-        this.id = id;
     }
 
     public int getNumber() {
@@ -138,7 +127,7 @@ public class Room extends BaseEntity {
     @Override
     public String toString() {
         return "Room{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", number=" + number +
                 ", category=" + category +
                 ", guests=" + guests +

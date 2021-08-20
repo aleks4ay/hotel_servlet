@@ -2,6 +2,8 @@ package org.aleks4ay.hotel.service;
 
 import org.aleks4ay.hotel.model.BaseEntity;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,5 +35,10 @@ public final class UtilService<T> {
             sb.append(f);
         }
         return sb.append(";").toString();
+    }
+
+    public static LocalDate getDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(date, formatter);
     }
 }

@@ -2,10 +2,10 @@ package org.aleks4ay.hotel.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
-public class Invoice {
+public class Invoice extends BaseEntity{
 
-    private long id;
     private LocalDateTime registered = LocalDateTime.now();
     private long cost;
     private Invoice.Status status;
@@ -15,20 +15,16 @@ public class Invoice {
     public Invoice() {
     }
 
+    public Invoice(long id) {
+        super(id);
+    }
+
     public Invoice(LocalDateTime registered, Status status, Order order) {
         this.registered = registered;
         this.cost = order.getCost();
         this.status = status;
         this.order = order;
         order.setInvoice(this);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public LocalDateTime getRegistered() {
@@ -75,12 +71,28 @@ public class Invoice {
     @Override
     public String toString() {
         return "Invoice{" +
-                "id=" + id +
+                "id=" + getId() +
                 ", registered=" + registered +
                 ", cost=" + cost +
                 ", status=" + status +
-//                ", order=" + order +
+                ", order=" + order.getId() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Invoice invoice = (Invoice) o;
+        return getCost() == invoice.getCost() &&
+                Objects.equals(getRegistered(), invoice.getRegistered()) &&
+                getStatus() == invoice.getStatus() &&
+                Objects.equals(getOrder(), invoice.getOrder());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getRegistered(), getCost(), getStatus(), getOrder());
     }
 
     public enum Status {

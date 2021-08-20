@@ -11,8 +11,8 @@ public class OrderDto {
     private String description;
     private LocalDate arrival;
     private LocalDate departure;
-    private String arrivalString;
-    private String departureString;
+//    private String arrivalString;
+//    private String departureString;
     private long correctPrice;
     private String imgName;
 
@@ -78,7 +78,7 @@ public class OrderDto {
     public void setDeparture(LocalDate departure) {
         this.departure = departure;
     }
-
+/*
     public String getArrivalString() {
         return arrivalString;
     }
@@ -93,7 +93,7 @@ public class OrderDto {
 
     public void setDepartureString(String departureString) {
         this.departureString = departureString;
-    }
+    }*/
 
     public long getCorrectPrice() {
         return correctPrice;
@@ -117,5 +117,21 @@ public class OrderDto {
 
     public double getCost() {
         return getCorrectPrice() * getPeriod();
+    }
+
+    @Override
+    public String toString() {
+        return "OrderDto{" +
+                "number=" + number +
+                ", category=" + category +
+                ", guests=" + guests +
+                ", description='" + description + '\'' +
+                ", arrival=" + arrival +
+                ", departure=" + departure +
+//                ", arrivalString='" + arrivalString + '\'' +
+//                ", departureString='" + departureString + '\'' +
+                ", correctPrice=" + correctPrice +
+                ", imgName='" + imgName + '\'' +
+                '}';
     }
 }

@@ -2,9 +2,13 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.dao.mapper.RoomMapper;
 import org.aleks4ay.hotel.model.Room;
+
 import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RoomDao extends AbstractDao<Long, Room>{
 
@@ -17,13 +21,60 @@ public class RoomDao extends AbstractDao<Long, Room>{
         return getAbstractById("SELECT * FROM room WHERE id = ?;", id);
     }
 
-    @Override
-    public List<Room> findAll() {
-        return findAbstractAll("SELECT * FROM room;");
+    public Optional<Room> findByNumber(int number) {
+        try (PreparedStatement prepStatement = connection.prepareStatement("SELECT * FROM room WHERE number = ?;")) {
+            prepStatement.setInt(1, number);
+            ResultSet rs = prepStatement.executeQuery();
+            if (rs.next()) {
+                return Optional.of(objectMapper.extractFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
-    public List<Room> findAllWithFilter(String filters) {
-        String sql = "SELECT * FROM room WHERE " + filters;
+    @Override
+    public List<Room> findAll(String sortMethod) {
+        return findAbstractAll("SELECT * FROM room order by " + sortMethod + ";");
+    }
+
+    public List<Room> findEmptyRoom(LocalDate start, LocalDate end, String sortMethod, List<String> filters) {
+        String filterSql = filters.stream()
+                .map(s -> " and " + s)
+                .collect(Collectors.joining());
+
+        String sql2 = "select r.* from room r WHERE r.id NOT IN (" +
+                "            select DISTINCT x.room_id from order_room x INNER JOIN orders o on x.order_id = o.id AND (" +
+                "            (? BETWEEN o.arrival and o.departure)" +
+                "            or (? BETWEEN o.arrival and o.departure)" +
+                "            or (o.arrival BETWEEN ? and ?))) " + filterSql + " order by " + sortMethod + ";";
+        List<Room> roomList = new ArrayList<>();
+        try (PreparedStatement prepStatement = connection.prepareStatement(sql2)){
+            prepStatement.setDate(1, Date.valueOf(start));
+            prepStatement.setDate(2, Date.valueOf(end));
+            prepStatement.setDate(3, Date.valueOf(start));
+            prepStatement.setDate(4, Date.valueOf(end));
+            ResultSet rs = prepStatement.executeQuery();
+            while (rs.next()) {
+                roomList.add(objectMapper.extractFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roomList;
+    }
+
+    public List<Room> findEmptyRoom(LocalDate start, String sortMethod, List<String> filters) {
+        return findEmptyRoom(start, start, sortMethod, filters);
+    }
+
+
+    public List<Room> findAllWithFilter(String sortMethod, List<String> filters) {
+        String filterSql = filters.stream()
+                .map(s -> " and " + s)
+                .collect(Collectors.joining()).replaceFirst("and", "where");
+        String sql = "SELECT * FROM room " + filterSql + " order by " + sortMethod + ";";
         return findAbstractAll(sql);
     }
 

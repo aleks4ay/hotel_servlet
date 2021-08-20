@@ -2,6 +2,7 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.dao.mapper.ObjectMapper;
 import org.aleks4ay.hotel.model.BaseEntity;
+import org.aleks4ay.hotel.model.Order;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.Optional;
 abstract class AbstractDao<K, T extends BaseEntity> {
 
     public abstract Optional<T> findById(K key);
-    public abstract List<T> findAll();
+    public abstract List<T> findAll(String sortMethod);
     public abstract Optional<T> create(T t);
 
     ObjectMapper<T> objectMapper;
@@ -27,6 +28,21 @@ abstract class AbstractDao<K, T extends BaseEntity> {
         try (Statement st = connection.createStatement()){
             ResultSet rs = st.executeQuery(sql);
 
+            while (rs.next()) {
+                T t = objectMapper.extractFromResultSet(rs);
+                entities.add(t);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return entities;
+    }
+
+    List<T> findAbstractAllById(long id, String sql) {
+        List<T> entities = new ArrayList<>();
+        try (PreparedStatement prepStatement = connection.prepareStatement(sql)){
+            prepStatement.setLong(1, id);
+            ResultSet rs = prepStatement.executeQuery();
             while (rs.next()) {
                 T t = objectMapper.extractFromResultSet(rs);
                 entities.add(t);

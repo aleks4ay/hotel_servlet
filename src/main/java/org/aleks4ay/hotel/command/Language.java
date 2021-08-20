@@ -22,6 +22,6 @@ class Language implements Command {
                 e.printStackTrace();
             }
         }
-        return "WEB-INF/index.jsp";
+        return "WEB-INF/jsp/index.jsp";
     }
 }

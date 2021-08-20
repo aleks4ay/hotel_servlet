@@ -51,8 +51,8 @@ public class UserDao extends AbstractDao<Long, User>{
     }
 
     @Override
-    public List<User> findAll() {
-        return findAbstractAll("SELECT * FROM usr JOIN user_roles ON usr.id=user_id;");
+    public List<User> findAll(String sortMethod) {
+        return findAbstractAll("SELECT * FROM usr JOIN user_roles ON usr.id=user_id order by " + sortMethod + ";");
     }
 
     public boolean update(User user) {

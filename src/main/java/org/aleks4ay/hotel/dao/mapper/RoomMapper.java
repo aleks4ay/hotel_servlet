@@ -26,7 +26,7 @@ public class RoomMapper implements ObjectMapper<Room> {
         statement.setString(1, room.getCategory().getTitle());
         statement.setInt(2, room.getGuests());
         statement.setString(3, room.getDescription());
-        statement.setDouble(4, room.getPrice());
+        statement.setLong(4, room.getPrice());
         statement.setString(5, room.getImgName());
         statement.setInt(6, room.getNumber());
     }

@@ -1,20 +1,16 @@
 package org.aleks4ay.hotel.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.*;
 
-import java.time.LocalDate;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-//import org.junit.*;
 import static org.junit.Assert.*;
 
 public class RoomTest {
     private Room room1, room2, room3;
     private List<Room> rooms = new LinkedList<>();
 
-    @BeforeEach
+    @Before
     public void setUp() {
         room1 = new Room(101, Category.STANDARD, 2, "Номер с видом на море", 1_600, "101.jpg");
         room2 = new Room(106, Category.SUPERIOR, 3, "Номер с wi-fi и видом на море", 2_800, "106.jpg");

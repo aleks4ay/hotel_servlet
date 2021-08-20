@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top">
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav mr-auto" style="font-size: 1.5rem">
+        <ul class="navbar-nav mr-auto" style="font-size: 1.1rem">
             <li class="nav-item">
                 <a class="nav-link gap-item" href="/"><fmt:message key="home"/></a>
             </li>
@@ -17,14 +17,25 @@
                     <a class="nav-link gap-item" href="/user?action=account&ap=order"><fmt:message key="account"/></a>
                 </li>
             </c:if>
-            <c:if test="${sessionScope.get('user').admin}">
-                <li class="nav-item">
-                    <a class="nav-link gap-item" href="/admin"><fmt:message key="admin"/></a>
-                </li>
-            </c:if>
+
             <c:if test="${sessionScope.get('user').manager}">
                 <li class="nav-item">
-                    <a class="nav-link gap-item" href="/manager"><fmt:message key="manager"/></a>
+                    <a class="nav-link gap-item" href="/manager?action=room"><fmt:message key="adm_act_2"/></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link gap-item" href="/manager?action=account&ap=order"><fmt:message key="adm_act_3"/></a>
+                </li>
+            </c:if>
+
+            <c:if test="${sessionScope.get('user').admin}">
+                <li class="nav-item">
+                    <a class="nav-link gap-item" href="/admin?action=room"> <fmt:message key="adm_act_2"/> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link gap-item" href="/admin?action=user"> <fmt:message key="adm_act_1"/> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link gap-item" href="/admin?action=order"> <fmt:message key="adm_act_3"/> </a>
                 </li>
             </c:if>
         </ul>

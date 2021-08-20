@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ServletController extends HttpServlet{
-    private Map<String, Command> commands = new HashMap<>();
+    private final Map<String, Command> commands = new HashMap<>();
     private static final Logger log = LogManager.getLogger(ServletController.class);
 
     @Override
@@ -39,7 +39,7 @@ public class ServletController extends HttpServlet{
             throws ServletException, IOException {
 
         String path = request.getRequestURI().replaceAll(".*(/app)?/", "");
-        Command command = commands.getOrDefault(path, (r)->"/WEB-INF/index.jsp");
+        Command command = commands.getOrDefault(path, (r)->"/WEB-INF/jsp/index.jsp");
         String urlPage = command.execute(request);
         if (urlPage.contains("redirect:")) {
             log.debug("redirect to=" + urlPage.replaceAll("redirect:", ""));

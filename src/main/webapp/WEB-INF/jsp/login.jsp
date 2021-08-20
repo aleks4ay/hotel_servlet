@@ -1,8 +1,8 @@
-<%@include file="head/headerPrefixAndLanguage.jsp"%>
+<%@include file="fragments/headerPrefixAndLanguage.jsp"%>
 
-<%@include file="head/head.jsp"%>
+<%@include file="fragments/head.jsp"%>
 
-<body>
+<body class="login">
 
 <div class="center1">
     <form class="inner_logo" method="post" action="/login">

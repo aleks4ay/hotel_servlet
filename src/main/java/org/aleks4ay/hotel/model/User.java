@@ -176,9 +176,9 @@ public class User extends BaseEntity{
     public String toString() {
         return "User{" +
                 "id=" + getId() +
-                ", login='" + login + '\'' +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
+                ", login='" + login +
+                ", name='" + name +
+                ", surname='" + surname +
                 ", active=" + active +
                 ", registered=" + registered +
                 ", bill=" + bill +

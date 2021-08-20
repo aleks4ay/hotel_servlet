@@ -9,6 +9,7 @@
             <th scope="col"><fmt:message key="guests"/></th>
             <th scope="col"><fmt:message key="description"/></th>
             <th scope="col"><fmt:message key="price"/></th>
+            <th scope="col"><fmt:message key="photo"/></th>
         </tr>
         </thead>
         <tbody>
@@ -22,11 +23,16 @@
                 <td><c:out value="${room.guests}" /></td>
                 <td><c:out value="${room.description}" /></td>
                 <td><c:out value="${room.price}" /></td>
+                <td> <img width="200px" src="/static/img/${room.imgName}"/> </td>
+
+                <td>
+                    <a href="/admin?action=changeRoom&id=${room.id}&pg=${pg}"> <fmt:message key="change"/> </a>
+                </td>
             </tr>
         </c:forEach>
         </tbody>
     </table>
 
-    <%@include file="../head/pagination.jsp"%>
+    <%@include file="../fragments/pagination.jsp"%>
 
 </div>

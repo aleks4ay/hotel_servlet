@@ -37,6 +37,6 @@
         </tbody>
     </table>
 
-    <%@include file="../head/pagination.jsp"%>
+    <%@include file="../fragments/pagination.jsp"%>
 
 </div>

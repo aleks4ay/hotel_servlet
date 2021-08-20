@@ -64,6 +64,11 @@
     margin-bottom: auto;
 }
 
+.disabled {
+    pointer-events: none;
+    cursor: default;
+    color: #888;
+}
 
 
 body {

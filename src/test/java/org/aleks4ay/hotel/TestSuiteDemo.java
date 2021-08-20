@@ -1,11 +1,21 @@
 package org.aleks4ay.hotel;
 
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.platform.suite.api.SelectPackages;
+import org.aleks4ay.hotel.dao.*;
+import org.aleks4ay.hotel.model.RoomTest;
+import org.aleks4ay.hotel.service.*;
+
 import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-
-@RunWith(JUnitPlatform.class)
-@SelectPackages("org.aleks4ay")
+@Suite.SuiteClasses(
+        {
+                OrderDaoTest.class,
+                RoomDaoTest.class,
+                UserDaoTest.class,
+//                RoomTest.class,
+                OrderServiceTest.class,
+                UserServiceTest.class
+        })
+@RunWith(Suite.class)
 public class TestSuiteDemo {
 }

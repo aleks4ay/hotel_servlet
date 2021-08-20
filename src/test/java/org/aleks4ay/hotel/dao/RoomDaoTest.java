@@ -3,18 +3,13 @@ package org.aleks4ay.hotel.dao;
 import org.aleks4ay.hotel.exception.NotEmptyRoomException;
 import org.aleks4ay.hotel.model.Category;
 import org.aleks4ay.hotel.model.Room;
-import org.aleks4ay.hotel.service.UtilService;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 public class RoomDaoTest {
@@ -22,7 +17,7 @@ public class RoomDaoTest {
     private RoomDao dao;
     private Connection conn;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         conn = connectionPool.getConnection();
         dao = new RoomDao(conn);
@@ -34,7 +29,7 @@ public class RoomDaoTest {
                 "(102, 'SUITE',4,'description 2','102.jpg', 420.00);");
     }
 
-    @AfterEach
+    @After
     public void tearDown() {
         connectionPool.closeConnection(conn);
     }
@@ -47,7 +42,7 @@ public class RoomDaoTest {
         assertEquals(dao.findById(1L).get(), expected);
     }
 
-    @Test
+/*    @Test
     public void findAllWithFilter() throws Exception {
         List<String> filters = new ArrayList<>();
         filters.add(" guests = " + "4");
@@ -58,11 +53,11 @@ public class RoomDaoTest {
         expectedRoom.setId(2L);
         List<Room> expectedRooms = Collections.singletonList(expectedRoom);
         assertEquals(expectedRooms, actualRooms);
-    }
+    }*/
 
     @Test
     public void findAll()  {
-        final List<Room> rooms = dao.findAll();
+        final List<Room> rooms = dao.findAll("id");
         assertEquals(2, rooms.size());
     }
 

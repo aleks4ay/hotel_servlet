@@ -30,7 +30,7 @@ public class OrderMapper implements ObjectMapper<Order> {
         statement.setDate(3, Date.valueOf(order.getDeparture()));
         statement.setInt(4, order.getGuests());
         statement.setString(5, order.getCategory().getTitle());
-        statement.setDouble(6, order.getCorrectPrice());
+        statement.setLong(6, order.getCorrectPrice());
         statement.setInt(7, order.getPeriod());
         statement.setString(8, order.getStatus().toString());
         statement.setLong(9, order.getUser().getId());

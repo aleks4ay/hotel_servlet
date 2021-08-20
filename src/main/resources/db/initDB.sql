@@ -61,7 +61,7 @@ CREATE TABLE orders (
 );
 
 CREATE TABLE invoice (
-    id          BIGINT NOT NULL,
+    id          BIGINT NOT NULL DEFAULT nextval('id_seq'),
     cost        BIGINT,
     registered  TIMESTAMP  NOT NULL DEFAULT now(),
     status      VARCHAR(64),

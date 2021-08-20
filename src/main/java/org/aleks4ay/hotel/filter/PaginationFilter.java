@@ -4,7 +4,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import java.io.IOException;
 
-@WebFilter( urlPatterns = { "/user", "/admin" })
+@WebFilter( urlPatterns = { "/user", "/admin", "/manager" })
 public class PaginationFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

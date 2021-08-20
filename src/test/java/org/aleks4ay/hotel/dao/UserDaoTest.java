@@ -4,22 +4,14 @@ import org.aleks4ay.hotel.exception.NotEmptyRoomException;
 import org.aleks4ay.hotel.model.Role;
 import org.aleks4ay.hotel.model.User;
 
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.sql.Connection;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-//import static org.junit.Assert.*;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 public class UserDaoTest {
     private static User expectedUserOne;
@@ -35,7 +27,7 @@ public class UserDaoTest {
         expectedUserOne.setRole(Role.ROLE_USER);
     }
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         conn = connectionPool.getConnection();
         dao = new UserDao(conn);
@@ -48,7 +40,7 @@ public class UserDaoTest {
         statement.execute("insert into user_roles (user_id, role) VALUES (1, 'ROLE_USER'), (2, 'ROLE_ADMIN');");
     }
 
-    @AfterEach
+    @After
     public void tearDown() throws Exception {
         connectionPool.closeConnection(conn);
     }
@@ -70,7 +62,7 @@ public class UserDaoTest {
 
     @Test
     public void findAll() {
-        final List<User> users = dao.findAll();
+        final List<User> users = dao.findAll("id");
         assertEquals(2, users.size());
     }
 

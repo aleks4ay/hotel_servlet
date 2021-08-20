@@ -1,7 +1,7 @@
 <div>
     <h2> <fmt:message key="adm_act_2"/>  </h2>
 
-    <%@include file="../head/dateField.jsp"%>
+    <%@include file="../fragments/sorting.jsp"%>
 
     <table class="table">
         <thead class="thead-light">
@@ -12,6 +12,7 @@
             <th scope="col"><fmt:message key="guests"/></th>
             <th scope="col"><fmt:message key="description"/></th>
             <th scope="col"><fmt:message key="price"/></th>
+            <th scope="col"><fmt:message key="photo"/></th>
         </tr>
         </thead>
         <tbody>
@@ -25,18 +26,20 @@
                 <td><c:out value="${room.guests}" /></td>
                 <td><c:out value="${room.description}" /></td>
                 <td><c:out value="${room.price}" /></td>
+                <td> <img width="200px" src="/static/img/${room.imgName}"/> </td>
+
                 <c:if test="${not empty sessionScope.get('user')}">
-                    <td><a href='<c:url value="/user?action=booking&id=${room.id}" />'><fmt:message key="act_2"/></a></td>
+                    <td><a href='<c:url value="/user?action=booking&id=${room.id}" />'>
+                        <fmt:message key="act_2"/></a></td>
                 </c:if>
                 <c:if test="${empty sessionScope.get('user')}">
-                    <td> <fmt:message key="act_2"/> </td>
+                    <td> <fmt:message key="book_info1"/> </td>
                 </c:if>
             </tr>
         </c:forEach>
         </tbody>
     </table>
-    <c:if test="${empty sessionScope.get('user')}">  <h3> <fmt:message key="book_info1"/> </h3>  </c:if>
 
-    <%@include file="../head/pagination.jsp"%>
+    <%@include file="../fragments/pagination.jsp"%>
 
 </div>

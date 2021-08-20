@@ -2,10 +2,12 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.dao.mapper.OrderMapper;
 import org.aleks4ay.hotel.model.Order;
+import org.aleks4ay.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,13 +20,19 @@ public class OrderDao extends AbstractDao<Long, Order>{
 
     @Override
     public Optional<Order> findById(Long id) {
-        return getAbstractById("SELECT o.*, x.room_id FROM orders o left join order_room x on o.id = x.order_id " +
-                "and o.id = ?;", id);
+        return getAbstractById("SELECT * FROM (SELECT * from orders o left join order_room x on o.id = x.order_id) " +
+                " AS o2 WHERE id = ?;", id);
     }
 
     @Override
-    public List<Order> findAll() {
-        return findAbstractAll("SELECT o.*, x.room_id FROM orders  o left join order_room x on o.id = x.order_id");
+    public List<Order> findAll(String sortMethod) {
+        return findAbstractAll("SELECT o.*, x.room_id FROM orders  o left join order_room x on o.id = x.order_id " +
+                " order by " + sortMethod + ";");
+    }
+
+    public List<Order> findAllByUser(long userId, String sortMethod) {
+        return findAbstractAllById(userId, "SELECT * FROM (SELECT * from orders o left join order_room x " +
+                "on o.id = x.order_id)  AS o2 WHERE user_id = ? order by " + sortMethod + ";");
     }
 
     @Override
@@ -49,5 +57,38 @@ public class OrderDao extends AbstractDao<Long, Order>{
             log.warn("Exception during create order '{}'. {}", order, e);
         }
         return newOrder;
+    }
+
+    public int checkRoomByRoomId(Long roomId, LocalDate start, LocalDate end) {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "select count(o.*) from order_room x INNER JOIN orders o on x.order_id = o.id AND x.room_id = ? " +
+                "         and ( (? BETWEEN o.arrival and o.departure) " +
+                "            or (? BETWEEN o.arrival and o.departure) " +
+                "            or (o.arrival BETWEEN ? and ?) )")) {
+
+            statement.setLong(1, roomId);
+            statement.setDate(2, Date.valueOf(start));
+            statement.setDate(3, Date.valueOf(end));
+            statement.setDate(4, Date.valueOf(start));
+            statement.setDate(5, Date.valueOf(end));
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            log.warn("Exception during check room with id '{}'. {}", roomId, e);
+        }
+        return 0;
+    }
+
+    public void saveRoomLink(Order order) {
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO order_room (order_id, room_id) " +
+                        "VALUES (?, ?);") ) {
+            statement.setLong(1, order.getId());
+            statement.setLong(2, order.getRoom().getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            log.warn("Exception during create order-room link '{}'. {}", order, e);
+        }
     }
 }

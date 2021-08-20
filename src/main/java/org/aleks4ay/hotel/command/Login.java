@@ -1,6 +1,7 @@
 package org.aleks4ay.hotel.command;
 
 import org.aleks4ay.hotel.dao.ConnectionPool;
+import org.aleks4ay.hotel.exception.NotFoundException;
 import org.aleks4ay.hotel.model.Role;
 import org.aleks4ay.hotel.model.User;
 import org.aleks4ay.hotel.service.UserService;
@@ -18,30 +19,25 @@ class Login implements Command {
         String pass = request.getParameter("log_pass");
 
         if ( (login == null || login.isEmpty()) && (pass == null || pass.isEmpty()) ) {
-            log.info("Try new exit");
+            log.info("Try new entered");
             CommandUtils.addBackUrl(request);
             return "WEB-INF/jsp/login.jsp";
         }
-        if (true/*!userService.checkLogin(login)*/) {
-            log.info("Login '{}' is wrong!", login);
-            request.setAttribute("wrongLogin", "Login is wrong!");
-            request.setAttribute("oldLogin", login);
-            return "WEB-INF/jsp/login.jsp";
-        }
-
-        if (/*!userService.checkPassword(login, pass)*/true) {
+        User user;
+        try {
+            user = userService.getByLoginAndPassword(login, pass);
+            request.getSession().setAttribute("user", user);
+        } catch (NotFoundException e) {
             log.info("Login '{}' or password is wrong!", login);
             request.setAttribute("wrongPass", "Password is wrong!");
             request.setAttribute("oldLogin", login);
             return "WEB-INF/jsp/login.jsp";
         }
 
-        User user = userService.getByLogin(login);
-        request.getSession().setAttribute("user", user);
         if (user.getRole() == Role.ROLE_ADMIN) {
             request.setAttribute("action", "user");
             log.info("Admin '{}' exited on site", login);
-            return "redirect:/admin";
+            return "redirect:/admin?action=room";
         }
         if (user.getRole() == Role.ROLE_MANAGER) {
             request.setAttribute("action", "order");
@@ -53,6 +49,6 @@ class Login implements Command {
             log.info("User '{}' exited on site", login);
             return "redirect:/user?action=room";
         }
-        return "WEB-INF/index.jsp";
+        return "WEB-INF/jsp/index.jsp";
     }
 }

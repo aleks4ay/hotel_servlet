@@ -40,15 +40,15 @@ public class UserService {
         return userOptional.orElseThrow(() -> new NotFoundException("User '" + login + "' non found or password is wrong"));
     }
 
-    public List<User> findAll() {
+    public List<User> findAll(String sortMethod) {
         Connection conn = connectionPool.getConnection();
-        List<User> users = new UserDao(conn).findAll();
+        List<User> users = new UserDao(conn).findAll(sortMethod);
         connectionPool.closeConnection(conn);
         return users;
     }
 
-    Map<Long, User> getAllAsMap() {
-        return findAll().stream()
+    Map<Long, User> getAllAsMap(String sortMethod) {
+        return findAll(sortMethod).stream()
                 .collect(Collectors.toMap(User::getId, u -> u));
     }
 
@@ -59,6 +59,7 @@ public class UserService {
         user.addBill(0d);
         User result = new UserDao(conn).create(user)
                     .orElseThrow(() -> new AlreadyException("User with login '" + user.getLogin() + "' already exists"));
+        new UserDao(conn).createRole(user);
         connectionPool.closeConnection(conn);
         return result;
     }
