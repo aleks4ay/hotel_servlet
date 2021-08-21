@@ -25,7 +25,7 @@ class Login implements Command {
         }
         User user;
         try {
-            user = userService.getByLoginAndPassword(login, pass);
+            user = userService.findByLoginAndPassword(login, pass);
             request.getSession().setAttribute("user", user);
         } catch (NotFoundException e) {
             log.info("Login '{}' or password is wrong!", login);

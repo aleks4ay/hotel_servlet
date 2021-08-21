@@ -2,12 +2,12 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.dao.mapper.OrderMapper;
 import org.aleks4ay.hotel.model.Order;
-import org.aleks4ay.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,6 +89,36 @@ public class OrderDao extends AbstractDao<Long, Order>{
             statement.executeUpdate();
         } catch (SQLException e) {
             log.warn("Exception during create order-room link '{}'. {}", order, e);
+        }
+    }
+
+    public boolean updateStatus(Order o) {
+        return updateStringAbstract(o.getStatus().toString(), o.getId(),
+                "update orders set status = ? where status !='CANCEL' and id = ?;");
+    }
+
+    public void updateRoom(Order order) {
+        try (PreparedStatement statement = connection.prepareStatement("update orders set status = 'BOOKED', " +
+                "correct_price = ? where id = ? and status = 'NEW';") ) {
+            statement.setLong(1, order.getRoom().getPrice());
+            statement.setLong(2, order.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            log.warn("Exception during create order-room link '{}'. {}", order, e);
+        }
+    }
+
+    public void doInvoiceInspector() {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "update invoice set status = 'CANCEL' where status = 'NEW' and registered < ?; " +
+                " update orders set status = 'CANCEL' where status = 'CONFIRMED' and id in (" +
+                     "select x.order_id from order_invoice x inner join invoice i on x.invoice_id = i.id " +
+                     "and i.status = 'CANCEL');") ) {
+            LocalDateTime canceledDate = LocalDateTime.now().minusDays(2);
+            statement.setTimestamp(1, Timestamp.valueOf(canceledDate));
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            log.warn("Exception during cancel old Invoice.", e);
         }
     }
 }

@@ -8,11 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 class Utils {
 
-    private static void parseDate(Map<String, Object> model, HttpServletRequest request) {
+    /*private static void parseDate(Map<String, Object> model, HttpServletRequest request) {
         HttpSession session = request.getSession();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -36,7 +38,7 @@ class Utils {
         } else {
             model.put("departure", session.getAttribute("departure"));
         }
-    }
+    }*/
 
     static void initSortMethod(HttpServletRequest request) {
         request.setAttribute("sortMethod", request.getSession().getAttribute("sortMethod") == null ? "id"
@@ -44,12 +46,12 @@ class Utils {
         request.getSession().setAttribute("sortMethod", request.getAttribute("sortMethod"));
     }
 
-    static void doFiltering(Map<String, Object> model, HttpServletRequest request) {
+ /*   static void doFiltering(Map<String, Object> model, HttpServletRequest request) {
         parseDate(model, request);
 
         String filterButtonName = request.getParameter("filter");
 
-        if (filterButtonName != null && filterButtonName.equalsIgnoreCase("filterCansel")) {
+        if (filterButtonName != null && filterButtonName.equalsIgnoreCase("filterCancel")) {
             request.removeAttribute("category");
             request.removeAttribute("guests");
             request.removeAttribute("arrival");
@@ -71,6 +73,33 @@ class Utils {
                 request.getSession().setAttribute("guests", Integer.parseInt(request.getParameter("filter_guests")));
             }
         }
+    }*/
+
+    public static String doFiltering(HttpServletRequest request, String path) {
+        List<String> filters = new ArrayList<>();
+
+        String filterButtonName = request.getParameter("filter");
+
+        if (filterButtonName != null && filterButtonName.equalsIgnoreCase("filterCancel")) {
+            request.removeAttribute("category");
+            request.removeAttribute("guests");
+            request.getSession().removeAttribute("category");
+            request.getSession().removeAttribute("guests");
+            request.getSession().removeAttribute("arrival");
+            request.getSession().removeAttribute("departure");
+        } else {
+            if (!request.getParameter("filter_category").equalsIgnoreCase("Select Category")) {
+                Category category = Category.valueOf(request.getParameter("filter_category"));
+                request.getSession().setAttribute("category", category);
+                filters.add(" category = '" + request.getParameter("filter_category") + "'");
+            }
+            if (!request.getParameter("filter_guests").equals("0")) {
+                request.getSession().setAttribute("guests", Integer.parseInt(request.getParameter("filter_guests")));
+                filters.add(" guests = " + request.getParameter("filter_guests"));
+            }
+            request.setAttribute("filters", filters);
+        }
+        return "redirect:" + path;
     }
 
     static Room getNewRoomFromRequest(HttpServletRequest request, boolean isNew) {
@@ -94,7 +123,7 @@ class Utils {
         model.put("category", request.getSession().getAttribute("category"));
     }
 
-    static void setAttributesFromManager(Map<String, Object> model, HttpServletRequest request, Order order) {
+    static void setAttributesFromManager(HttpServletRequest request, Order order) {
         HttpSession session = request.getSession();
         session.setAttribute("arrival", order.getArrival());
         session.setAttribute("departure", order.getDeparture());

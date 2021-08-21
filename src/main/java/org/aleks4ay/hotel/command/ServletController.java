@@ -1,5 +1,7 @@
 package org.aleks4ay.hotel.command;
 
+import org.aleks4ay.hotel.dao.ConnectionPool;
+import org.aleks4ay.hotel.service.OrderService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,8 +22,10 @@ public class ServletController extends HttpServlet{
         commands.put("logout", new Logout());
         commands.put("registration", new Registration());
         commands.put("admin", new AdminCommand());
+        commands.put("manager", new ManagerCommand());
         commands.put("user", new UserCommand());
         commands.put("exception", new CommandException());
+        startInvoiceInspector();
     }
 
     @Override
@@ -48,5 +52,18 @@ public class ServletController extends HttpServlet{
             log.debug("forward to=" + urlPage);
             request.getRequestDispatcher(urlPage).forward(request, response);
         }
+    }
+
+    private void startInvoiceInspector() {
+        new Thread(() -> {
+            while (Thread.currentThread().isAlive()) {
+                try {
+                    Thread.sleep(5 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                new OrderService(new ConnectionPool()).setCancelInvoice();
+            }
+        }).start();
     }
 }

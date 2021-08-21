@@ -63,7 +63,7 @@ public class InvoiceServiceTest {
 
     @Test
     public void findAll() {
-        assertEquals(2, invoiceService.findAll("id").size());
+        assertEquals(2, invoiceService.findAll().size());
     }
 
     @Test

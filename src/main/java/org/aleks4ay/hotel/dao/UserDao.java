@@ -21,7 +21,7 @@ public class UserDao extends AbstractDao<Long, User>{
         return getAbstractById("SELECT * FROM usr JOIN user_roles ON id = ? AND usr.id=user_id;", id);
     }
 
-    public Optional<User> getByLogin(String name) {
+    public Optional<User> findByLogin(String name) {
         String SQL_GET_BY_LOGIN = "SELECT * FROM usr INNER JOIN user_roles ON login = ? AND usr.id=user_id;";
         try (PreparedStatement prepStatement = connection.prepareStatement(SQL_GET_BY_LOGIN)) {
             prepStatement.setString(1, name);
@@ -35,7 +35,7 @@ public class UserDao extends AbstractDao<Long, User>{
         return Optional.empty();
     }
 
-    public Optional<User> getByLoginAndPassword(String name, String pass) {
+    public Optional<User> findByLoginAndPassword(String name, String pass) {
         String sql = "SELECT * FROM usr INNER JOIN user_roles ON login = ? AND password = ? AND usr.id=user_id;";
         try (PreparedStatement prepStatement = connection.prepareStatement(sql)) {
             prepStatement.setString(1, name);

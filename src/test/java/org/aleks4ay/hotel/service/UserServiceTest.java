@@ -53,18 +53,18 @@ public class UserServiceTest {
 
     @Test
     public void getById() {
-        assertEquals(expectedUserOne, service.getById(1L));
+        assertEquals(expectedUserOne, service.findById(1L));
 //        assertNotNull(service.getById(1L));
     }
 
     @Test
     public void getByLogin() {
-        assertNotNull(service.getByLogin("login2"));
+        assertNotNull(service.findByLogin("login2"));
     }
 
     @Test
     public void getByLoginAndPassword() {
-        assertNotNull(service.getByLoginAndPassword("login2", "password2"));
+        assertNotNull(service.findByLoginAndPassword("login2", "password2"));
     }
 
     @Test
@@ -75,10 +75,10 @@ public class UserServiceTest {
 
     @Test
     public void update() {
-        User userFromDb = service.getByLogin("login2");
+        User userFromDb = service.findByLogin("login2");
         userFromDb.setBill(1000);
         service.update(userFromDb);
-        User userAfterUpdate = service.getByLogin("login2");
+        User userAfterUpdate = service.findByLogin("login2");
         assertEquals(userFromDb, userAfterUpdate);
     }
 
@@ -95,7 +95,7 @@ public class UserServiceTest {
         assertEquals(0L, user.getId());
         user = service.save(user);
         assertNotEquals(0L, user.getId());
-        assertEquals(Role.ROLE_USER, service.getByLogin("login5").getRole());
+        assertEquals(Role.ROLE_USER, service.findByLogin("login5").getRole());
     }
 
     @Test(expected = AlreadyException.class)

@@ -40,7 +40,7 @@ class AdminCommand implements Command {
 
         if (action.equalsIgnoreCase("changeRoom")) {
             request.setAttribute("categories", Category.values());
-            request.setAttribute("room", roomService.getById(Long.parseLong(request.getParameter("id"))));
+            request.setAttribute("room", roomService.findById(Long.parseLong(request.getParameter("id"))));
             return "WEB-INF/jsp/adminPage.jsp";
         }
 
@@ -51,7 +51,7 @@ class AdminCommand implements Command {
 
         } else if (action.equalsIgnoreCase("room")){
             Utils.initSortMethod(request);
-            List<Room> roomList = roomService.getAll((String) request.getAttribute("sortMethod"), new ArrayList<>());
+            List<Room> roomList = roomService.findAll((String) request.getAttribute("sortMethod"), new ArrayList<>());
             roomList = roomService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), roomList);
 
             request.setAttribute("rooms", roomList);

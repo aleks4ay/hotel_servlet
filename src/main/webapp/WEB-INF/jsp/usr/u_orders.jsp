@@ -25,8 +25,12 @@
                 <td> ${order.departure} </td>
                 <td> <b style="${order.status.toString()=='CANCEL' ? 'color: #d54d38' : 'color: #3b6696'}"> ${order.status} </b> </td>
                 <td> ${order.cost} </td>
-<%--                <td> <img if="${order.room}" width="100px" th:src="${'/static/img/' + order.room.imgName}"/> </td>--%>
-                <td> <a  href="/user/account/order/change?id=${order.id}"> <fmt:message key="detail"/> </a> </td>
+                <td>
+                    <c:if test="${not empty order.room}">
+                        <img width="100px" src="/static/img/${order.room.imgName}"/>
+                    </c:if>
+                </td>
+                <td> <a  href="/user?action=account&ap=oneOrder&id=${order.id}"> <fmt:message key="detail"/> </a> </td>
             </tr>
         </c:forEach>
         </tbody>

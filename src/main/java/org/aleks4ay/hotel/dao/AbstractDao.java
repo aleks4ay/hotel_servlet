@@ -101,9 +101,7 @@ abstract class AbstractDao<K, T extends BaseEntity> {
             prepStatement.setString(1, s);
             prepStatement.setLong(2, id);
             return prepStatement.executeUpdate() == 1;
-
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }

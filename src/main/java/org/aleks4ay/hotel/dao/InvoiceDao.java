@@ -2,6 +2,7 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.dao.mapper.InvoiceMapper;
 import org.aleks4ay.hotel.model.Invoice;
+import org.aleks4ay.hotel.model.Order;
 import org.aleks4ay.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,5 +51,9 @@ public class InvoiceDao extends AbstractDao<Long, Invoice>{
         } catch (SQLException e) {
             log.warn("Exception during create order-invoice link '{}'. {}", invoice, e);
         }
+    }
+
+    public boolean updateStatus(Invoice i) {
+        return updateStringAbstract(i.getStatus().toString(), i.getId(), "update invoice set status = ? where id = ?;");
     }
 }

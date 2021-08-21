@@ -1,6 +1,7 @@
 package org.aleks4ay.hotel.model;
 
 import org.aleks4ay.hotel.exception.NoMoneyException;
+import org.aleks4ay.hotel.exception.NotFoundException;
 import org.aleks4ay.hotel.service.UserService;
 
 import java.math.BigDecimal;
@@ -144,10 +145,20 @@ public class User extends BaseEntity{
         }
     }
 
-    public void setOrders(List<Order> orders) {
-        for (Order o : orders) {
-            addOrder(o);
+    public Order getOrderById(long id) {
+        if (orders.isEmpty()) {
+            throw new NotFoundException("Order with id = " + id + " not found");
         }
+        for (Order o : this.orders) {
+            if (o.getId() == id) {
+                return o;
+            }
+        }
+        throw new NotFoundException("Order with id = " + id + " not found");
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     public void addOrder(Order order) {

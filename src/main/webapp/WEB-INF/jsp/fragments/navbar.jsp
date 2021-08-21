@@ -23,7 +23,7 @@
                     <a class="nav-link gap-item" href="/manager?action=room"><fmt:message key="adm_act_2"/></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link gap-item" href="/manager?action=account&ap=order"><fmt:message key="adm_act_3"/></a>
+                    <a class="nav-link gap-item" href="/manager?action=order"><fmt:message key="adm_act_3"/></a>
                 </li>
             </c:if>
 

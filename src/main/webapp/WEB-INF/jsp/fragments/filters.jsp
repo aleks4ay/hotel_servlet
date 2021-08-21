@@ -46,8 +46,8 @@
                 <fmt:message key="filterEnter"/>
             </button>
             <hr/>
-            <button type="submit" class="btn btn-outline-success" name="filter" value="filterCansel">
-                <fmt:message key="filterCansel"/>
+            <button type="submit" class="btn btn-outline-success" name="filter" value="filterCancel">
+                <fmt:message key="filterCancel"/>
             </button>
         </div>
     </c:if>

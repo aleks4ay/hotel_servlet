@@ -1,6 +1,7 @@
 package org.aleks4ay.hotel.command;
 
 import org.aleks4ay.hotel.dao.ConnectionPool;
+import org.aleks4ay.hotel.exception.NoMoneyException;
 import org.aleks4ay.hotel.exception.NotEmptyRoomException;
 import org.aleks4ay.hotel.model.*;
 import org.aleks4ay.hotel.service.*;
@@ -8,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +36,9 @@ class UserCommand implements Command {
         if (action.equalsIgnoreCase("room") || action.contains("room")) {
             return getRoom(request);
         }
-        if (action.equalsIgnoreCase("setDate")) {
-            return setDate(request);
-        }
+//        if (action.equalsIgnoreCase("setDate")) {
+//            return setDate(request);
+//        }
         if (action.equalsIgnoreCase("booking")) {
             return doBooking(request);
         }
@@ -46,8 +48,11 @@ class UserCommand implements Command {
         if (action.equalsIgnoreCase("newOrder")) {
             return doNewOrder(request, user);
         }
+        if (action.equalsIgnoreCase("changeOrder")) {
+            return changeOrderStatus(request, user);
+        }
         if (action.equalsIgnoreCase("filter")) {
-            return doFiltering(request);
+            return Utils.doFiltering(request, "/user?action=room");
         }
         if (action.equalsIgnoreCase("changeBill")) {
             return doChangeBill(request, user);
@@ -56,10 +61,6 @@ class UserCommand implements Command {
             return doAccount(request, user);
         }
         return "WEB-INF/jsp/userPage.jsp";
-    }
-
-    private String setDate(HttpServletRequest request) {
-        return "redirect:/user?action=room";
     }
 
 
@@ -79,12 +80,12 @@ class UserCommand implements Command {
     }
 
 
-    private String doFiltering(HttpServletRequest request) {
+/*    private String doFiltering(HttpServletRequest request) {
         List<String> filters = new ArrayList<>();
 
         String filterButtonName = request.getParameter("filter");
 
-        if (filterButtonName != null && filterButtonName.equalsIgnoreCase("filterCansel")) {
+        if (filterButtonName != null && filterButtonName.equalsIgnoreCase("filterCancel")) {
             request.removeAttribute("category");
             request.removeAttribute("guests");
             request.getSession().removeAttribute("category");
@@ -104,22 +105,23 @@ class UserCommand implements Command {
             request.setAttribute("filters", filters);
         }
         return "redirect:/user?action=room";
-    }
-
+    }*/
 
     private String doAccount(HttpServletRequest request, User user) {
         String actionPage = request.getParameter("ap");
         if (actionPage == null) {
             actionPage = "order";
         }
+        request.setAttribute("ap", actionPage);
         if (actionPage.equalsIgnoreCase("order")) {
             List<Order> orderList = orderService.findAllByUser(user);
-            user.setOrders(orderList);
             request.setAttribute("orders", orderList);
         } else if (actionPage.equalsIgnoreCase("bill")) {
+            user.setBill(userService.findById(user.getId()).getBill());
             request.setAttribute("bill", user.getBill());
+        } else if (actionPage.equalsIgnoreCase("oneOrder")) {
+            return getOrderBlank(request, user);
         }
-        request.setAttribute("ap", actionPage);
         return "WEB-INF/jsp/userPage.jsp";
     }
 
@@ -133,14 +135,15 @@ class UserCommand implements Command {
 
     private String doNewOrder(HttpServletRequest request, User user) {
         long id = Long.parseLong(request.getParameter("id"));
-        OrderDto dto = orderService.createOrderDto(request, roomService.getById(id));
+        OrderDto dto = orderService.createOrderDto(request, roomService.findById(id));
         Order order = orderService.create(dto, user);
         try {
-            orderService.saveOrderIfEmpty(order);
+            order = orderService.saveOrderIfEmpty(order);
             log.info("Was create new Order '{}'", order);
             Invoice invoice = invoiceService.create(new Invoice(LocalDateTime.now(), Invoice.Status.NEW, order));
             log.info("Was create new Invoice '{}'", invoice);
         } catch (NotEmptyRoomException e) {
+            user.getOrders().remove(order);
             request.getSession().setAttribute("arrival", dto.getArrival());
             request.getSession().setAttribute("departure", dto.getDeparture());
             request.setAttribute("roomOccupiedMessage", e);
@@ -153,8 +156,34 @@ class UserCommand implements Command {
 
     private String doBooking(HttpServletRequest request) {
         long id = Long.parseLong(request.getParameter("id"));
-        request.setAttribute("orderDto", orderService.createOrderDto(request, roomService.getById(id)));
+        request.setAttribute("orderDto", orderService.createOrderDto(request, roomService.findById(id)));
         request.setAttribute("roomId", id);
         return "WEB-INF/jsp/usr/u_booking.jsp";
+    }
+
+    private String getOrderBlank(HttpServletRequest request, User user) {
+        request.setAttribute("categories", Category.values());
+        request.setAttribute("order", orderService.findById(Long.parseLong(request.getParameter("id"))));
+        request.setAttribute("bill", user.getBill());
+        return "WEB-INF/jsp/usr/u_one_order.jsp";
+    }
+
+    private String changeOrderStatus(HttpServletRequest request, User user) {
+        Order order = user.getOrderById(Long.parseLong(request.getParameter("id")));
+        if (request.getParameter("changeStatus").equalsIgnoreCase("confirm")) {
+            order.setStatus(Order.Status.CONFIRMED);
+            orderService.updateStatus(order);
+            Invoice invoice = invoiceService.create(new Invoice(LocalDateTime.now(), Invoice.Status.NEW, order));
+            log.info("Was confirmed Order '{}'", order);
+            log.info("Was create new Invoice '{}'", invoice);
+        } else {
+            try {
+                orderService.pay(order);
+            } catch (NoMoneyException | SQLException e) {
+                request.setAttribute("noMoneyMessage", e);
+                return getOrderBlank(request, user);
+            }
+        }
+        return "redirect:/user?action=account&ap=oneOrder&id=" + order.getId();
     }
 }

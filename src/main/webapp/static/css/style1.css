@@ -110,7 +110,8 @@ body.login{
 .rotate1{
     display: flex;
     justify-content: center;
-    width: 30%;
+    width: 45%;
+    /*30%;*/
     margin-left: 50%;
     border-radius: 10px;
     transform:rotate(-15deg);

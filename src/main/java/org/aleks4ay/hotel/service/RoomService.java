@@ -7,7 +7,6 @@ import org.aleks4ay.hotel.model.Room;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Connection;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,14 +21,14 @@ public class RoomService {
         this.connectionPool = connectionPool;
     }
 
-    public Room getById(Long id) {
+    public Room findById(Long id) {
         Connection conn = connectionPool.getConnection();
         Room room = new RoomDao(conn).findById(id).orElseThrow(() -> new NotFoundException("Room with id=" + id + "not found"));
         connectionPool.closeConnection(conn);
         return room;
     }
 
-    public Room getByNumber(int number) {
+    public Room findByNumber(int number) {
         Connection conn = connectionPool.getConnection();
         Room room = new RoomDao(conn).findByNumber(number)
                 .orElseThrow(() -> new NotFoundException("Room with number=" + number + "not found"));
@@ -37,7 +36,7 @@ public class RoomService {
         return room;
     }
 
-    public List<Room> getAll(String sortMethod, List<String> filters) {
+    public List<Room> findAll(String sortMethod, List<String> filters) {
         Connection conn = connectionPool.getConnection();
         List<Room> rooms = new RoomDao(conn).findAllWithFilter(sortMethod, filters);
 //        final Map<Long, List<Order>> orderMap = orderService.getAllAsMapByRoomId();
@@ -51,8 +50,8 @@ public class RoomService {
         return rooms;
     }
 
-    Map<Long, Room> getAllAsMap(String sortMethod) {
-        return getAll(sortMethod, new ArrayList<>()).stream()
+    Map<Long, Room> findAllAsMap(String sortMethod) {
+        return findAll(sortMethod, new ArrayList<>()).stream()
                 .collect(Collectors.toMap(Room::getId, r -> r));
     }
 
@@ -69,14 +68,6 @@ public class RoomService {
         connectionPool.closeConnection(conn);
         return result;
     }
-
-/*    public List<Room> getAllWithFilters(List<String> filters) {
-        Connection conn = connectionPool.getConnection();
-        String filterAsString = UtilService.filterFromListToString(filters);
-        List<Room> rooms = new RoomDao(conn).findAllWithFilter(filterAsString);
-        connectionPool.closeConnection(conn);
-        return rooms;
-    }*/
 
     public List<Room> getRoomsWithFilter(HttpServletRequest request) {
         Connection conn = connectionPool.getConnection();

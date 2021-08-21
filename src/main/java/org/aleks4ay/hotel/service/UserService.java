@@ -19,23 +19,23 @@ public class UserService {
         this.connectionPool = connectionPool;
     }
 
-    public User getById(Long id) {
+    public User findById(Long id) {
         Connection conn = connectionPool.getConnection();
         Optional<User> userOptional = new UserDao(conn).findById(id);
         connectionPool.closeConnection(conn);
         return userOptional.orElseThrow(() -> new NotFoundException("User with id = " + id + " non found"));
     }
 
-    public User getByLogin(String login) {
+    public User findByLogin(String login) {
         Connection conn = connectionPool.getConnection();
-        Optional<User> userOptional = new UserDao(conn).getByLogin(login);
+        Optional<User> userOptional = new UserDao(conn).findByLogin(login);
         connectionPool.closeConnection(conn);
         return userOptional.orElseThrow(() -> new NotFoundException("User '" + login + "' non found"));
     }
 
-    public User getByLoginAndPassword(String login, String pass) {
+    public User findByLoginAndPassword(String login, String pass) {
         Connection conn = connectionPool.getConnection();
-        Optional<User> userOptional = new UserDao(conn).getByLoginAndPassword(login, Encrypt.hash(pass, "SHA-256"));
+        Optional<User> userOptional = new UserDao(conn).findByLoginAndPassword(login, Encrypt.hash(pass, "SHA-256"));
         connectionPool.closeConnection(conn);
         return userOptional.orElseThrow(() -> new NotFoundException("User '" + login + "' non found or password is wrong"));
     }

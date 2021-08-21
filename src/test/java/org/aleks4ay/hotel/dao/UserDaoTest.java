@@ -52,12 +52,12 @@ public class UserDaoTest {
 
     @Test
     public void testGetByLogin() {
-        assertEquals(expectedUserOne, dao.getByLogin("login1").get());
+        assertEquals(expectedUserOne, dao.findByLogin("login1").get());
     }
 
     @Test
     public void testGetByLoginAndPassword() {
-        assertEquals(expectedUserOne, dao.getByLoginAndPassword("login1", "password1").get());
+        assertEquals(expectedUserOne, dao.findByLoginAndPassword("login1", "password1").get());
     }
 
     @Test
@@ -68,25 +68,25 @@ public class UserDaoTest {
 
     @Test
     public void update() {
-        User userFromDb = dao.getByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
+        User userFromDb = dao.findByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
         userFromDb.setBill(1000);
         dao.update(userFromDb);
-        User userAfterUpdate = dao.getByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
+        User userAfterUpdate = dao.findByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
         assertEquals(userFromDb, userAfterUpdate);
     }
 
     @Test
     public void updateRole() {
-        User userFromDb = dao.getByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
+        User userFromDb = dao.findByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
         userFromDb.setRole(Role.ROLE_MANAGER);
         dao.updateRole(userFromDb);
-        User userAfterUpdate = dao.getByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
+        User userAfterUpdate = dao.findByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
         assertEquals(Role.ROLE_MANAGER, userAfterUpdate.getRole());
     }
 
     @Test
     public void createRole() {
-        User userFromDb = dao.getByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
+        User userFromDb = dao.findByLogin("login1").orElseThrow(() -> new NotEmptyRoomException("user not found"));
         userFromDb.setRole(Role.ROLE_MANAGER);
         assertTrue(dao.createRole(userFromDb));
     }
