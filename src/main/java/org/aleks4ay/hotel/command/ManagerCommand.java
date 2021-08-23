@@ -43,7 +43,12 @@ class ManagerCommand implements Command {
     }
 
     private String getRooms(HttpServletRequest request) {
-        List<Room> roomList = roomService.getRoomsWithFilter(request);
+        List<Room> roomList;
+//        if (request.getAttribute("similar") != null && ((boolean)request.getAttribute("similar"))) {
+//            roomList = roomService.getSimilarRoomsWithFilter(request);
+//        } else {
+            roomList = roomService.getRoomsWithFilter(request);
+//        }
         roomList = roomService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), roomList);
         request.setAttribute("rooms", roomList);
         return "WEB-INF/jsp/managerPage.jsp";
@@ -63,6 +68,9 @@ class ManagerCommand implements Command {
         request.setAttribute("ordId", ordId);
         request.setAttribute("isNew", order.getStatus() == Order.Status.NEW);
         request.setAttribute("action", "manageProposal");
+        if (request.getParameter("similar") != null) {
+            request.setAttribute("similar", true);
+        }
         return getRooms(request);
     }
 
@@ -74,6 +82,7 @@ class ManagerCommand implements Command {
         order.setStatus(Order.Status.BOOKED);
         order = orderService.updateOrderIfEmpty(order);
         log.info("Was processed Order '{}'", order);
-        return "redirect:/manager?action=order";
+        request.setAttribute("filter", "filterCancel");
+        return Utils.doFiltering(request, "/manager?action=order");
     }
 }

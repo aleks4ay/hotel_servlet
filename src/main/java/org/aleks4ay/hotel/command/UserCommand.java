@@ -8,16 +8,20 @@ import org.aleks4ay.hotel.service.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import java.io.*;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 class UserCommand implements Command {
+    private static final Logger log = LogManager.getLogger(UserCommand.class);
+
     private static final int POSITION_ON_PAGE = 4;
     private final ConnectionPool connectionPool = new ConnectionPool();
-    private static final Logger log = LogManager.getLogger(UserCommand.class);
     private final OrderService orderService = new OrderService(connectionPool);
     private final RoomService roomService = new RoomService(connectionPool);
     private final UserService userService = new UserService(connectionPool);
@@ -36,9 +40,6 @@ class UserCommand implements Command {
         if (action.equalsIgnoreCase("room") || action.contains("room")) {
             return getRoom(request);
         }
-//        if (action.equalsIgnoreCase("setDate")) {
-//            return setDate(request);
-//        }
         if (action.equalsIgnoreCase("booking")) {
             return doBooking(request);
         }
@@ -63,7 +64,6 @@ class UserCommand implements Command {
         return "WEB-INF/jsp/userPage.jsp";
     }
 
-
     private String doChangeBill(HttpServletRequest request, User user) {
         int number = Integer.parseInt(request.getParameter("addBill"));
         user.addBill(number);
@@ -79,33 +79,6 @@ class UserCommand implements Command {
         return "WEB-INF/jsp/userPage.jsp";
     }
 
-
-/*    private String doFiltering(HttpServletRequest request) {
-        List<String> filters = new ArrayList<>();
-
-        String filterButtonName = request.getParameter("filter");
-
-        if (filterButtonName != null && filterButtonName.equalsIgnoreCase("filterCancel")) {
-            request.removeAttribute("category");
-            request.removeAttribute("guests");
-            request.getSession().removeAttribute("category");
-            request.getSession().removeAttribute("guests");
-            request.getSession().removeAttribute("arrival");
-            request.getSession().removeAttribute("departure");
-        } else {
-            if (!request.getParameter("filter_category").equalsIgnoreCase("Select Category")) {
-                Category category = Category.valueOf(request.getParameter("filter_category"));
-                request.getSession().setAttribute("category", category);
-                filters.add(" category = '" + request.getParameter("filter_category") + "'");
-            }
-            if (!request.getParameter("filter_guests").equals("0")) {
-                request.getSession().setAttribute("guests", Integer.parseInt(request.getParameter("filter_guests")));
-                filters.add(" guests = " + request.getParameter("filter_guests"));
-            }
-            request.setAttribute("filters", filters);
-        }
-        return "redirect:/user?action=room";
-    }*/
 
     private String doAccount(HttpServletRequest request, User user) {
         String actionPage = request.getParameter("ap");

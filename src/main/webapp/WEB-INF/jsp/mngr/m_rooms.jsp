@@ -45,6 +45,8 @@
         </table>
     </c:if>
 
-    <%@include file="../fragments/pagination.jsp"%>
+    <c:if test="${action == 'room'}">
+        <%@include file="../fragments/pagination.jsp"%>
+    </c:if>
 
 </div>

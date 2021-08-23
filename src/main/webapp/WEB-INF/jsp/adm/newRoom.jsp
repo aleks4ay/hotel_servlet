@@ -1,5 +1,5 @@
 <form  class="sticky rounded-lg shadow p-4 mb-4" method="post" action="/admin?action=newRoom"
-       style="background-color: rgba(96, 162, 218, 0.2);">
+       enctype="multipart/form-data" style="background-color: rgba(96, 162, 218, 0.2);">
     <h3><fmt:message key="new_room"/></h3>
     <div class="mb-3">
         <label for="field1" class="form-label"> <fmt:message key="number"/>:</label>
@@ -33,12 +33,12 @@
     </div>
 
     <div class="custom-file">
-        <label class="custom-file-label" for="customFile" ></label>
-        <input type="file" name="imgName" class="custom-file-input" id="customFile" value="${imgName}"/>
+        <label class="custom-file-label" for="inputFile04" aria-describedby="inputAddon" id="lab1"></label>
+        <input type="file" name="image" class="custom-file-input" id="inputFile04" onchange="changeImage()"/> <%--value="${imgName}"--%>
     </div>
 
     <div >
-        <button type="submit" class="btn btn-outline-success" >  <fmt:message key="save"/>  </button>
+        <button type="submit" class="btn btn-outline-success" id="inputAddon">  <fmt:message key="save"/>  </button>
     </div>
 
 </form>

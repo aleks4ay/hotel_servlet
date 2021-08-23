@@ -44,7 +44,7 @@
     <div >
         <button type="submit" class="btn btn-outline-success" >  <fmt:message key="save"/>  </button>
     </div>
-    <button type="button" class="btn btn-outline-success" onclick="window.location='/admin?action=room&pg=${pg}'">
+    <button type="button" class="btn btn-outline-success" onClick="window.location='/admin?action=room&pg=${pg}'">
         <h5> <fmt:message key="cancel"/> </h5>
     </button>
 

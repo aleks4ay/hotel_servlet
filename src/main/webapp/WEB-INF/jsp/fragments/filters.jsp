@@ -37,6 +37,14 @@
         <input type="date" class="form-control" id="dateEnd" name="departure" value="${departure}" ${action=='manageProposal' ? 'disabled':''} />
     </div>
 
+    <c:if test="${action == 'manageProposal'}">
+        <div style="color: rgba(19, 23, 186, 0.9); font-size: 1.2em" >
+            <button type="button" class="btn btn-outline-success"
+                    onClick="window.location='/manager?action=manageProposal&ordId=${order.id}&similar=true'">
+                <fmt:message key="similar"/>
+            </button>
+        </div>
+    </c:if>
     <c:if test="${action != 'manageProposal'}">
         <div style="color: rgba(19, 23, 186, 0.9); font-size: 1.2em" >
             <c:if test="${not empty category}" > <p> <fmt:message key="category"/>: ${category} </p> </c:if>

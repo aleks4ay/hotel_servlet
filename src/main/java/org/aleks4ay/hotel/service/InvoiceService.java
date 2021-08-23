@@ -5,7 +5,6 @@ import org.aleks4ay.hotel.dao.InvoiceDao;
 import org.aleks4ay.hotel.exception.CannotSaveException;
 import org.aleks4ay.hotel.exception.NotFoundException;
 import org.aleks4ay.hotel.model.Invoice;
-import org.aleks4ay.hotel.model.Room;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,11 +59,11 @@ public class InvoiceService {
         connectionPool.closeConnection(conn);
         return invoiceAfterSave;
     }
-
-    public boolean updateStatus(Invoice invoice) {
-        Connection conn = connectionPool.getConnection();
-        boolean result = new InvoiceDao(conn).updateStatus(invoice);
-        connectionPool.closeConnection(conn);
-        return result;
-    }
+//
+//    public boolean updateStatus(Invoice invoice) {
+//        Connection conn = connectionPool.getConnection();
+//        boolean result = new InvoiceDao(conn).updateStatus(invoice);
+//        connectionPool.closeConnection(conn);
+//        return result;
+//    }
 }

@@ -32,4 +32,7 @@
 </div>
 
 </body>
+<script>
+    var changeImage = function () { lab1.innerHTML = inputFile04.value.split('fakepath\\')[1]; };
+</script>
 </html>
