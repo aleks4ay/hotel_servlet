@@ -7,6 +7,7 @@
 <%@include file="fragments/navbar.jsp"%>
 
     <div class="center1">
+        <h1>Registration</h1>
         <form class="inner_logo" method="post" action="/registration">
             <div class="mb-3">
                 <label for="login1" class="form-label"> Login </label>
@@ -55,7 +56,7 @@
                 <fmt:message key="cancel"/>
             </button>
             <div style="margin-top: 30px; font-size: 1.3em">
-                <a href='<c:url value="/login" />'> <fmt:message key="toLogin"/> </a>
+                <a href="/login"> <fmt:message key="toLogin"/> </a>
             </div>
         </form>
     </div>

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class UserService {
 
-    private ConnectionPool connectionPool;
+    private final ConnectionPool connectionPool;
 
     public UserService(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
@@ -71,51 +71,7 @@ public class UserService {
         return result;
     }
 
-    public void addOldValues(Map<String, Object> model, User user) {
-        model.put("wrongLogin", "User exists!");
-        model.put("oldLogin", user.getLogin());
-        model.put("oldFirstName", user.getName());
-        model.put("oldLastName", user.getSurname());
-    }
-
-/*    public boolean checkPassword(String login, String pass) {
-        Connection conn = connectionPool.getConnection();
-        final Optional<User> userFromDB = new UserDao(conn).getByLogin(login);
-        if (userFromDB.isPresent()) {
-            String passFromDb = userFromDB.get().getPassword();
-            String encryptedPassword = Encrypt.hash(pass, "SHA-256");
-            connectionPool.closeConnection(conn);
-            return passFromDb.equals(encryptedPassword);
-        }
-        connectionPool.closeConnection(conn);
-        return false;
-    }*/
-
     public List<User> doPagination(int positionOnPage, int page, List<User> entities) {
         return new UtilService<User>().doPagination(positionOnPage, page, entities);
     }
-
-
-
-    /*public Optional<User> create(String login, String firstName, String lastName, String pass) {
-        Connection conn = ConnectionPoolProduction.getConnection();
-        UserDao userDao = new UserDao(conn);
-        if (checkLogin(login)) {
-            throw new AlreadyException("User with login '" + login + "' already exists");
-        }
-        String encryptPassword = Encrypt.hash(pass, "SHA-256");
-        User user = new User(0L, login, firstName, lastName, encryptPassword);
-        user.setRole(Role.ROLE_USER);
-        Optional<User> userOptional = userDao.create(user);
-        userDao.createRole(user);
-        ConnectionPoolProduction.closeConnection(conn);
-        return userOptional;
-    }
-
-    public boolean checkLogin(String login) {
-        Connection conn = ConnectionPoolProduction.getConnection();
-        boolean result = new UserDao(conn).getByLogin(login).isPresent();
-        ConnectionPoolProduction.closeConnection(conn);
-        return result;
-    }*/
 }

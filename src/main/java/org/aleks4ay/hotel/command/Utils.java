@@ -11,9 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import java.io.*;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 class Utils {
@@ -54,29 +51,14 @@ class Utils {
         return "redirect:" + path;
     }
 
-    static Room getNewRoomFromRequest(HttpServletRequest request, boolean isNew) {
+    static Room getNewRoomFromRequest(HttpServletRequest request) {
         int number = Integer.parseInt(request.getParameter("number"));
         String description = request.getParameter("description");
         long price = Long.parseLong(request.getParameter("price"));
         int guests = Integer.parseInt(request.getParameter("guests"));
         Category category = Category.valueOf(request.getParameter("category"));
-        /*String imgName = request.getParameter("imgName");
-        String imgName2 = imgName;
-        if (!isNew && !request.getParameter("imgName2").equals("")) {
-            imgName2 = request.getParameter("imgName2");
-        }*/
         String imgName = saveImage(request, number);
-
-        return /*isNew ?*/ new Room(number, category, guests, description, price, imgName);
-//                     : new Room(number, category, guests, description, price, imgName2);
-    }
-
-
-    static void setAttributesInModel(Map<String, Object> model, HttpServletRequest request) {
-        model.put("arrival", request.getSession().getAttribute("arrival"));
-        model.put("departure", request.getSession().getAttribute("departure"));
-        model.put("guests", request.getSession().getAttribute("guests"));
-        model.put("category", request.getSession().getAttribute("category"));
+        return new Room(number, category, guests, description, price, imgName);
     }
 
     static void setAttributesFromManager(HttpServletRequest request, Order order) {
@@ -85,11 +67,6 @@ class Utils {
         session.setAttribute("departure", order.getDeparture());
         session.setAttribute("guests", order.getGuests());
         session.setAttribute("category", order.getCategory());
-    }
-
-    public static LocalDate getDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(date, formatter);
     }
 
     public static String getImagePath() {
@@ -104,15 +81,14 @@ class Utils {
         return imgPath;
     }
 
-    private static String saveImage(HttpServletRequest request, int number) {
+    public static String saveImage(HttpServletRequest request, int number) {
         String newFileName = "";
         Part filePart;
         try {
             filePart = request.getPart("image");
-            String oldFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-            String[] elements = oldFileName.split("\\.");
+            String[] elements = filePart.getSubmittedFileName().split("\\.");
             String fileExtension = elements[elements.length - 1].toLowerCase();
-            newFileName = number + "." + fileExtension;
+            newFileName = getEmptyFileName(Utils.getImagePath(), number + "." + fileExtension);
             InputStream is = filePart.getInputStream();
             byte[] buffer = new byte[is.available()];
             OutputStream os = new FileOutputStream(Utils.getImagePath() + newFileName);
@@ -124,5 +100,18 @@ class Utils {
             e.printStackTrace();
         }
         return newFileName;
+    }
+
+    private static String getEmptyFileName(String imagePath, String fileName) {
+        File oldFile = new File(imagePath + fileName);
+        if (oldFile.exists()) {
+            for (int i = 1; ; i++) {
+                String newName = fileName.replaceFirst("\\.", "(" + i + ").");
+                if (! new File(imagePath + newName).exists()) {
+                    return newName;
+                }
+            }
+        }
+        return fileName;
     }
 }

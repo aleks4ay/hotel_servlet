@@ -5,14 +5,14 @@
 
 <%@include file="fragments/navbar.jsp"%>
 
-<div class="container-fluid" style="margin-top:10px">
+<div class="container-fluid">
     <div class="row">
 
         <div class="col-sm-2">
             <c:if test="${(action == 'room') or (action == 'filter')}">  <%@include file="fragments/filters.jsp"%> </c:if>
 
             <c:if test="${(sessionScope.get('user').client) and (action != 'room') and (action != 'filter')}">
-                <div>  <h1> <fmt:message key="account"/>  </h1> </div>
+                <div>  <h2> <fmt:message key="account"/>  </h2> </div>
             </c:if>
 
         </div>

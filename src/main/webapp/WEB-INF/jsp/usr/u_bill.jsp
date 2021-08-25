@@ -7,6 +7,10 @@
             <label for="bill1" class="form-label"> <fmt:message key="sum"/>: </label>
             <input type="number" class="form-control" id="bill1"  name="addBill" style="width: 40%"/>
         </div>
+        <c:if test="${not empty errMess}">
+            <h4 class="text-danger"> <fmt:message key="negativeMoney"/> </h4>
+        </c:if>
+
         <div >
             <button type="submit" class="btn btn-outline-success" >  <fmt:message key="addBill"/>  </button>
         </div>

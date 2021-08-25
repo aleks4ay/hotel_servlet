@@ -45,10 +45,14 @@ public class RoomDao extends AbstractDao<Long, Room>{
                 .collect(Collectors.joining());
 
         String sql2 = "select r.* from room r WHERE r.id NOT IN (" +
-                "            select DISTINCT x.room_id from order_room x INNER JOIN orders o on x.order_id = o.id AND (" +
-                "            (? BETWEEN o.arrival and o.departure)" +
-                "            or (? BETWEEN o.arrival and o.departure)" +
-                "            or (o.arrival BETWEEN ? and ?))) " + filterSql + " order by " + sortMethod + ";";
+                "           select DISTINCT x.room_id from order_room x INNER JOIN orders o on x.order_id = o.id " +
+                "           and o.status != 'CANCEL' and o.status != 'NEW' " +
+                "and (" +
+                "           (? BETWEEN o.arrival and o.departure)" +
+                "        or (? BETWEEN o.arrival and o.departure)" +
+                "        or (o.arrival BETWEEN ? and ?))) " +
+                filterSql +
+                " order by " + sortMethod + ";";
         List<Room> roomList = new ArrayList<>();
         try (PreparedStatement prepStatement = connection.prepareStatement(sql2)){
             prepStatement.setDate(1, Date.valueOf(start));

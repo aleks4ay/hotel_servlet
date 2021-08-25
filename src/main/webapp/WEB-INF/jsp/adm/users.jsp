@@ -15,15 +15,15 @@
         <tbody>
         <c:forEach var="user" items="${users}" varStatus="position" >
             <tr>
-                <td scope="row">
+                <td>
                     <c:out value="${itemOnPage * (pg - 1) + position.count}" />
                 </td>
-                <td><c:out value="${user.login}" /></td>
-                <td><c:out value="${user.name}" /></td>
-                <td><c:out value="${user.surname}" /></td>
-                <td><c:out value="${user.active}" /></td>
-                <td><c:out value="${user.registered}" /></td>
-                <td><c:out value="${user.role.title}" /></td>
+                <td> ${user.login} </td>
+                <td> ${user.name} </td>
+                <td> ${user.surname} </td>
+                <td> ${user.active} </td>
+                <td> ${user.registered} </td>
+                <td> ${user.role.title} </td>
             </tr>
         </c:forEach>
         </tbody>

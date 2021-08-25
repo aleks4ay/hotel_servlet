@@ -15,14 +15,12 @@
         <tbody>
         <c:forEach var="room" items="${rooms}" varStatus="position">
             <tr>
-                <td scope="row">
-                    <c:out value="${itemOnPage * (pg - 1) + position.count}" />
-                </td>
-                <td><c:out value="${room.number}" /></td>
-                <td><c:out value="${room.category.title}" /></td>
-                <td><c:out value="${room.guests}" /></td>
-                <td><c:out value="${room.description}" /></td>
-                <td><c:out value="${room.price}" /></td>
+                <td> ${itemOnPage * (pg - 1) + position.count} </td>
+                <td> ${room.number} </td>
+                <td> ${room.category.title} </td>
+                <td> ${room.guests} </td>
+                <td> ${room.description} </td>
+                <td> ${room.price}" /></td>
                 <td> <img width="200px" src="/static/img/${room.imgName}"/> </td>
 
                 <td>

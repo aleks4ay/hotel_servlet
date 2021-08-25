@@ -5,6 +5,7 @@
 <body class="login">
 
 <div class="center1">
+    <h1>Log In</h1>
     <form class="inner_logo" method="post" action="/login">
         <div class="mb-3">
             <label for="login1" class="form-label"> Login </label>
@@ -26,7 +27,7 @@
             <fmt:message key="cancel"/>
         </button>
         <div style="margin-top: 30px; font-size: 1.3em">
-            <a href='<c:url value="/registration" />'> <fmt:message key="registration"/> </a>
+            <a href="/registration"> <fmt:message key="registration"/> </a>
         </div>
     </form>
 </div>

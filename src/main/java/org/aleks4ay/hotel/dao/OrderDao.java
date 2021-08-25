@@ -62,9 +62,10 @@ public class OrderDao extends AbstractDao<Long, Order>{
     public int checkRoomByRoomId(Long roomId, LocalDate start, LocalDate end) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "select count(o.*) from order_room x INNER JOIN orders o on x.order_id = o.id AND x.room_id = ? " +
-                "         and ( (? BETWEEN o.arrival and o.departure) " +
-                "            or (? BETWEEN o.arrival and o.departure) " +
-                "            or (o.arrival BETWEEN ? and ?) )")) {
+                        " and o.status != 'CANCEL' and o.status != 'NEW' " +
+                        " and ( (? BETWEEN o.arrival and o.departure) " +
+                        "       or (? BETWEEN o.arrival and o.departure) " +
+                        "       or (o.arrival BETWEEN ? and ?) )")) {
 
             statement.setLong(1, roomId);
             statement.setDate(2, Date.valueOf(start));

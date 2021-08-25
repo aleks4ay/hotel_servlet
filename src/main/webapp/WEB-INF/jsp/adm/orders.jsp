@@ -7,36 +7,39 @@
             <th scope="col"><fmt:message key="firstName"/></th>
             <th scope="col"><fmt:message key="lastName"/></th>
             <th scope="col"><fmt:message key="roomNumber"/></th>
-            <th scope="col"><fmt:message key="category"/></th>
             <th scope="col"><fmt:message key="arrival"/></th>
             <th scope="col"><fmt:message key="departure"/></th>
-            <th scope="col"><fmt:message key="guests"/></th>
-            <th scope="col"><fmt:message key="description"/></th>
-            <th scope="col"><fmt:message key="data_reg"/></th>
-            <th scope="col"><fmt:message key="price"/></th>
+            <th scope="col"><fmt:message key="statusOrd"/></th>
+            <th scope="col"><fmt:message key="cost_2"/></th>
+            <th scope="col"><fmt:message key="photo"/></th>
         </tr>
         </thead>
         <tbody>
         <c:forEach var="order" items="${orders}" varStatus="position">
-            <tr>
+            <tr style="${order.status.toString()=='CANCEL' ? 'color: #d54d38' : ''}">
                 <td scope="row">
-                    <c:out value="${itemOnPage * (pg - 1) + position.count}" />
+                    <input type="hidden" value="${order.id}"/>
+                        ${order.id}
                 </td>
-                <td><c:out value="${order.user.name}" /></td>
-                <td><c:out value="${order.user.surname}" /></td>
-                <td><c:out value="${order.room.number}" /></td>
-                <td><c:out value="${order.room.category.title}" /></td>
-                <td><c:out value="${order.schedule.arrival}" /></td>
-                <td><c:out value="${order.schedule.departure}" /></td>
-                <td><c:out value="${order.room.guests}" /></td>
-                <td><c:out value="${order.room.description}" /></td>
-                <td><c:out value="${order.registered}" /></td>
-                <td><c:out value="${order.correctPrice}" /></td>
+                <td> ${order.user.name} </td>
+
+                <td> ${order.user.surname} </td>
+
+
+                <td> <c:if test="${not empty order.room}"> ${order.room.number} </c:if> &nbsp;</td>
+                <td> ${order.arrival} </td>
+                <td> ${order.departure} </td>
+                <td> <b style="${order.status.toString()=='CANCEL' ? 'color: #d54d38' : 'color: #3b6696'}"> ${order.status} </b> </td>
+                <td> ${order.cost} </td>
+                <td>
+                    <c:if test="${not empty order.room}">
+                        <img width="100px" src="/static/img/${order.room.imgName}"/>
+                    </c:if>
+                </td>
             </tr>
         </c:forEach>
         </tbody>
     </table>
-
     <%@include file="../fragments/pagination.jsp"%>
 
 </div>

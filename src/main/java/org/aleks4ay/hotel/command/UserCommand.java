@@ -8,11 +8,7 @@ import org.aleks4ay.hotel.service.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-import java.io.*;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -66,8 +62,12 @@ class UserCommand implements Command {
 
     private String doChangeBill(HttpServletRequest request, User user) {
         int number = Integer.parseInt(request.getParameter("addBill"));
-        user.addBill(number);
-        userService.update(user);
+        if (number <= 0) {
+            return "redirect:/user?action=account&ap=bill&errMess=t";
+        } else {
+            user.addBill(number);
+            userService.update(user);
+        }
         return "redirect:/user?action=account&ap=bill";
     }
 
@@ -91,9 +91,18 @@ class UserCommand implements Command {
             request.setAttribute("orders", orderList);
         } else if (actionPage.equalsIgnoreCase("bill")) {
             user.setBill(userService.findById(user.getId()).getBill());
+            if (request.getParameter("errMess") != null) {
+                request.setAttribute("errMess", "negative bill");
+            }
             request.setAttribute("bill", user.getBill());
         } else if (actionPage.equalsIgnoreCase("oneOrder")) {
-            return getOrderBlank(request, user);
+            if (request.getParameter("noMoney") != null) {
+                request.setAttribute("noMoneyMessage", "noMoney");
+            }
+            request.setAttribute("categories", Category.values());
+            request.setAttribute("order", orderService.findById(Long.parseLong(request.getParameter("id"))));
+            request.setAttribute("bill", user.getBill());
+            return "WEB-INF/jsp/usr/u_one_order.jsp";
         }
         return "WEB-INF/jsp/userPage.jsp";
     }
@@ -134,13 +143,6 @@ class UserCommand implements Command {
         return "WEB-INF/jsp/usr/u_booking.jsp";
     }
 
-    private String getOrderBlank(HttpServletRequest request, User user) {
-        request.setAttribute("categories", Category.values());
-        request.setAttribute("order", orderService.findById(Long.parseLong(request.getParameter("id"))));
-        request.setAttribute("bill", user.getBill());
-        return "WEB-INF/jsp/usr/u_one_order.jsp";
-    }
-
     private String changeOrderStatus(HttpServletRequest request, User user) {
         Order order = user.getOrderById(Long.parseLong(request.getParameter("id")));
         if (request.getParameter("changeStatus").equalsIgnoreCase("confirm")) {
@@ -153,8 +155,7 @@ class UserCommand implements Command {
             try {
                 orderService.pay(order);
             } catch (NoMoneyException | SQLException e) {
-                request.setAttribute("noMoneyMessage", e);
-                return getOrderBlank(request, user);
+                return "redirect:/user?action=account&ap=oneOrder&id=" + order.getId() + "&noMoney=true";
             }
         }
         return "redirect:/user?action=account&ap=oneOrder&id=" + order.getId();

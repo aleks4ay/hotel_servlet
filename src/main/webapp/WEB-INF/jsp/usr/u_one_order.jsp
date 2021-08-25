@@ -6,7 +6,7 @@
 
 <%@include file="../fragments/navbar.jsp"%>
 
-<div class="container-fluid" style="margin-top:10px">
+<div class="container-fluid mt-3">
     <div class="row">
 
         <div class="col-sm-4">
@@ -41,7 +41,7 @@
                 </div>
 
                 <c:if test="${order.status.toString()=='BOOKED'}">
-                    <div class="btn-group" style="width: 100%">
+                    <div class="btn-group w-100">
                         <button type="submit" class="btn btn-primary btn-my-r" name="changeStatus" value="confirm">
                             <fmt:message key="act_5"/>
                         </button>
@@ -50,7 +50,7 @@
             </form>
             <hr>
 
-            <button type="submit" class="btn btn-primary btn-my-r"
+            <button type="button" class="btn btn-primary btn-my-r w-100"
                     onclick="window.location='/user?action=account&ap=order'">
                 <fmt:message key="returnToOrder"/>
             </button>
@@ -89,12 +89,16 @@
                         <h3><fmt:message key="cost"/>: ${order.invoice.cost} <fmt:message key="currency"/> </h3>
                     </div>
 
-                    <c:if test="${order.status.toString()=='CONFIRMED'}">
-                        <div class="btn-group" style="width: 100%">
-                            <button type="submit" class="btn btn-primary btn-my-r" name="changeStatus" value="pay">
-                                <fmt:message key="act_6"/>
-                            </button>
-                        </div>
+                    <c:if test="${empty noMoneyMessage and order.status.toString()=='CONFIRMED'}">
+                        <button type="submit" class="btn btn-primary btn-my-r w-100" name="changeStatus" value="pay">
+                            <fmt:message key="act_6"/>
+                        </button>
+                    </c:if>
+                    <c:if test="${not empty noMoneyMessage}">
+                        <button type="button" class="btn btn-primary btn-my-r w-100"
+                                onclick="window.location='/user?action=account&ap=bill'">
+                            <fmt:message key="addBill"/>
+                        </button>
                     </c:if>
                 </form>
             </c:if>

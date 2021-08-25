@@ -2,6 +2,7 @@ package org.aleks4ay.hotel.service;
 
 import org.aleks4ay.hotel.dao.ConnectionPool;
 import org.aleks4ay.hotel.dao.RoomDao;
+import org.aleks4ay.hotel.exception.AlreadyException;
 import org.aleks4ay.hotel.exception.NotFoundException;
 import org.aleks4ay.hotel.model.Room;
 
@@ -10,8 +11,6 @@ import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparing;
 
 public class RoomService {
 
@@ -39,13 +38,6 @@ public class RoomService {
     public List<Room> findAll(String sortMethod, List<String> filters) {
         Connection conn = connectionPool.getConnection();
         List<Room> rooms = new RoomDao(conn).findAllWithFilter(sortMethod, filters);
-//        final Map<Long, List<Order>> orderMap = orderService.getAllAsMapByRoomId();
-//        for (Room room : rooms) {
-//            List<Order> orders = orderMap.get(room.getId());
-//            if (orders != null) {
-//                room.setOrders(orders);
-//            }
-//        }
         connectionPool.closeConnection(conn);
         return rooms;
     }
@@ -55,11 +47,12 @@ public class RoomService {
                 .collect(Collectors.toMap(Room::getId, r -> r));
     }
 
-    public Optional<Room> create(Room room) {
+    public Room create(Room room) {
         Connection conn = connectionPool.getConnection();
-        Optional<Room> roomOptional = new RoomDao(conn).create(room);
+        Room result = new RoomDao(conn).create(room)
+                .orElseThrow(() -> new AlreadyException("Room with number #" + room.getNumber() + "already exists"));
         connectionPool.closeConnection(conn);
-        return roomOptional;
+        return result;
     }
 
     public boolean update(Room room) {
@@ -94,36 +87,19 @@ public class RoomService {
         } else {
             rooms = dao.findEmptyRoom((LocalDate) arrivalObj, (LocalDate) departureObj, sortMethod, filterList);
         }
-
-/*        if (categoryObj != null) {
-            rooms = rooms.stream()
-                    .filter(room -> room.getCategory() == categoryObj)
-                    .collect(Collectors.toList());
-        }
-        if (guestsObj != null && (int) guestsObj != 0) {
-            rooms = rooms.stream()
-                    .filter(room -> room.getGuests() == (int) guestsObj)
-                    .collect(Collectors.toList());
-        }*/
-        return rooms;
-    }
-
-    public List<Room> setSorting(List<Room> rooms, String sortMethod) {
-        if (sortMethod.equalsIgnoreCase("category")) {
-            rooms.sort(comparing(Room::getCategory));
-        } else if (sortMethod.equalsIgnoreCase("price")) {
-            rooms.sort(comparing(Room::getPrice));
-        } else if (sortMethod.equalsIgnoreCase("guests")) {
-            rooms.sort(comparing(Room::getGuests));
-        } else if (sortMethod.equalsIgnoreCase("number")) {
-            rooms.sort(comparing(Room::getNumber));
-        } else {
-            rooms.sort(comparing(Room::getId));
-        }
         return rooms;
     }
 
     public List<Room> doPagination(int positionOnPage, int page, List<Room> entities) {
         return new UtilService<Room>().doPagination(positionOnPage, page, entities);
+    }
+
+    public void addOldValues(HttpServletRequest request, Room room) {
+        request.setAttribute("roomExistMessage", "Room with this number exists!");
+        request.setAttribute("oldNumber", room.getNumber());
+        request.setAttribute("oldDescription", room.getDescription());
+        request.setAttribute("oldGuests", room.getGuests());
+        request.setAttribute("oldPrice", room.getPrice());
+        request.setAttribute("oldCategory", room.getCategory());
     }
 }
