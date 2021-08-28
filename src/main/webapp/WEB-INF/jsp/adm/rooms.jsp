@@ -20,7 +20,7 @@
                 <td> ${room.category.title} </td>
                 <td> ${room.guests} </td>
                 <td> ${room.description} </td>
-                <td> ${room.price}" /></td>
+                <td> ${room.price} </td>
                 <td> <img width="200px" src="/static/img/${room.imgName}"/> </td>
 
                 <td>
