@@ -17,7 +17,6 @@ public class OrderDaoTest {
     private final ConnectionPool connectionPool = new ConnectionPoolTest();
     private OrderDao dao;
     private Connection conn;
-    private User userOne;
     private Order orderOne;
 
     @Before
@@ -28,6 +27,7 @@ public class OrderDaoTest {
         statement.execute("delete from usr where true;");
         statement.execute("delete from orders where true;");
         statement.execute("delete from room where true;");
+        statement.execute("delete from invoice where true;");
         statement.execute("ALTER sequence id_seq restart with 1;");
         statement.execute("insert into usr (login, name, surname, password, registered, active, bill) VALUES " +
                 "('login1', 'name1', 'surname1', '0B14D501A594442A01C6859541BCB3E8164D183D32937B851835442F69D5C94E', " +
@@ -45,7 +45,7 @@ public class OrderDaoTest {
                 "period, status, user_id) VALUES " +
                 "('2021-09-01', '2021-09-02', 'STANDARD', 1, '2021-09-10T15:54:44.0', 410, 1, 'CONFIRMED', 1), " +
                 "('2021-09-05', '2021-09-07', 'STANDARD', 1, '2021-09-10T15:54:44.0', 410, 2, 'CONFIRMED', 1), " +
-                "('2021-09-01', '2021-09-05', 'SUITE', 4, '2021-09-10T15:54:44.0', 410, 4, 'NEW', 1);");
+                "('2021-09-01', '2021-09-05', 'SUITE', 4, '2021-09-10T15:54:44.0', 410, 4, 'NEW', 2);");
         statement.execute("insert into order_room (order_id, room_id) VALUES (6, 4), (7, 4);");
         statement.execute("insert into invoice (cost, registered, status) VALUES " +
                 "(410, '2021-09-10T15:54:44.0', 'NEW'), (820, '2021-09-10T15:54:44.0', 'NEW');");
@@ -54,7 +54,7 @@ public class OrderDaoTest {
 
     @Before
     public void setStartValue() {
-        userOne = new User(
+        User userOne = new User(
                 "login1", "name1", "surname1",
                 "0B14D501A594442A01C6859541BCB3E8164D183D32937B851835442F69D5C94E", true,
                 LocalDateTime.of(2021, 9, 10, 15, 54, 44), 10);

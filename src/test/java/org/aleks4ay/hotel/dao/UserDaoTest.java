@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 
 public class UserDaoTest {
     private static User expectedUserOne;
-    private ConnectionPool connectionPool = new ConnectionPoolTest();
+    private final ConnectionPool connectionPool = new ConnectionPoolTest();
     private UserDao dao;
     private Connection conn;
 

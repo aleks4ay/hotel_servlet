@@ -42,18 +42,6 @@ public class RoomDaoTest {
         assertEquals(dao.findById(1L).get(), expected);
     }
 
-/*    @Test
-    public void findAllWithFilter() throws Exception {
-        List<String> filters = new ArrayList<>();
-        filters.add(" guests = " + "4");
-        filters.add(" category = " + "'SUITE'");
-        String filterAsString = UtilService.filterFromListToString(filters);
-        List<Room> actualRooms = dao.findAllWithFilter(filterAsString);
-        Room expectedRoom = new Room(102, Category.SUITE, 4, "description 2", 420L, "102.jpg");
-        expectedRoom.setId(2L);
-        List<Room> expectedRooms = Collections.singletonList(expectedRoom);
-        assertEquals(expectedRooms, actualRooms);
-    }*/
 
     @Test
     public void findAll()  {

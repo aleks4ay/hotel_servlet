@@ -2,7 +2,6 @@ package org.aleks4ay.hotel.dao;
 
 import org.aleks4ay.hotel.dao.mapper.ObjectMapper;
 import org.aleks4ay.hotel.model.BaseEntity;
-import org.aleks4ay.hotel.model.Order;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -1,5 +1,5 @@
 <form  class="sticky rounded-lg shadow p-4 mb-4" method="post" action="/admin?action=saveChangedRoom"
-       enctype="multipart/form-data" style="background-color: rgba(96, 162, 218, 0.2);">
+       style="background-color: rgba(96, 162, 218, 0.2);">
     <h3><fmt:message key="new_room"/></h3>
     <div class="mb-3">
         <input type="hidden" name="id" value="${room.id}"/>
