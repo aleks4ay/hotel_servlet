@@ -19,7 +19,7 @@ class ManagerCommand implements Command {
 
     @Override
     public String execute(HttpServletRequest request) {
-        String action = request.getParameter("action");
+        String action = request.getParameter("action") == null ? "room" : request.getParameter("action");
         request.setAttribute("action", action);
         request.setAttribute("itemOnPage", POSITION_ON_PAGE);
         request.setAttribute("categories", Category.values());
@@ -44,11 +44,7 @@ class ManagerCommand implements Command {
 
     private String getRooms(HttpServletRequest request) {
         List<Room> roomList;
-//        if (request.getAttribute("similar") != null && ((boolean)request.getAttribute("similar"))) {
-//            roomList = roomService.getSimilarRoomsWithFilter(request);
-//        } else {
             roomList = roomService.getRoomsWithFilter(request);
-//        }
         roomList = roomService.doPagination(POSITION_ON_PAGE, (int) request.getAttribute("pg"), roomList);
         request.setAttribute("rooms", roomList);
         return "WEB-INF/jsp/managerPage.jsp";

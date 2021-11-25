@@ -1,25 +1,14 @@
 package org.aleks4ay.hotel.service;
 
-import org.aleks4ay.hotel.model.BaseEntity;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class UtilService<T> {
 
-    List<T> doPagination(int positionOnPage, int page, List<? extends BaseEntity> entities) {
-        int startPosition = positionOnPage * (page - 1);
-        List<T> roomsAfterFilter = new ArrayList<>();
-
-        if (entities.size() > startPosition) {
-            for (int i = startPosition; i < startPosition + positionOnPage; i++) {
-                if (i >= entities.size()) {
-                    break;
-                }
-                roomsAfterFilter.add((T) entities.get(i));
-            }
-            return roomsAfterFilter;
-        }
-        return new ArrayList<>();
+    List<T> doPagination(int positionOnPage, int page, List<T> entities) {
+        return entities.stream()
+                .skip(positionOnPage * (page - 1))
+                .limit(positionOnPage)
+                .collect(Collectors.toList());
     }
 }
